@@ -1,0 +1,44 @@
+id: eob-006
+category: missing_field
+difficulty: medium
+edge_case: true
+input: |
+  COASTAL EMPIRE HEALTH PARTNERS
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Oliver Fitzgerald
+  Member ID:         CE-902781
+  Payer:              Coastal Empire Health Partners
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     11/30/2026
+  Facility:             Coastal Empire Outpatient Surgery Center
+  Attending Physician:  Dr. Hana Willoughby
+  Referring Physician:  Dr. Ben Castellano
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                        Billed
+  29881      Knee arthroscopy w/ meniscectomy    $2,150.00
+  73721      MRI, lower extremity, w/o contrast  $640.00
+  ----------------------------------------------------------
+  Total Billed:                                  $2,790.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                     $2,440.00
+  Patient Responsibility:                        $350.00
+
+  Provider identifiers are on file with Coastal Empire Health
+  Partners and available upon request.
+expected:
+  patient_name: "Oliver Fitzgerald"
+  date_of_service: "2026-11-30"
+  provider_npi: null
+  payer_name: "Coastal Empire Health Partners"
+  member_id: "CE-902781"
+  cpt_codes: ["29881", "73721"]
+  billed_amount: 2790.00
+  patient_responsibility: 350.00

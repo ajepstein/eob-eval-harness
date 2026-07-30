@@ -1,0 +1,39 @@
+id: eob-008
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |
+  EVERGREEN TRUST HEALTH PLAN
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Sofia Bellweather
+  Member ID:         ET-660312
+  Payer:              Evergreen Trust Health Plan
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     March 3, 2026
+  Rendering Provider:   Dr. Marcus Whitfield, NPI 7418529630
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                     Billed
+  99395      Preventive visit, established    $195.00
+  81003      Urinalysis, automated             $25.00
+  ----------------------------------------------------------
+  Total Billed:                                $220.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                   $190.00
+  Patient Responsibility:                      $30.00
+expected:
+  patient_name: "Sofia Bellweather"
+  date_of_service: "2026-03-03"
+  provider_npi: "7418529630"
+  payer_name: "Evergreen Trust Health Plan"
+  member_id: "ET-660312"
+  cpt_codes: ["99395", "81003"]
+  billed_amount: 220.00
+  patient_responsibility: 30.00

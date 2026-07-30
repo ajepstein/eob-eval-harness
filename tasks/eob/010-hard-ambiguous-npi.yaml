@@ -1,0 +1,41 @@
+id: eob-010
+category: hard
+difficulty: hard
+edge_case: true
+input: |
+  HOLLOWAY GENERAL INDEMNITY
+  Explanation of Benefits
+  This is not a bill.
+
+  Insured:            Benjamin Okonkwo
+  Insured ID:          HG-223190
+  Plan Name:            Holloway General Indemnity
+
+  Claim Detail
+  ----------------------------------------------------------
+  Service Date:          10/05/2026
+  Facility NPI:            1112223334
+  Rendering Provider NPI:  6667778889
+  Rendering Provider:      Dr. Rosalind Cheung
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                        Billed
+  99223      Initial hospital care, high         $410.00
+  71260      CT chest, w/ contrast                $520.00
+  ----------------------------------------------------------
+  Total Billed:                                  $930.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                     $780.00
+  Patient Responsibility:                        $150.00
+expected:
+  patient_name: "Benjamin Okonkwo"
+  date_of_service: "2026-10-05"
+  provider_npi: "6667778889"
+  payer_name: "Holloway General Indemnity"
+  member_id: "HG-223190"
+  cpt_codes: ["99223", "71260"]
+  billed_amount: 930.00
+  patient_responsibility: 150.00

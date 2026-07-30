@@ -1,0 +1,26 @@
+id: eob-007
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |
+  PINEWOOD REGIONAL INSURANCE COOPERATIVE
+  Explanation of Benefits
+
+  This letter explains how we processed a recent claim for Theodore
+  Nakamura (Member ID PW-114499), covered under his plan with Pinewood
+  Regional Insurance Cooperative. The visit took place on 2026-02-18 with
+  Dr. Isabel Cordero, whose National Provider Identifier is 5551237890.
+  During the visit, two services were billed: CPT 99213, an established
+  patient office visit, and CPT 82947, a blood glucose test. Together
+  these services were billed at a total of $180.00. After the plan's
+  contribution, Theodore is responsible for a remaining balance of
+  $30.00. Please retain this notice for your records; it is not a bill.
+expected:
+  patient_name: "Theodore Nakamura"
+  date_of_service: "2026-02-18"
+  provider_npi: "5551237890"
+  payer_name: "Pinewood Regional Insurance Cooperative"
+  member_id: "PW-114499"
+  cpt_codes: ["99213", "82947"]
+  billed_amount: 180.00
+  patient_responsibility: 30.00

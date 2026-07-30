@@ -1,0 +1,39 @@
+id: eob-001
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  NORTHSTAR HEALTH
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:          Jane Doe
+  Member ID:       NS-88213
+  Payer:           Northstar Health
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:   03/14/2026
+  Rendering Provider: Dr. Alan Roth, NPI 1234567890
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                 Billed
+  99213      Office visit, established   $220.00
+  85025      Complete blood count        $120.00
+  ----------------------------------------------------------
+  Total Billed:                          $340.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                             $295.00
+  Patient Responsibility:                $45.00
+expected:
+  patient_name: "Jane Doe"
+  date_of_service: "2026-03-14"
+  provider_npi: "1234567890"
+  payer_name: "Northstar Health"
+  member_id: "NS-88213"
+  cpt_codes: ["99213", "85025"]
+  billed_amount: 340.00
+  patient_responsibility: 45.00

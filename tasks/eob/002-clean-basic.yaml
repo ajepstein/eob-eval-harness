@@ -1,0 +1,40 @@
+id: eob-002
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  MERIDIAN MUTUAL INSURANCE
+  Explanation of Benefits Statement
+  Not a bill - for your records only
+
+  Patient:          Marcus Chen
+  Subscriber ID:    MM-405217
+  Health Plan:      Meridian Mutual Insurance
+
+  Claim Information
+  ----------------------------------------------------------
+  Service Date:       06/02/2026
+  Provider:           Lakeside Family Clinic, NPI 9876543210
+
+  Line Items
+  ----------------------------------------------------------
+  CPT       Description                    Charge
+  99396     Preventive visit, established  $210.00
+  80053     Comprehensive metabolic panel  $95.00
+  36415     Venipuncture                   $15.00
+  ----------------------------------------------------------
+  Total Charges:                           $320.00
+
+  Payment Summary
+  ----------------------------------------------------------
+  Insurance Paid:                          $280.00
+  You Owe:                                 $40.00
+expected:
+  patient_name: "Marcus Chen"
+  date_of_service: "2026-06-02"
+  provider_npi: "9876543210"
+  payer_name: "Meridian Mutual Insurance"
+  member_id: "MM-405217"
+  cpt_codes: ["99396", "80053", "36415"]
+  billed_amount: 320.00
+  patient_responsibility: 40.00

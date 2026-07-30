@@ -1,0 +1,38 @@
+id: eob-003
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  BLUE HARBOR HEALTH PLAN
+  Explanation of Benefits
+
+  Member Name:      Priya Natarajan
+  Member Number:    BH-771102
+  Payer Name:       Blue Harbor Health Plan
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:    01/09/2026
+  Rendering Provider:  Dr. Felicia Okafor, NPI 4567891230
+
+  Services Rendered
+  ----------------------------------------------------------
+  CPT Code   Description                     Billed
+  99214      Office visit, established        $260.00
+  93000      Electrocardiogram, complete       $85.00
+  ----------------------------------------------------------
+  Total Billed Amount:                         $345.00
+
+  Cost Breakdown
+  ----------------------------------------------------------
+  Amount Paid by Plan:                         $270.00
+  Patient Responsibility:                      $75.00
+expected:
+  patient_name: "Priya Natarajan"
+  date_of_service: "2026-01-09"
+  provider_npi: "4567891230"
+  payer_name: "Blue Harbor Health Plan"
+  member_id: "BH-771102"
+  cpt_codes: ["99214", "93000"]
+  billed_amount: 345.00
+  patient_responsibility: 75.00

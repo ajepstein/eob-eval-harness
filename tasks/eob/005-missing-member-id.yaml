@@ -1,0 +1,40 @@
+id: eob-005
+category: missing_field
+difficulty: medium
+edge_case: true
+input: |
+  GRANITE STATE HEALTH ALLIANCE
+  Explanation of Benefits
+  This is a summary of a recent claim, not a bill.
+
+  Patient Name:      Wanda Ibarra
+  Payer:              Granite State Health Alliance
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     09/11/2026
+  Rendering Provider:   Dr. Samuel Torres, NPI 3216549870
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99204      Office visit, new patient          $310.00
+  90471      Immunization administration        $40.00
+  ----------------------------------------------------------
+  Total Billed:                                 $350.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $290.00
+  Patient Responsibility:                       $60.00
+
+  Questions about this claim? Call the number on your ID card.
+expected:
+  patient_name: "Wanda Ibarra"
+  date_of_service: "2026-09-11"
+  provider_npi: "3216549870"
+  payer_name: "Granite State Health Alliance"
+  member_id: null
+  cpt_codes: ["99204", "90471"]
+  billed_amount: 350.00
+  patient_responsibility: 60.00

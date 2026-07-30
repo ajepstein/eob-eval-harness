@@ -1,0 +1,15 @@
+id: eob-f002
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  Document two.
+expected:
+  patient_name: "Patient Two"
+  date_of_service: "2026-01-02"
+  provider_npi: null
+  payer_name: "Payer Two"
+  member_id: null
+  cpt_codes: []
+  billed_amount: 20.00
+  patient_responsibility: 6.00

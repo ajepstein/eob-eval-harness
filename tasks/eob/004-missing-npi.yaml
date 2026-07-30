@@ -1,0 +1,42 @@
+id: eob-004
+category: missing_field
+difficulty: medium
+edge_case: true
+input: |
+  SUMMIT COMMUNITY HEALTH PLAN
+  Explanation of Benefits
+  This is not a bill.
+
+  Patient:          Derek Vance
+  Member ID:        SC-330456
+  Payer:            Summit Community Health Plan
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:    04/22/2026
+  Provider:            Riverside Urgent Care
+
+  Contact the provider's billing office directly for questions
+  about how this claim was coded.
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                   Billed
+  99283      Emergency dept visit, mod     $410.00
+  71046      Chest X-ray, 2 views          $120.00
+  ----------------------------------------------------------
+  Total Billed:                            $530.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                               $455.00
+  Patient Responsibility:                  $75.00
+expected:
+  patient_name: "Derek Vance"
+  date_of_service: "2026-04-22"
+  provider_npi: null
+  payer_name: "Summit Community Health Plan"
+  member_id: "SC-330456"
+  cpt_codes: ["99283", "71046"]
+  billed_amount: 530.00
+  patient_responsibility: 75.00

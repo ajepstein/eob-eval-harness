@@ -1,0 +1,15 @@
+id: eob-f003
+category: hard
+difficulty: hard
+edge_case: true
+input: |
+  Document three.
+expected:
+  patient_name: "Patient Three"
+  date_of_service: "2026-01-03"
+  provider_npi: null
+  payer_name: "Payer Three"
+  member_id: null
+  cpt_codes: []
+  billed_amount: 30.00
+  patient_responsibility: 7.00

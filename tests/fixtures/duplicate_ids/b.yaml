@@ -1,0 +1,15 @@
+id: eob-dup
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  Some document text B.
+expected:
+  patient_name: "B Patient"
+  date_of_service: "2026-01-02"
+  provider_npi: null
+  payer_name: "Some Payer"
+  member_id: null
+  cpt_codes: []
+  billed_amount: 20.00
+  patient_responsibility: 6.00

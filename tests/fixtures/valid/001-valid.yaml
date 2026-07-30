@@ -1,0 +1,28 @@
+id: eob-fixture-valid
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  SAMPLE PAYER
+  Explanation of Benefits
+
+  Member:    Test Patient
+  Member ID: TP-000111
+  Payer:     Sample Payer
+
+  Date of Service: 05/01/2026
+  Provider: Dr. Test, NPI 1112223334
+
+  CPT 99213  $100.00
+
+  Total Billed: $100.00
+  Patient Responsibility: $20.00
+expected:
+  patient_name: "Test Patient"
+  date_of_service: "2026-05-01"
+  provider_npi: "1112223334"
+  payer_name: "Sample Payer"
+  member_id: "TP-000111"
+  cpt_codes: ["99213"]
+  billed_amount: 100.00
+  patient_responsibility: 20.00

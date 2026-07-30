@@ -1,0 +1,44 @@
+id: eob-009
+category: hard
+difficulty: hard
+edge_case: true
+input: |
+  CARDINAL POINT HEALTH INSURANCE
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Grace Ashworth
+  Member ID:         CP-508827
+  Payer:              Cardinal Point Health Insurance
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     07/19/2026
+  Rendering Provider:   Dr. Nadia Petrov, NPI 8529637410
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                      Billed
+  99215      Office visit, established, high    $290.00
+  93010      ECG interpretation and report      $35.00
+  ----------------------------------------------------------
+  Total Billed:                                 $325.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $230.00
+  Prior Balance Carried Forward:                $40.00
+  Patient Responsibility:                       $95.00
+
+  Note: the prior balance shown above reflects an unrelated
+  outstanding amount from a previous claim and is provided for
+  informational purposes only.
+expected:
+  patient_name: "Grace Ashworth"
+  date_of_service: "2026-07-19"
+  provider_npi: "8529637410"
+  payer_name: "Cardinal Point Health Insurance"
+  member_id: "CP-508827"
+  cpt_codes: ["99215", "93010"]
+  billed_amount: 325.00
+  patient_responsibility: 95.00

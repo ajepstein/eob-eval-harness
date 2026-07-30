@@ -1,0 +1,15 @@
+id: eob-f001
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  Document one.
+expected:
+  patient_name: "Patient One"
+  date_of_service: "2026-01-01"
+  provider_npi: null
+  payer_name: "Payer One"
+  member_id: null
+  cpt_codes: []
+  billed_amount: 10.00
+  patient_responsibility: 5.00

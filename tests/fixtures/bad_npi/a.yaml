@@ -1,0 +1,15 @@
+id: eob-bad-npi
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  Some document text.
+expected:
+  patient_name: "A Patient"
+  date_of_service: "2026-01-01"
+  provider_npi: "12345"
+  payer_name: "Some Payer"
+  member_id: null
+  cpt_codes: []
+  billed_amount: 10.00
+  patient_responsibility: 5.00
