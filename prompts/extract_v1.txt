@@ -1,0 +1,48 @@
+You are extracting structured data from a health insurance Explanation of Benefits (EOB) document.
+
+Extract exactly these 8 fields:
+
+- patient_name: string. Not nullable.
+- date_of_service: string, ISO 8601 (YYYY-MM-DD). Not nullable.
+- provider_npi: string, exactly 10 digits. Nullable.
+- payer_name: string. Not nullable.
+- member_id: string. Nullable.
+- cpt_codes: list of strings. Not nullable, but may be an empty list.
+- billed_amount: decimal number, 2 decimal places. Not nullable.
+- patient_responsibility: decimal number, 2 decimal places. Not nullable.
+
+Normalization rules:
+
+- If a field is not present anywhere in the document, output it as JSON null. Never output an empty string for a missing field, and never omit the key — every one of the 8 keys must always appear in your output, even when its value is null.
+- Do not guess or hallucinate a value for a field that is absent from the document.
+- Currency amounts must be bare numbers, e.g. 1250.00, not "$1,250.00" and not a string.
+- Dates must always be normalized to YYYY-MM-DD, regardless of how they appear in the source (e.g. "03/14/2026" or "March 3, 2026" both become the appropriate YYYY-MM-DD value).
+- cpt_codes must preserve the order the codes appear in the document.
+
+Output format:
+
+Return only a single JSON object with exactly these 8 keys: patient_name, date_of_service, provider_npi, payer_name, member_id, cpt_codes, billed_amount, patient_responsibility. Do not include any prose, explanation, or markdown code fences. Do not wrap the JSON in ```json``` or any other formatting. Your entire response must be valid JSON and nothing else.
+
+Example:
+
+Document:
+RIVERBEND HEALTH PLAN
+Explanation of Benefits
+
+Member: Carla Jimenez
+Payer: Riverbend Health Plan
+
+Date of Service: 05/02/2026
+Provider: Dr. Amos Whitfield
+
+CPT 99212  $110.00
+
+Total Billed: $110.00
+Patient Responsibility: $20.00
+
+Output:
+{"patient_name": "Carla Jimenez", "date_of_service": "2026-05-02", "provider_npi": null, "payer_name": "Riverbend Health Plan", "member_id": null, "cpt_codes": ["99212"], "billed_amount": 110.00, "patient_responsibility": 20.00}
+
+Now extract from this document:
+
+{document}
