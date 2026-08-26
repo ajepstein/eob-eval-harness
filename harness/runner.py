@@ -18,6 +18,7 @@ from tenacity.wait import wait_exponential_jitter
 from harness.adapters.base import Adapter, RateLimited, TransientError
 from harness.cache import ResponseCache, make_cache_key
 from harness.prompts import load_prompt, prompt_hash
+from harness.scorers.base import Scorer, score_result
 from harness.types import ModelResponse, RunSummary, Task, TaskResult
 
 _MAX_ATTEMPTS = 4
@@ -56,6 +57,29 @@ async def _complete_with_retries(
     raise AssertionError("unreachable")
 
 
+def _score_of(result: TaskResult, scorer_name: str) -> float | None:
+    """The value of one named score on a result, or None if absent."""
+    for score in result.scores:
+        if score.scorer == scorer_name:
+            return score.value
+    return None
+
+
+def _mean(values: list[float]) -> float:
+    return sum(values) / len(values) if values else 0.0
+
+
+def _by_category(
+    tasks: list[Task], results: list[TaskResult], scorer_name: str
+) -> dict[str, float]:
+    buckets: dict[str, list[float]] = {}
+    for task, result in zip(tasks, results):
+        value = _score_of(result, scorer_name)
+        if value is not None:
+            buckets.setdefault(task.category, []).append(value)
+    return {category: _mean(values) for category, values in sorted(buckets.items())}
+
+
 async def run_tasks(
     tasks: list[Task],
     adapter: Adapter,
@@ -63,11 +87,13 @@ async def run_tasks(
     concurrency: int = 5,
     cache: ResponseCache | None = None,
     max_tokens: int = 2000,
+    scorers: list[Scorer] | None = None,
 ) -> RunSummary:
     template = load_prompt(prompt_name)
     template_hash = prompt_hash(prompt_name)
     params = {"max_tokens": max_tokens}
     semaphore = asyncio.Semaphore(concurrency)
+    active_scorers = scorers or []
 
     progress = Progress(
         TextColumn("[progress.description]{task.description}"),
@@ -88,7 +114,15 @@ async def run_tasks(
             hit = cache.get(key)
             if hit is not None:
                 progress.update(bar, advance=1, cost=running_cost)
-                return TaskResult(task_id=task.id, response=hit, scores=[], cached=True)
+                # Scoring is recomputed on cache hits: it is local and free,
+                # and a scorer fix must take effect without re-paying for
+                # generations.
+                return TaskResult(
+                    task_id=task.id,
+                    response=hit,
+                    scores=score_result(task, hit, active_scorers),
+                    cached=True,
+                )
 
         # Only the network call is bounded by the semaphore, so the cap
         # actually limits in-flight requests rather than task creation.
@@ -99,7 +133,12 @@ async def run_tasks(
             cache.set(key, response)
         running_cost += response.cost_usd
         progress.update(bar, advance=1, cost=running_cost)
-        return TaskResult(task_id=task.id, response=response, scores=[], cached=False)
+        return TaskResult(
+            task_id=task.id,
+            response=response,
+            scores=score_result(task, response, active_scorers),
+            cached=False,
+        )
 
     start = time.monotonic()
     with progress:
@@ -127,6 +166,9 @@ async def run_tasks(
     total_out = sum(r.response.tokens_out for r in results if r.response)
     latencies = [r.response.latency_ms for r in results if r.response and not r.cached]
 
+    schema_values = [v for r in results if (v := _score_of(r, "schema")) is not None]
+    f1_values = [v for r in results if (v := _score_of(r, "fields")) is not None]
+
     return RunSummary(
         results=results,
         adapter_name=adapter.name,
@@ -142,4 +184,8 @@ async def run_tasks(
         cached=cached_count,
         latency_p50_ms=_percentile(latencies, 50),
         latency_p95_ms=_percentile(latencies, 95),
+        schema_pass_rate=_mean(schema_values),
+        mean_f1=_mean(f1_values),
+        schema_pass_rate_by_category=_by_category(tasks, results, "schema"),
+        mean_f1_by_category=_by_category(tasks, results, "fields"),
     )
