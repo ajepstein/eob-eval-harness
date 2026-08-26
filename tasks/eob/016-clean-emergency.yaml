@@ -1,0 +1,42 @@
+id: eob-016
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  NORTHGATE PREFERRED PLAN
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Beatrice Kowalczyk
+  Member ID:         NPP-64228
+  Payer:             Northgate Preferred Plan
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     09/03/2026
+  Rendering Provider:   Dr. Ellis Thornbury, NPI 7890123456
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99285      Emergency dept visit, high       $1,450.00
+  71046      Chest X-ray, 2 views               $185.00
+  93010      ECG interpretation                  $75.00
+  ----------------------------------------------------------
+  Total Billed:                               $1,710.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Applied to Deductible:                        $500.00
+  Coinsurance (20%):                            $242.00
+  Plan Paid:                                    $968.00
+  Patient Responsibility:                       $742.00
+expected:
+  patient_name: "Beatrice Kowalczyk"
+  date_of_service: "2026-09-03"
+  provider_npi: "7890123456"
+  payer_name: "Northgate Preferred Plan"
+  member_id: "NPP-64228"
+  cpt_codes: ["99285", "71046", "93010"]
+  billed_amount: 1710.00
+  patient_responsibility: 742.00

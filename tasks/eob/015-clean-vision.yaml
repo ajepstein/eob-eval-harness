@@ -1,0 +1,39 @@
+id: eob-015
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  CLEARWATER VISION GROUP
+  Explanation of Benefits
+  Retain for your records.
+
+  Patient:           Nathaniel Okoro
+  Member ID:         CVG-20385
+  Payer:             Clearwater Vision Group
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     08/14/2026
+  Rendering Provider:   Dr. Susanna Delacroix-Mbeki, NPI 6789012345
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  92004      Eye exam, new patient, compr.      $210.00
+  92015      Refraction                          $60.00
+  ----------------------------------------------------------
+  Total Billed:                                 $270.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $200.00
+  Patient Responsibility:                       $70.00
+expected:
+  patient_name: "Nathaniel Okoro"
+  date_of_service: "2026-08-14"
+  provider_npi: "6789012345"
+  payer_name: "Clearwater Vision Group"
+  member_id: "CVG-20385"
+  cpt_codes: ["92004", "92015"]
+  billed_amount: 270.00
+  patient_responsibility: 70.00

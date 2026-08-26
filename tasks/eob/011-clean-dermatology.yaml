@@ -1,0 +1,39 @@
+id: eob-011
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  ALPINE RIDGE HEALTH
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Ronald Pemberton
+  Member ID:         AR-556201
+  Payer:             Alpine Ridge Health
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     04/08/2026
+  Rendering Provider:   Dr. Helena Marchetti, NPI 2345678901
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99213      Office visit, established          $185.00
+  11100      Biopsy of skin lesion              $145.00
+  ----------------------------------------------------------
+  Total Billed:                                 $330.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $264.00
+  Patient Responsibility:                       $66.00
+expected:
+  patient_name: "Ronald Pemberton"
+  date_of_service: "2026-04-08"
+  provider_npi: "2345678901"
+  payer_name: "Alpine Ridge Health"
+  member_id: "AR-556201"
+  cpt_codes: ["99213", "11100"]
+  billed_amount: 330.00
+  patient_responsibility: 66.00

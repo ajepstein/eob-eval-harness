@@ -1,0 +1,38 @@
+id: eob-023
+category: missing_field
+difficulty: medium
+edge_case: true
+input: |
+  LANTERN BAY HEALTH SERVICES
+  Explanation of Benefits
+
+  Patient:           Rosalind Fairweather
+  Account Number:    ACCT-556677
+  Payer:             Lantern Bay Health Services
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     08/05/2026
+  Rendering Provider:   Dr. Kwame Boateng-Asante, NPI 1134567890
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99214      Office visit, established          $250.00
+  81002      Urinalysis, non-automated           $20.00
+  ----------------------------------------------------------
+  Total Billed:                                 $270.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $216.00
+  Patient Responsibility:                        $54.00
+expected:
+  patient_name: "Rosalind Fairweather"
+  date_of_service: "2026-08-05"
+  provider_npi: "1134567890"
+  payer_name: "Lantern Bay Health Services"
+  member_id: null
+  cpt_codes: ["99214", "81002"]
+  billed_amount: 270.00
+  patient_responsibility: 54.00

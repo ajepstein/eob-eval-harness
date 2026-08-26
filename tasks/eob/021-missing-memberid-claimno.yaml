@@ -1,0 +1,40 @@
+id: eob-021
+category: missing_field
+difficulty: medium
+edge_case: true
+input: |
+  STILLWATER GUARANTY HEALTH
+  Explanation of Benefits
+
+  Patient:           Lorenzo Battaglia
+  Claim Number:      CLM-2026-773401
+  Payer:             Stillwater Guaranty Health
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     06/11/2026
+  Rendering Provider:   Dr. Freya Lindqvist, NPI 1023456789
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99213      Office visit, established          $195.00
+  87804      Influenza assay                     $40.00
+  ----------------------------------------------------------
+  Total Billed:                                 $235.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $188.00
+  Patient Responsibility:                        $47.00
+
+  Questions? Reference the claim number above when calling.
+expected:
+  patient_name: "Lorenzo Battaglia"
+  date_of_service: "2026-06-11"
+  provider_npi: "1023456789"
+  payer_name: "Stillwater Guaranty Health"
+  member_id: null
+  cpt_codes: ["99213", "87804"]
+  billed_amount: 235.00
+  patient_responsibility: 47.00

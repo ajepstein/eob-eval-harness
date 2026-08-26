@@ -1,0 +1,35 @@
+id: eob-027
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |
+  MERIDIAN CROSSING BENEFIT SOCIETY
+  Explanation of Benefits
+
+  Dear Member,
+
+  We have finished processing a claim submitted on behalf of Winifred
+  Achterberg, who is enrolled with us under member number MC-448190. The
+  services in question were furnished on 2026-01-27 by Dr. Casimir
+  Wojciechowski, whose National Provider Identifier we have on record as
+  1356789012.
+
+  Two procedures were submitted for consideration. The first, billed under
+  CPT 99212, was a brief office visit for an established patient. The second,
+  CPT 94640, was a nebulizer treatment administered during the same encounter.
+  Taken together, the provider billed a total of $165.00 for this encounter.
+
+  After applying your plan's negotiated rates and benefit provisions, we have
+  paid the provider $132.00 directly. The remaining balance of $33.00 is your
+  responsibility and may be billed to you separately by the provider's office.
+
+  This notice is furnished for informational purposes and is not itself a bill.
+expected:
+  patient_name: "Winifred Achterberg"
+  date_of_service: "2026-01-27"
+  provider_npi: "1356789012"
+  payer_name: "Meridian Crossing Benefit Society"
+  member_id: "MC-448190"
+  cpt_codes: ["99212", "94640"]
+  billed_amount: 165.00
+  patient_responsibility: 33.00

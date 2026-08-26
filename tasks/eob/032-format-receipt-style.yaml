@@ -1,0 +1,36 @@
+id: eob-032
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |2
+          * * * ORCHARD LANE HEALTH PLAN * * *
+              EXPLANATION OF BENEFITS
+                -- NOT A BILL --
+
+    PAYER ........ Orchard Lane Health Plan
+    MEMBER ....... Fitzgerald Abernathy
+    MEMBER NO .... OLH-192837
+    SVC DATE ..... 08/28/2026
+    PROVIDER ..... Dr. Naomi Sotomayor-Reyes
+    NPI .......... 1801234567
+
+    ------------------------------------------
+    ITEM  CODE   DESCRIPTION           CHARGED
+    ------------------------------------------
+     1    99213  Office visit, est.    $ 200.00
+     2    69210  Cerumen removal       $ 110.00
+     3    92551  Pure tone screening   $  55.00
+    ------------------------------------------
+                         BILLED TOTAL  $ 365.00
+                         PLAN PAYMENT  $ 292.00
+                         YOU OWE       $  73.00
+    ------------------------------------------
+expected:
+  patient_name: "Fitzgerald Abernathy"
+  date_of_service: "2026-08-28"
+  provider_npi: "1801234567"
+  payer_name: "Orchard Lane Health Plan"
+  member_id: "OLH-192837"
+  cpt_codes: ["99213", "69210", "92551"]
+  billed_amount: 365.00
+  patient_responsibility: 73.00

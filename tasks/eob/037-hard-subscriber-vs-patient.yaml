@@ -1,0 +1,44 @@
+id: eob-037
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  HAWTHORNE FAMILY BENEFIT PLAN
+  Explanation of Benefits
+  This is not a bill.
+
+  Subscriber:        Reginald Thorncastle
+  Subscriber ID:     HFB-908177
+  Patient:           Clementine Thorncastle  (dependent, child)
+  Relationship:      Daughter
+  Payer:             Hawthorne Family Benefit Plan
+
+  The services below were rendered to the patient named above,
+  not to the subscriber.
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     04/25/2026
+  Rendering Provider:   Dr. Cassius Mbeki-Lindgren, NPI 1567098234
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99392      Preventive visit, child, est.      $185.00
+  90460      Immunization administration         $40.00
+  ----------------------------------------------------------
+  Total Billed:                                 $225.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $202.50
+  Patient Responsibility:                        $22.50
+expected:
+  patient_name: "Clementine Thorncastle"
+  date_of_service: "2026-04-25"
+  provider_npi: "1567098234"
+  payer_name: "Hawthorne Family Benefit Plan"
+  member_id: "HFB-908177"
+  cpt_codes: ["99392", "90460"]
+  billed_amount: 225.00
+  patient_responsibility: 22.50

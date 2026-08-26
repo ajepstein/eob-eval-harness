@@ -1,0 +1,33 @@
+id: eob-031
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |
+  COPPERFIELD ASSURANCE SOCIETY
+  Explanation of Benefits
+
+  Member:              Wilhelmina Strzelecki
+  Membership Number:   CAS-704412
+  Underwritten by:     Copperfield Assurance Society
+
+  Services were rendered on the seventeenth of June, that is
+  17 June 2026, at the offices of Dr. Alastair Pennington-Rhodes,
+  National Provider Identifier 1790123456.
+
+  Procedures Considered
+  ------------------------------------------------------------
+    CPT 99395   Periodic preventive medicine, established
+    CPT 82962   Glucose, blood by monitoring device
+  ------------------------------------------------------------
+    Total amount billed by the provider          $  265.00
+    Benefit paid on your behalf                  $  212.00
+    Balance remaining as your responsibility     $   53.00
+expected:
+  patient_name: "Wilhelmina Strzelecki"
+  date_of_service: "2026-06-17"
+  provider_npi: "1790123456"
+  payer_name: "Copperfield Assurance Society"
+  member_id: "CAS-704412"
+  cpt_codes: ["99395", "82962"]
+  billed_amount: 265.00
+  patient_responsibility: 53.00

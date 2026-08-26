@@ -1,0 +1,33 @@
+id: eob-030
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |
+  IRONWOOD FEDERATED HEALTH          EXPLANATION OF BENEFITS
+
+  MEMBER INFORMATION                 CLAIM INFORMATION
+  --------------------------------   --------------------------------
+  Name:      Seraphina Oyelowo        Service Date:  04/16/2026
+  Member ID: IFH-336095               Provider:      Dr. Hector Villalobos
+  Payer:     Ironwood Federated       NPI:           1689012345
+             Health
+
+  PROCEDURE DETAIL
+  ------------------------------------------------------------------
+    99204    Office visit, new patient, moderate           $340.00
+    93306    Echocardiogram, complete                      $580.00
+  ------------------------------------------------------------------
+                                          TOTAL BILLED     $920.00
+
+  FINANCIAL SUMMARY
+  ------------------------------------------------------------------
+    Plan payment ....... $736.00        Your share ....... $184.00
+expected:
+  patient_name: "Seraphina Oyelowo"
+  date_of_service: "2026-04-16"
+  provider_npi: "1689012345"
+  payer_name: "Ironwood Federated Health"
+  member_id: "IFH-336095"
+  cpt_codes: ["99204", "93306"]
+  billed_amount: 920.00
+  patient_responsibility: 184.00
