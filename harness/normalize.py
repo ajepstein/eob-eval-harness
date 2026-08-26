@@ -29,8 +29,38 @@ from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from typing import Any, Callable
 
+# The 8 EOB fields, in SCHEMA.md order. This is the canonical list: the task
+# loader validates expected blocks against it and the schema scorer checks
+# response keys against it, so adding a field is a one-line change here
+# rather than a hunt through three modules.
+SCHEMA_FIELDS: tuple[str, ...] = (
+    "patient_name",
+    "date_of_service",
+    "provider_npi",
+    "payer_name",
+    "member_id",
+    "cpt_codes",
+    "billed_amount",
+    "patient_responsibility",
+)
+
+# Fields SCHEMA.md marks nullable — the document may genuinely not contain
+# them. The other six are always present in a well-formed EOB, so a null
+# there is a miss rather than a correct abstention.
+NULLABLE_FIELDS: frozenset[str] = frozenset({"provider_npi", "member_id"})
+
 # Spellings that all mean "this field is absent from the document".
 # Compared against the casefolded, whitespace-collapsed string form.
+#
+# This set is deliberately wider than the handful of spellings seen so far.
+# Scoring "not provided" as a hallucination would measure a model's
+# formatting compliance rather than whether it correctly declined to invent
+# a value, and that is the distinction the missing_field tasks exist to
+# test. The cost of the wider set is that a field whose genuine value is
+# literally one of these strings would read as absent — no real EOB field
+# (a name, date, NPI, payer, member id, or amount) can take these values,
+# so the trade is one-sided here. `test_null_equivalents_are_pinned` fixes
+# the exact set so any future widening is a deliberate, reviewed change.
 _NULL_EQUIVALENTS = {
     "",
     "null",

@@ -266,6 +266,32 @@ def test_schema_allows_null_for_nullable_scalar():
     assert score.passed is True
 
 
+def test_each_field_has_exactly_one_absence_marker():
+    # The documented principle behind the scalar/list asymmetry: null is the
+    # absence marker for scalars, [] is the absence marker for cpt_codes, and
+    # using the other one is a structural error. These four assertions are
+    # the whole rule.
+    scorer = SchemaScorer()
+
+    # Scalars: null is accepted even for a SCHEMA.md non-nullable field,
+    # because "I could not find it" is a content claim fields.py scores.
+    assert scorer.score(_task(), _response(_prediction(billed_amount=None))).passed
+    # cpt_codes: [] is the way to say "no codes found".
+    assert scorer.score(_task(), _response(_prediction(cpt_codes=[]))).passed
+    # ...and null is not, because the container type was never produced.
+    assert not scorer.score(_task(), _response(_prediction(cpt_codes=None))).passed
+    # Nor is a scalar borrowing the list's marker.
+    assert not scorer.score(_task(), _response(_prediction(patient_name=[]))).passed
+
+
+def test_null_amount_fails_the_field_scorer_even_though_schema_allows_it():
+    # The other half of the same principle: structural leniency on a null
+    # amount does not mean it scores as correct. It is a miss.
+    score = FieldScorer().score(_task(), _response(_prediction(billed_amount=None)))
+
+    assert score.detail["fields"]["billed_amount"] == "fn_missed"
+
+
 def test_schema_fails_on_unparseable_text():
     score = SchemaScorer().score(_task(), _response("no json here"))
 
