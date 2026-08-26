@@ -419,3 +419,86 @@ def test_deleting_a_run_cascades_to_results_and_scores(db: Path):
     with sqlite3.connect(db) as conn:
         assert conn.execute("SELECT COUNT(*) FROM results").fetchone()[0] == 0
         assert conn.execute("SELECT COUNT(*) FROM scores").fetchone()[0] == 0
+
+
+# --- judge calls -------------------------------------------------------------
+
+
+def _judge_result(task_id: str, field: str = "payer_name") -> TaskResult:
+    return TaskResult(
+        task_id=task_id,
+        response=_response(),
+        scores=[
+            Score(
+                scorer="judge",
+                value=1.0,
+                passed=True,
+                detail={
+                    "raw_f1": 6 / 7,
+                    "f1": 1.0,
+                    "judge_calls": 1,
+                    "judge_cost_usd": 0.002,
+                    "judge_model_id": "claude-sonnet-5",
+                    "judge_prompt_hash": "rubric123",
+                    "fields": {
+                        field: {
+                            "outcome": "fp_fn_wrong",
+                            "judged": True,
+                            "verdict": "equivalent",
+                            "reason": "Same payer stated more fully.",
+                            "expected": "northstar health",
+                            "predicted": "northstar health plan of ohio",
+                            "cost_usd": 0.002,
+                        },
+                        "member_id": {"outcome": "tp", "judged": False},
+                    },
+                },
+            )
+        ],
+    )
+
+
+def test_judge_calls_are_persisted_with_their_reasons(db: Path):
+    from harness.store import list_judge_calls
+
+    run_id = save_run(_summary([_judge_result("t1")]), [_task("t1")], db_path=db)
+
+    calls = list_judge_calls(run_id, db_path=db)
+
+    assert len(calls) == 1
+    call = calls[0]
+    assert call["field"] == "payer_name"
+    assert call["verdict"] == "equivalent"
+    assert call["reason"] == "Same payer stated more fully."
+    assert call["expected"] == "northstar health"
+    assert call["predicted"] == "northstar health plan of ohio"
+    assert call["judge_prompt_hash"] == "rubric123"
+    assert call["cost_usd"] == pytest.approx(0.002)
+
+
+def test_unjudged_fields_do_not_create_judge_call_rows(db: Path):
+    from harness.store import list_judge_calls
+
+    run_id = save_run(_summary([_judge_result("t1")]), [_task("t1")], db_path=db)
+
+    # member_id was not judged, so it must not appear in the audit table.
+    assert [c["field"] for c in list_judge_calls(run_id, db_path=db)] == ["payer_name"]
+
+
+def test_run_without_a_judge_records_no_judge_calls(db: Path):
+    from harness.store import list_judge_calls
+
+    run_id = save_run(_summary([_result("t1")]), [_task("t1")], db_path=db)
+
+    assert list_judge_calls(run_id, db_path=db) == []
+
+
+def test_deleting_a_run_cascades_to_judge_calls(db: Path):
+    run_id = save_run(_summary([_judge_result("t1")]), [_task("t1")], db_path=db)
+
+    with sqlite3.connect(db) as conn:
+        conn.execute("PRAGMA foreign_keys = ON")
+        conn.execute("DELETE FROM runs WHERE id = ?", (run_id,))
+
+    with sqlite3.connect(db) as conn:
+        assert conn.execute("SELECT COUNT(*) FROM judge_calls").fetchone()[0] == 0

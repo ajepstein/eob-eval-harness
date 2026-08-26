@@ -22,6 +22,7 @@ from harness.cache import ResponseCache
 from harness.report import render_category_table, render_diff, render_run_table
 from harness.runner import run_tasks
 from harness.scorers.fields import FieldScorer
+from harness.scorers.judge import JudgeScorer
 from harness.scorers.schema import SchemaScorer
 from harness.store import (
     DEFAULT_DB_PATH,
@@ -38,6 +39,16 @@ from harness.types import RunSummary, Task
 async def main_async(args: argparse.Namespace, tasks: list[Task]) -> list[RunSummary]:
     cache = ResponseCache(enabled=not args.no_cache)
 
+    scorers = [SchemaScorer(), FieldScorer()]
+    if args.judge:
+        scorers.append(
+            JudgeScorer(
+                adapter=get_adapter(args.judge, model_alias=args.judge_model),
+                only_near_misses=not args.judge_all,
+                cache=cache,
+            )
+        )
+
     summaries = []
     for name in args.adapter:
         adapter = get_adapter(name, model_alias=args.model)
@@ -48,7 +59,7 @@ async def main_async(args: argparse.Namespace, tasks: list[Task]) -> list[RunSum
             concurrency=args.concurrency,
             cache=cache,
             max_tokens=args.max_tokens,
-            scorers=[SchemaScorer(), FieldScorer()],
+            scorers=scorers,
         )
         summaries.append(summary)
     return summaries
@@ -63,7 +74,9 @@ def render(summaries: list[RunSummary], console: Console) -> None:
     table.add_column("cached", justify="right")
     table.add_column("schema", justify="right")
     table.add_column("F1", justify="right")
+    table.add_column("judge F1", justify="right")
     table.add_column("cost $", justify="right", no_wrap=True)
+    table.add_column("judge $", justify="right", no_wrap=True)
     table.add_column("p50 ms", justify="right")
     table.add_column("p95 ms", justify="right")
     table.add_column("wall s", justify="right")
@@ -77,13 +90,21 @@ def render(summaries: list[RunSummary], console: Console) -> None:
             str(s.cached),
             f"{s.schema_pass_rate:.2f}",
             f"{s.mean_f1:.3f}",
+            f"{s.mean_judge_f1:.3f}" if s.judge_prompt_hash else "—",
             f"{s.total_cost_usd:.6f}",
+            f"{s.judge_cost_usd:.6f}" if s.judge_prompt_hash else "—",
             f"{s.latency_p50_ms:.0f}",
             f"{s.latency_p95_ms:.0f}",
             f"{s.wall_clock_seconds:.1f}",
         )
 
     console.print(table)
+    for s in summaries:
+        if s.judge_prompt_hash:
+            console.print(
+                f"  [dim]judge: {s.judge_calls} call(s), rubric "
+                f"{s.judge_prompt_hash}[/dim]"
+            )
     render_categories(summaries, console)
 
     for s in summaries:
@@ -170,6 +191,18 @@ def main() -> None:
     parser.add_argument("--max-tokens", type=int, default=2000)
     parser.add_argument("--model", default=None, help="Override MODELS alias")
     parser.add_argument("--no-cache", action="store_true", help="Disable the response cache")
+    parser.add_argument(
+        "--judge",
+        default=None,
+        metavar="ADAPTER",
+        help="Adjudicate near-misses with this adapter as judge",
+    )
+    parser.add_argument(
+        "--judge-all",
+        action="store_true",
+        help="Judge every mismatched field, not only near-misses",
+    )
+    parser.add_argument("--judge-model", default=None, help="MODELS alias for the judge")
     parser.add_argument("--db", default=DEFAULT_DB_PATH, help="SQLite store path")
     parser.add_argument(
         "--no-save", action="store_true", help="Run without persisting to the store"
