@@ -1,0 +1,40 @@
+id: eob-020
+category: missing_field
+difficulty: medium
+edge_case: true
+input: |
+  WINDROSE HEALTH PARTNERS
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Adaeze Nwachukwu
+  Member ID:         WHP-33912
+  Payer:             Windrose Health Partners
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     05/06/2026
+  Rendering Provider:   Dr. Bartholomew Kingsley
+  State License No.:    MD-449120
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99204      Office visit, new patient          $320.00
+  94010      Spirometry                          $85.00
+  ----------------------------------------------------------
+  Total Billed:                                 $405.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $324.00
+  Patient Responsibility:                        $81.00
+expected:
+  patient_name: "Adaeze Nwachukwu"
+  date_of_service: "2026-05-06"
+  provider_npi: null
+  payer_name: "Windrose Health Partners"
+  member_id: "WHP-33912"
+  cpt_codes: ["99204", "94010"]
+  billed_amount: 405.00
+  patient_responsibility: 81.00

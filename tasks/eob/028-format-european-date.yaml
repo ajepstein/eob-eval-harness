@@ -1,0 +1,39 @@
+id: eob-028
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |
+  ATLANTIC PROVIDENT HEALTH
+  Explanation of Benefits / Relevé de prestations
+
+  Member          : Étienne Beaulieu-Marchand
+  Member ID       : APH-527741
+  Payer           : Atlantic Provident Health
+
+  CLAIM DETAIL
+  ==========================================================
+  Date of Service : 25/03/2026        (DD/MM/YYYY)
+  Provider        : Dr. Genevieve Thibodeaux
+  NPI             : 1467890123
+
+  SERVICES
+  ==========================================================
+    Code    Description                          Amount
+    99213   Office visit, established           $ 215.00
+    20605   Arthrocentesis, intermediate        $ 160.00
+  ==========================================================
+    TOTAL BILLED                                $ 375.00
+
+  BENEFIT SUMMARY
+  ==========================================================
+    Paid by plan                                $ 300.00
+    Member responsibility                       $  75.00
+expected:
+  patient_name: "Étienne Beaulieu-Marchand"
+  date_of_service: "2026-03-25"
+  provider_npi: "1467890123"
+  payer_name: "Atlantic Provident Health"
+  member_id: "APH-527741"
+  cpt_codes: ["99213", "20605"]
+  billed_amount: 375.00
+  patient_responsibility: 75.00

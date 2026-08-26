@@ -1,0 +1,39 @@
+id: eob-019
+category: missing_field
+difficulty: medium
+edge_case: true
+input: |
+  CEDARMONT EMPLOYEE HEALTH TRUST
+  Explanation of Benefits
+
+  Patient:           Gregory Ashfield
+  Group Number:      GRP-88401
+  Group Name:        Cedarmont Manufacturing Co.
+  Payer:             Cedarmont Employee Health Trust
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     04/29/2026
+  Rendering Provider:   Dr. Marisol Quintanilla, NPI 9012345678
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99396      Preventive visit, established      $230.00
+  80053      Comprehensive metabolic panel       $95.00
+  ----------------------------------------------------------
+  Total Billed:                                 $325.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $292.50
+  Patient Responsibility:                        $32.50
+expected:
+  patient_name: "Gregory Ashfield"
+  date_of_service: "2026-04-29"
+  provider_npi: "9012345678"
+  payer_name: "Cedarmont Employee Health Trust"
+  member_id: null
+  cpt_codes: ["99396", "80053"]
+  billed_amount: 325.00
+  patient_responsibility: 32.50

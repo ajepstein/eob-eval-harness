@@ -18,15 +18,23 @@ from rich.table import Table
 
 from harness.adapters import available_adapters, get_adapter
 from harness.cache import ResponseCache
+from harness.report import render_category_table, render_diff, render_run_table
 from harness.runner import run_tasks
 from harness.scorers.fields import FieldScorer
 from harness.scorers.schema import SchemaScorer
+from harness.store import (
+    DEFAULT_DB_PATH,
+    compare_runs,
+    list_runs,
+    load_run,
+    rescore_run,
+    save_run,
+)
 from harness.tasks import load_tasks
-from harness.types import RunSummary
+from harness.types import RunSummary, Task
 
 
-async def main_async(args: argparse.Namespace) -> list[RunSummary]:
-    tasks = load_tasks(args.tasks, categories=args.category, limit=args.limit)
+async def main_async(args: argparse.Namespace, tasks: list[Task]) -> list[RunSummary]:
     cache = ResponseCache(enabled=not args.no_cache)
 
     summaries = []
@@ -106,8 +114,47 @@ def render_categories(summaries: list[RunSummary], console: Console) -> None:
     console.print(table)
 
 
+def cmd_list_runs(args: argparse.Namespace, console: Console) -> None:
+    runs = list_runs(limit=args.limit_runs, adapter=args.adapter_filter, db_path=args.db)
+    if not runs:
+        console.print("[yellow]No runs recorded yet.[/yellow]")
+        return
+    render_run_table([m.run_id for m in runs], db_path=args.db, console=console)
+
+
+def cmd_show(args: argparse.Namespace, console: Console) -> None:
+    render_run_table(args.show, db_path=args.db, console=console)
+    render_category_table(args.show, db_path=args.db, console=console)
+
+
+def cmd_compare(args: argparse.Namespace, console: Console) -> None:
+    run_a, run_b = args.compare
+    render_diff(compare_runs(run_a, run_b, db_path=args.db), console=console)
+
+
+def cmd_rescore(args: argparse.Namespace, console: Console) -> None:
+    """Re-run scorers over stored response text. No API calls, no cost."""
+    tasks = load_tasks(args.tasks)
+    before = load_run(args.rescore, db_path=args.db).meta
+    record = rescore_run(
+        args.rescore, tasks, [SchemaScorer(), FieldScorer()], db_path=args.db
+    )
+    after = record.meta
+
+    console.print(
+        f"Rescored [bold]{after.run_id[:8]}[/bold] "
+        f"({len(record.results)} results, no API calls)"
+    )
+    console.print(
+        f"  schema {before.schema_pass_rate:.3f} → {after.schema_pass_rate:.3f}   "
+        f"F1 {before.mean_f1:.4f} → {after.mean_f1:.4f}"
+    )
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="Run, persist, and compare LLM extraction evals."
+    )
     parser.add_argument(
         "--adapter",
         action="append",
@@ -122,13 +169,54 @@ def main() -> None:
     parser.add_argument("--max-tokens", type=int, default=2000)
     parser.add_argument("--model", default=None, help="Override MODELS alias")
     parser.add_argument("--no-cache", action="store_true", help="Disable the response cache")
+    parser.add_argument("--db", default=DEFAULT_DB_PATH, help="SQLite store path")
+    parser.add_argument(
+        "--no-save", action="store_true", help="Run without persisting to the store"
+    )
+
+    store = parser.add_argument_group("stored runs")
+    store.add_argument("--list-runs", action="store_true", help="List recorded runs")
+    store.add_argument(
+        "--limit-runs", type=int, default=20, help="Rows for --list-runs (default 20)"
+    )
+    store.add_argument(
+        "--adapter-filter", default=None, help="Filter --list-runs by adapter"
+    )
+    store.add_argument("--show", nargs="+", metavar="RUN_ID", help="Render stored runs")
+    store.add_argument(
+        "--compare", nargs=2, metavar=("RUN_A", "RUN_B"), help="Diff two runs"
+    )
+    store.add_argument(
+        "--rescore",
+        metavar="RUN_ID",
+        help="Re-run scorers over stored text (no API calls)",
+    )
+
     args = parser.parse_args()
+    console = Console()
+
+    # Read-only store commands short-circuit before anything can spend money.
+    if args.list_runs:
+        return cmd_list_runs(args, console)
+    if args.show:
+        return cmd_show(args, console)
+    if args.compare:
+        return cmd_compare(args, console)
+    if args.rescore:
+        return cmd_rescore(args, console)
 
     if not args.adapter:
         args.adapter = ["anthropic"]
 
-    summaries = asyncio.run(main_async(args))
-    render(summaries, Console())
+    tasks = load_tasks(args.tasks, categories=args.category, limit=args.limit)
+    summaries = asyncio.run(main_async(args, tasks))
+    render(summaries, console)
+
+    if not args.no_save:
+        console.print()
+        for summary in summaries:
+            run_id = save_run(summary, tasks, db_path=args.db)
+            console.print(f"  saved {summary.adapter_name} run [bold]{run_id[:8]}[/bold]")
 
 
 if __name__ == "__main__":

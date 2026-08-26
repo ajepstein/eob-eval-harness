@@ -1,0 +1,46 @@
+id: eob-034
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  CRESTMOOR NATIONAL INSURANCE — EXPLANATION OF BENEFITS      Page 1 of 2
+
+  Member:            Persephone Aldworth
+  Member ID:         CNI-556812
+  Payer:             Crestmoor National Insurance
+  Date of Service:     07/09/2026
+  Rendering Provider:   Dr. Lucian Ravenscroft, NPI 1234509876
+
+  SERVICES (continued on page 2)
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99284      Emergency dept visit, moderate     $980.00
+  72125      CT cervical spine, w/o contrast    $740.00
+
+  - - - - - - - - - - - - page break - - - - - - - - - - - -
+
+  CRESTMOOR NATIONAL INSURANCE — EXPLANATION OF BENEFITS      Page 2 of 2
+
+  Member:            Persephone Aldworth
+  Member ID:         CNI-556812
+
+  SERVICES (continued from page 1)
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  36415      Venipuncture                        $22.00
+  ----------------------------------------------------------
+  Total Billed (all pages):                   $1,742.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                  $1,393.60
+  Patient Responsibility:                       $348.40
+expected:
+  patient_name: "Persephone Aldworth"
+  date_of_service: "2026-07-09"
+  provider_npi: "1234509876"
+  payer_name: "Crestmoor National Insurance"
+  member_id: "CNI-556812"
+  cpt_codes: ["99284", "72125", "36415"]
+  billed_amount: 1742.00
+  patient_responsibility: 348.40

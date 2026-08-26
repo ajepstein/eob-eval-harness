@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import warnings
 from pathlib import Path
 from typing import Any
 
@@ -60,6 +61,7 @@ class _TaskModel(BaseModel):
     edge_case: bool
     input: str
     expected: _ExpectedModel
+    verified: bool = False
 
 
 def _load_one(file_path: Path) -> Task:
@@ -103,6 +105,7 @@ def _load_one(file_path: Path) -> Task:
         edge_case=model.edge_case,
         input=model.input,
         expected=model.expected.model_dump(),
+        verified=model.verified,
     )
 
 
@@ -139,5 +142,17 @@ def load_tasks(
 
     if limit is not None:
         tasks = tasks[:limit]
+
+    unverified = [t.id for t in tasks if not t.verified]
+    if unverified:
+        shown = ", ".join(unverified[:5])
+        more = f" (+{len(unverified) - 5} more)" if len(unverified) > 5 else ""
+        warnings.warn(
+            f"{len(unverified)} of {len(tasks)} tasks are unverified: {shown}{more}. "
+            f"Run scripts/verify_tasks.py — an unreviewed answer key biases "
+            f"every score computed against it.",
+            UserWarning,
+            stacklevel=2,
+        )
 
     return tasks

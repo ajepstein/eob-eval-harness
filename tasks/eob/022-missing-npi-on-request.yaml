@@ -1,0 +1,42 @@
+id: eob-022
+category: missing_field
+difficulty: medium
+edge_case: true
+input: |
+  GOLDENROD MUTUAL ASSURANCE
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Priscilla Vanterpool
+  Member ID:         GMA-60817
+  Payer:             Goldenrod Mutual Assurance
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     07/23/2026
+  Rendering Provider:   Dr. Ignatius Oyelaran
+
+  Provider identification numbers are maintained on file and
+  are available to members upon written request.
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99215      Office visit, established, high    $285.00
+  93000      Electrocardiogram, complete         $90.00
+  ----------------------------------------------------------
+  Total Billed:                                 $375.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $300.00
+  Patient Responsibility:                        $75.00
+expected:
+  patient_name: "Priscilla Vanterpool"
+  date_of_service: "2026-07-23"
+  provider_npi: null
+  payer_name: "Goldenrod Mutual Assurance"
+  member_id: "GMA-60817"
+  cpt_codes: ["99215", "93000"]
+  billed_amount: 375.00
+  patient_responsibility: 75.00

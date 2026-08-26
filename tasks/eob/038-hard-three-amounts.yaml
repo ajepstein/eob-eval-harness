@@ -1,0 +1,47 @@
+id: eob-038
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  LARKSPUR CIVIC HEALTH FUND
+  Explanation of Benefits
+
+  Member:            Horatio Wynnstanley
+  Member ID:         LCH-224509
+  Payer:             Larkspur Civic Health Fund
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     11/07/2026
+  Rendering Provider:   Dr. Ottoline Ashgrove, NPI 1678098345
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99215      Office visit, established, high    $290.00
+  20551      Injection, tendon origin            $130.00
+  ----------------------------------------------------------
+  Total Billed (this claim):                    $420.00
+
+  Summary of Costs — This Claim
+  ----------------------------------------------------------
+  Plan Paid:                                    $336.00
+  Patient Responsibility (this claim):           $84.00
+
+  Account Summary — All Claims
+  ----------------------------------------------------------
+  Balance carried forward from prior claims:    $212.00
+  Patient responsibility from this claim:        $84.00
+  Total account balance:                        $296.00
+
+  The account balance above includes charges from earlier claims
+  and is provided for informational purposes only.
+expected:
+  patient_name: "Horatio Wynnstanley"
+  date_of_service: "2026-11-07"
+  provider_npi: "1678098345"
+  payer_name: "Larkspur Civic Health Fund"
+  member_id: "LCH-224509"
+  cpt_codes: ["99215", "20551"]
+  billed_amount: 420.00
+  patient_responsibility: 84.00

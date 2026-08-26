@@ -1,0 +1,40 @@
+id: eob-026
+category: missing_field
+difficulty: medium
+edge_case: true
+input: |
+  FERNCLIFFE HEALTH ASSURANCE
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Octavia Ramsbotham
+  Member ID:         FHA-12876
+  Payer:             Ferncliffe Health Assurance
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     11/14/2026
+  Facility:             Ferncliffe Imaging Center
+  Accreditation No.:    AC-88213
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  72148      MRI lumbar spine, w/o contrast     $890.00
+  76000      Fluoroscopy                        $145.00
+  ----------------------------------------------------------
+  Total Billed:                               $1,035.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $828.00
+  Patient Responsibility:                       $207.00
+expected:
+  patient_name: "Octavia Ramsbotham"
+  date_of_service: "2026-11-14"
+  provider_npi: null
+  payer_name: "Ferncliffe Health Assurance"
+  member_id: "FHA-12876"
+  cpt_codes: ["72148", "76000"]
+  billed_amount: 1035.00
+  patient_responsibility: 207.00

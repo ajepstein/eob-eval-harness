@@ -1,0 +1,41 @@
+id: eob-025
+category: missing_field
+difficulty: medium
+edge_case: true
+input: |
+  HOLLYHOCK STATE INSURANCE
+  Explanation of Benefits
+  This is a summary of a recent claim, not a bill.
+
+  Patient Name:      Anneliese Sorensen
+  Payer:             Hollyhock State Insurance
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     10/02/2026
+  Rendering Provider:   Dr. Solomon Whitfield-Pryce, NPI 1245678901
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99203      Office visit, new patient          $205.00
+  71045      Chest X-ray, single view            $95.00
+  ----------------------------------------------------------
+  Total Billed:                                 $300.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $240.00
+  Patient Responsibility:                        $60.00
+
+  To reach member services, call the number on the back of
+  your identification card.
+expected:
+  patient_name: "Anneliese Sorensen"
+  date_of_service: "2026-10-02"
+  provider_npi: "1245678901"
+  payer_name: "Hollyhock State Insurance"
+  member_id: null
+  cpt_codes: ["99203", "71045"]
+  billed_amount: 300.00
+  patient_responsibility: 60.00

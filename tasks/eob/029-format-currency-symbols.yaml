@@ -1,0 +1,36 @@
+id: eob-029
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |
+  SUMMITVIEW GUARANTY GROUP
+  EXPLANATION OF BENEFITS
+
+    Patient .................. Bartholomew Quintrell
+    Member Identifier ........ SVG-880341
+    Insurance Carrier ........ Summitview Guaranty Group
+    Date of Service .......... 02/09/2026
+    Servicing Provider ....... Dr. Anastasia Vukovic
+    Provider NPI ............. 1578901234
+
+    PROCEDURES BILLED
+    ......................................................
+    (1) CPT 99223 - Initial hospital care, high      USD 1,275.00
+    (2) CPT 71260 - CT chest with contrast           USD   825.00
+    (3) CPT 80048 - Basic metabolic panel            USD    90.00
+    ......................................................
+    AMOUNT BILLED IN TOTAL ......................... USD 2,190.00
+
+    BENEFIT DETERMINATION
+    ......................................................
+    Carrier payment ................................ USD 1,752.00
+    Amount owed by patient ......................... USD   438.00
+expected:
+  patient_name: "Bartholomew Quintrell"
+  date_of_service: "2026-02-09"
+  provider_npi: "1578901234"
+  payer_name: "Summitview Guaranty Group"
+  member_id: "SVG-880341"
+  cpt_codes: ["99223", "71260", "80048"]
+  billed_amount: 2190.00
+  patient_responsibility: 438.00

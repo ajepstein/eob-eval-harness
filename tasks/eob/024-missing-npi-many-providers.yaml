@@ -1,0 +1,42 @@
+id: eob-024
+category: missing_field
+difficulty: medium
+edge_case: true
+input: |
+  THISTLEDOWN CARE NETWORK
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Marcus Delacroix
+  Member ID:         TCN-90244
+  Payer:             Thistledown Care Network
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     09/18/2026
+  Facility:             Thistledown Ambulatory Surgery Center
+  Attending Physician:  Dr. Evangeline Hartsworth
+  Assisting Physician:  Dr. Rupert Calloway
+  Anesthesiologist:     Dr. Yuki Tanabe-Ferreira
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  45378      Colonoscopy, diagnostic            $980.00
+  00810      Anesthesia, lower intestinal       $420.00
+  ----------------------------------------------------------
+  Total Billed:                               $1,400.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                  $1,260.00
+  Patient Responsibility:                       $140.00
+expected:
+  patient_name: "Marcus Delacroix"
+  date_of_service: "2026-09-18"
+  provider_npi: null
+  payer_name: "Thistledown Care Network"
+  member_id: "TCN-90244"
+  cpt_codes: ["45378", "00810"]
+  billed_amount: 1400.00
+  patient_responsibility: 140.00

@@ -1,0 +1,45 @@
+id: eob-039
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  VERMILION HERITAGE INSURANCE
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Evangelina Castellanos-Ruiz
+  Member ID:         VHI-660412
+  Payer:             Vermilion Heritage Insurance
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     03/09/2026
+
+  Billing Entity:        Vermilion Heritage Medical Group
+  Billing Provider NPI:  1789098456
+  Referring Provider:    Dr. Constance Wetherby
+  Referring NPI:         1890098567
+  Rendering Provider:    Dr. Alaric Fenwick-Osei
+  Rendering NPI:         1901098678
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  29827      Arthroscopy, shoulder, repair    $2,850.00
+  73221      MRI upper extremity, w/o contrast  $690.00
+  ----------------------------------------------------------
+  Total Billed:                               $3,540.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                  $3,186.00
+  Patient Responsibility:                       $354.00
+expected:
+  patient_name: "Evangelina Castellanos-Ruiz"
+  date_of_service: "2026-03-09"
+  provider_npi: "1901098678"
+  payer_name: "Vermilion Heritage Insurance"
+  member_id: "VHI-660412"
+  cpt_codes: ["29827", "73221"]
+  billed_amount: 3540.00
+  patient_responsibility: 354.00

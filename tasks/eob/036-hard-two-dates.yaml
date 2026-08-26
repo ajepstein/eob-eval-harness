@@ -1,0 +1,42 @@
+id: eob-036
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  GRANTHAM PROVIDENT SOCIETY
+  Explanation of Benefits
+
+  Member:            Rosamund Fairbrother
+  Member ID:         GPS-337102
+  Payer:             Grantham Provident Society
+
+  Processing History
+  ----------------------------------------------------------
+  Claim Received:      09/22/2026
+  Claim Adjudicated:   09/30/2026
+  Statement Printed:   10/04/2026
+  Date of Service:     09/15/2026
+
+  Rendering Provider:   Dr. Barnabas Ellingham, NPI 1456098723
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99213      Office visit, established          $205.00
+  90686      Influenza vaccine                   $45.00
+  ----------------------------------------------------------
+  Total Billed:                                 $250.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $225.00
+  Patient Responsibility:                        $25.00
+expected:
+  patient_name: "Rosamund Fairbrother"
+  date_of_service: "2026-09-15"
+  provider_npi: "1456098723"
+  payer_name: "Grantham Provident Society"
+  member_id: "GPS-337102"
+  cpt_codes: ["99213", "90686"]
+  billed_amount: 250.00
+  patient_responsibility: 25.00
