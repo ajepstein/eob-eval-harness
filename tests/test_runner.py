@@ -1,4 +1,5 @@
 import asyncio
+import json
 from pathlib import Path
 
 import pytest
@@ -6,8 +7,21 @@ import pytest
 import harness.runner as runner_module
 from harness.cache import ResponseCache
 from harness.runner import run_tasks
+from harness.scorers.fields import FieldScorer
+from harness.scorers.schema import SchemaScorer
 from harness.types import Task
 from tests.fakes import FakeAdapter
+
+_PERFECT = {
+    "patient_name": "Jane Doe",
+    "date_of_service": "2026-03-14",
+    "provider_npi": None,
+    "payer_name": "Northstar Health",
+    "member_id": "NS-88213",
+    "cpt_codes": ["99213"],
+    "billed_amount": 340.00,
+    "patient_responsibility": 45.00,
+}
 
 
 @pytest.fixture(autouse=True)
@@ -24,6 +38,18 @@ def _task(task_id: str, input_text: str | None = None) -> Task:
         edge_case=False,
         input=input_text if input_text is not None else f"document for {task_id}",
         expected={},
+    )
+
+
+def _scored_task(task_id: str, category: str = "clean") -> Task:
+    """A task whose expected block matches _PERFECT, for scoring tests."""
+    return Task(
+        id=task_id,
+        category=category,
+        difficulty="easy",
+        edge_case=False,
+        input=f"document for {task_id}",
+        expected=dict(_PERFECT),
     )
 
 
@@ -111,6 +137,94 @@ def test_cost_and_token_totals_aggregate_correctly():
     assert summary.total_cost_usd == pytest.approx(0.03)
     assert summary.total_tokens_in == 30
     assert summary.total_tokens_out == 15
+
+
+def test_scorers_populate_task_result_scores():
+    payload = json.dumps(_PERFECT)
+    fake = FakeAdapter(text=payload)
+
+    summary = asyncio.run(
+        run_tasks(
+            [_scored_task("t1")],
+            fake,
+            concurrency=1,
+            cache=None,
+            scorers=[SchemaScorer(), FieldScorer()],
+        )
+    )
+
+    scores = summary.results[0].scores
+    assert [s.scorer for s in scores] == ["schema", "fields"]
+    assert summary.schema_pass_rate == pytest.approx(1.0)
+    assert summary.mean_f1 == pytest.approx(1.0)
+
+
+def test_cache_hit_still_recomputes_scores(tmp_path: Path):
+    # The payoff of scoring outside the adapter: a scorer change takes
+    # effect on replay without re-paying for generations.
+    payload = json.dumps(_PERFECT)
+    fake = FakeAdapter(text=payload)
+    cache = ResponseCache(cache_dir=tmp_path)
+    tasks = [_scored_task("t1")]
+
+    first = asyncio.run(
+        run_tasks(tasks, fake, concurrency=1, cache=cache, scorers=[FieldScorer()])
+    )
+    second = asyncio.run(
+        run_tasks(tasks, fake, concurrency=1, cache=cache, scorers=[FieldScorer()])
+    )
+
+    assert fake.call_count == 1  # no second network call
+    assert second.results[0].cached is True
+    assert second.results[0].scores  # but scores were still produced
+    assert second.mean_f1 == pytest.approx(first.mean_f1)
+
+
+def test_scores_break_down_by_category():
+    perfect = json.dumps(_PERFECT)
+    fake = FakeAdapter(text=perfect)
+    tasks = [
+        _scored_task("t1", category="clean"),
+        _scored_task("t2", category="hard"),
+    ]
+
+    summary = asyncio.run(
+        run_tasks(tasks, fake, concurrency=2, cache=None, scorers=[FieldScorer()])
+    )
+
+    assert set(summary.mean_f1_by_category) == {"clean", "hard"}
+    assert summary.mean_f1_by_category["clean"] == pytest.approx(1.0)
+
+
+def test_no_scorers_leaves_scores_empty_and_aggregates_zero():
+    fake = FakeAdapter()
+
+    summary = asyncio.run(run_tasks([_task("t1")], fake, concurrency=1, cache=None))
+
+    assert summary.results[0].scores == []
+    assert summary.schema_pass_rate == 0.0
+    assert summary.mean_f1 == 0.0
+
+
+def test_malformed_model_output_scores_zero_without_failing_the_task():
+    fake = FakeAdapter(text="I was unable to extract that.")
+
+    summary = asyncio.run(
+        run_tasks(
+            [_scored_task("t1")],
+            fake,
+            concurrency=1,
+            cache=None,
+            scorers=[SchemaScorer(), FieldScorer()],
+        )
+    )
+
+    # The call succeeded; the *output* was unusable. Those are different
+    # failures and the summary must not conflate them.
+    assert summary.succeeded == 1
+    assert summary.failed == 0
+    assert summary.schema_pass_rate == 0.0
+    assert summary.mean_f1 == 0.0
 
 
 def test_latency_percentiles_exclude_cached_results(tmp_path: Path):
