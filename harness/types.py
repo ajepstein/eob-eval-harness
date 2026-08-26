@@ -156,3 +156,10 @@ class RunSummary:
     mean_f1: float = 0.0
     schema_pass_rate_by_category: dict[str, float] = field(default_factory=dict)
     mean_f1_by_category: dict[str, float] = field(default_factory=dict)
+    # Judge spend is tracked apart from extraction spend: it is a cost of
+    # running the harness, not of the model under test, and conflating them
+    # would misreport the cost-per-task of every adapter.
+    judge_cost_usd: float = 0.0
+    judge_calls: int = 0
+    mean_judge_f1: float = 0.0
+    judge_prompt_hash: str | None = None

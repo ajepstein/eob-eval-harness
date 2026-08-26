@@ -93,6 +93,22 @@ CREATE TABLE IF NOT EXISTS scores (
     detail_json  TEXT    NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS judge_calls (
+    id                 INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id             TEXT NOT NULL REFERENCES runs(id) ON DELETE CASCADE,
+    task_id            TEXT NOT NULL,
+    field              TEXT NOT NULL,
+    expected           TEXT,
+    predicted          TEXT,
+    verdict            TEXT NOT NULL,
+    reason             TEXT,
+    cost_usd           REAL NOT NULL,
+    judge_model_id     TEXT NOT NULL,
+    judge_prompt_hash  TEXT NOT NULL,
+    created_at         TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_judge_run    ON judge_calls(run_id);
 CREATE INDEX IF NOT EXISTS idx_results_run   ON results(run_id);
 CREATE INDEX IF NOT EXISTS idx_scores_result ON scores(result_id);
 CREATE INDEX IF NOT EXISTS idx_runs_created  ON runs(created_at DESC);
@@ -230,8 +246,57 @@ def save_run(
                 ),
             )
             _insert_scores(conn, cursor.lastrowid, result.scores)
+            _insert_judge_calls(conn, run_id, result)
 
     return run_id
+
+
+def _insert_judge_calls(conn: sqlite3.Connection, run_id: str, result) -> None:
+    """One row per adjudicated field.
+
+    Every judgement is auditable by design — Week 2C reads these by hand to
+    check whether the judge agreed for the right reason, and a verdict
+    without its reason and its inputs cannot be reviewed.
+    """
+    judge = next((s for s in result.scores if s.scorer == "judge"), None)
+    if judge is None:
+        return
+    now = datetime.now(timezone.utc).isoformat()
+    rows = [
+        (
+            run_id,
+            result.task_id,
+            field,
+            entry.get("expected"),
+            entry.get("predicted"),
+            entry.get("verdict", ""),
+            entry.get("reason"),
+            entry.get("cost_usd", 0.0),
+            judge.detail.get("judge_model_id", ""),
+            judge.detail.get("judge_prompt_hash", ""),
+            now,
+        )
+        for field, entry in (judge.detail.get("fields") or {}).items()
+        if entry.get("judged")
+    ]
+    conn.executemany(
+        """INSERT INTO judge_calls (run_id, task_id, field, expected, predicted,
+                                    verdict, reason, cost_usd, judge_model_id,
+                                    judge_prompt_hash, created_at)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
+        rows,
+    )
+
+
+def list_judge_calls(run_id: str, db_path: str | Path = DEFAULT_DB_PATH) -> list[dict]:
+    """Every judgement made during a run, for hand review."""
+    with _session(db_path) as conn:
+        full_id = _resolve_run_id(conn, run_id)
+        rows = conn.execute(
+            "SELECT * FROM judge_calls WHERE run_id = ? ORDER BY task_id, field",
+            (full_id,),
+        ).fetchall()
+        return [dict(row) for row in rows]
 
 
 def _insert_scores(conn: sqlite3.Connection, result_id: int, scores: list[Score]) -> None:

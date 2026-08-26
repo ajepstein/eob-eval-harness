@@ -18,7 +18,12 @@ from tenacity.wait import wait_exponential_jitter
 from harness.adapters.base import Adapter, RateLimited, TransientError
 from harness.cache import ResponseCache, make_cache_key
 from harness.prompts import load_prompt, prompt_hash
-from harness.scorers.base import Scorer, score_result
+from harness.scorers.base import (
+    Scorer,
+    is_async_scorer,
+    score_result,
+    score_result_async,
+)
 from harness.types import ModelResponse, RunSummary, Task, TaskResult
 
 _MAX_ATTEMPTS = 4
@@ -93,7 +98,9 @@ async def run_tasks(
     template_hash = prompt_hash(prompt_name)
     params = {"max_tokens": max_tokens}
     semaphore = asyncio.Semaphore(concurrency)
-    active_scorers = scorers or []
+    all_scorers = list(scorers or [])
+    sync_scorers = [s for s in all_scorers if not is_async_scorer(s)]
+    async_scorers = [s for s in all_scorers if is_async_scorer(s)]
 
     progress = Progress(
         TextColumn("[progress.description]{task.description}"),
@@ -117,11 +124,12 @@ async def run_tasks(
                 # Scoring is recomputed on cache hits: it is local and free,
                 # and a scorer fix must take effect without re-paying for
                 # generations.
+                scores = score_result(task, hit, sync_scorers)
+                if async_scorers:
+                    async with semaphore:
+                        scores += await score_result_async(task, hit, async_scorers)
                 return TaskResult(
-                    task_id=task.id,
-                    response=hit,
-                    scores=score_result(task, hit, active_scorers),
-                    cached=True,
+                    task_id=task.id, response=hit, scores=scores, cached=True
                 )
 
         # Only the network call is bounded by the semaphore, so the cap
@@ -133,11 +141,14 @@ async def run_tasks(
             cache.set(key, response)
         running_cost += response.cost_usd
         progress.update(bar, advance=1, cost=running_cost)
+        scores = score_result(task, response, sync_scorers)
+        if async_scorers:
+            # Judge calls share the extraction semaphore so the cap bounds
+            # total in-flight network calls, not just extraction calls.
+            async with semaphore:
+                scores += await score_result_async(task, response, async_scorers)
         return TaskResult(
-            task_id=task.id,
-            response=response,
-            scores=score_result(task, response, active_scorers),
-            cached=False,
+            task_id=task.id, response=response, scores=scores, cached=False
         )
 
     start = time.monotonic()
@@ -168,6 +179,17 @@ async def run_tasks(
 
     schema_values = [v for r in results if (v := _score_of(r, "schema")) is not None]
     f1_values = [v for r in results if (v := _score_of(r, "fields")) is not None]
+    judge_values = [v for r in results if (v := _score_of(r, "judge")) is not None]
+
+    judge_details = [
+        s.detail for r in results for s in r.scores if s.scorer == "judge"
+    ]
+    judge_cost = sum(d.get("judge_cost_usd", 0.0) for d in judge_details)
+    judge_calls = sum(d.get("judge_calls", 0) for d in judge_details)
+    judge_hash = next(
+        (d.get("judge_prompt_hash") for d in judge_details if d.get("judge_prompt_hash")),
+        None,
+    )
 
     return RunSummary(
         results=results,
@@ -188,4 +210,8 @@ async def run_tasks(
         mean_f1=_mean(f1_values),
         schema_pass_rate_by_category=_by_category(tasks, results, "schema"),
         mean_f1_by_category=_by_category(tasks, results, "fields"),
+        judge_cost_usd=judge_cost,
+        judge_calls=judge_calls,
+        mean_judge_f1=_mean(judge_values),
+        judge_prompt_hash=judge_hash,
     )
