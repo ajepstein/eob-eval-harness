@@ -66,3 +66,11 @@ class RunSummary:
     cached: int
     latency_p50_ms: float
     latency_p95_ms: float
+    # Accuracy aggregates. Computed over results that produced a response;
+    # tasks that errored are counted in `failed` rather than being folded in
+    # as zeros, so infrastructure failure stays distinguishable from model
+    # failure. Read these alongside `failed`, never on their own.
+    schema_pass_rate: float = 0.0
+    mean_f1: float = 0.0
+    schema_pass_rate_by_category: dict[str, float] = field(default_factory=dict)
+    mean_f1_by_category: dict[str, float] = field(default_factory=dict)
