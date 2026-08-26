@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import sys
+import warnings
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -194,6 +195,10 @@ def main() -> None:
 
     args = parser.parse_args()
     console = Console()
+
+    # Python's default warning format dumps the offending source line, which
+    # is noise for a warning the user is meant to act on rather than debug.
+    warnings.formatwarning = lambda msg, *a, **kw: f"warning: {msg}\n"
 
     # Read-only store commands short-circuit before anything can spend money.
     if args.list_runs:

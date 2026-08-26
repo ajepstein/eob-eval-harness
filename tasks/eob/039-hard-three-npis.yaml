@@ -15,12 +15,16 @@ input: |2
   ----------------------------------------------------------
   Date of Service:     03/09/2026
 
-  Billing Entity:        Vermilion Heritage Medical Group
-  Billing Provider NPI:  1789098456
-  Referring Provider:    Dr. Constance Wetherby
-  Referring NPI:         1890098567
-  Rendering Provider:    Dr. Alaric Fenwick-Osei
-  Rendering NPI:         1901098678
+  Provider of Record for This Claim
+    Dr. Alaric Fenwick-Osei  (rendering physician)
+    NPI: 1901098678
+
+  Additional identifiers appear below for claim routing only and
+  do not identify the provider who furnished these services.
+    Billing entity ....... Vermilion Heritage Medical Group
+    Billing NPI .......... 1789098456
+    Referred by .......... Dr. Constance Wetherby
+    Referring NPI ........ 1890098567
 
   Services
   ----------------------------------------------------------
