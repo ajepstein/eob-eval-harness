@@ -9,22 +9,11 @@ from typing import Any
 import yaml
 from pydantic import BaseModel, ConfigDict, ValidationError, field_validator
 
+from harness.normalize import SCHEMA_FIELDS
 from harness.types import Task
 
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _NPI_RE = re.compile(r"^\d{10}$")
-
-# schema field -> nullable
-_EXPECTED_SCHEMA: dict[str, bool] = {
-    "patient_name": False,
-    "date_of_service": False,
-    "provider_npi": True,
-    "payer_name": False,
-    "member_id": True,
-    "cpt_codes": False,
-    "billed_amount": False,
-    "patient_responsibility": False,
-}
 
 
 class TaskLoadError(ValueError):
@@ -90,13 +79,13 @@ def _load_one(file_path: Path) -> Task:
 
     expected_raw = raw.get("expected")
     if isinstance(expected_raw, dict):
-        unknown = set(expected_raw) - set(_EXPECTED_SCHEMA)
+        unknown = set(expected_raw) - set(SCHEMA_FIELDS)
         if unknown:
             raise TaskLoadError(
                 f"{file_path}: expected has unknown key(s) {sorted(unknown)} "
                 f"not present in the schema"
             )
-        missing = set(_EXPECTED_SCHEMA) - set(expected_raw)
+        missing = set(SCHEMA_FIELDS) - set(expected_raw)
         if missing:
             raise TaskLoadError(
                 f"{file_path}: expected is missing schema field(s) {sorted(missing)}"

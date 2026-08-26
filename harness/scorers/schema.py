@@ -12,15 +12,22 @@ Passing requires all of:
 4. no keys beyond those 8
 5. every value has a plausible type for its field
 
-On (5) the rule differs between scalars and the code list, deliberately:
+Rule (5) rests on a single principle: **every field has exactly one way to
+express absence, and this scorer accepts only that one.**
 
-- **Scalar fields** accept their type *or null*. Null is how a model says
-  "absent"; whether absence is *correct* is a content question, and
-  ``fields.py`` scores it under the counting rules.
-- **``cpt_codes`` must be a list.** Null there means the model failed to
-  produce the container type at all, not that it judged a value missing.
-  SCHEMA.md marks it non-nullable-but-possibly-empty, so ``[]`` is the way
-  to say "no codes found".
+- For **scalar fields**, the absence marker is ``null``. All five scalars
+  accept their type or null — including ``billed_amount``, which SCHEMA.md
+  marks non-nullable. That is deliberate: a null there is the model saying
+  "I could not find this", which is a *content* claim, and ``fields.py``
+  scores it as a miss under the counting rules. Failing it structurally too
+  would penalize the same mistake twice and blur the line between "did not
+  follow the output contract" and "did not find the value".
+- For **``cpt_codes``**, the absence marker is ``[]`` — SCHEMA.md marks it
+  non-nullable but possibly empty. ``null`` there is not an abstention, it
+  is a failure to produce the container type at all, so it fails.
+
+The asymmetry is therefore between *absence markers*, not between fields:
+each field has one, and using anything else is a structural error.
 
 Amounts must be JSON numbers. ``"$340.00"`` is a string, and the prompt
 asks explicitly for bare numbers — accepting it here would let a model
@@ -30,10 +37,10 @@ ignore the output contract for free.
 from __future__ import annotations
 
 from harness.extract import extract_json
-from harness.normalize import FIELD_NORMALIZERS
+from harness.normalize import SCHEMA_FIELDS
 from harness.types import ModelResponse, Score, Task
 
-SCHEMA_FIELDS: frozenset[str] = frozenset(FIELD_NORMALIZERS)
+_EXPECTED_KEYS: frozenset[str] = frozenset(SCHEMA_FIELDS)
 
 _STRING_FIELDS = {
     "patient_name",
@@ -82,8 +89,8 @@ class SchemaScorer:
             return Score(scorer=self.name, value=0.0, passed=False, detail=detail)
 
         present = set(parsed)
-        missing = sorted(SCHEMA_FIELDS - present)
-        extra = sorted(present - SCHEMA_FIELDS)
+        missing = sorted(_EXPECTED_KEYS - present)
+        extra = sorted(present - _EXPECTED_KEYS)
 
         if missing:
             detail["reason"] = f"missing keys: {', '.join(missing)}"
@@ -95,7 +102,7 @@ class SchemaScorer:
             detail["extra_keys"] = extra
             return Score(scorer=self.name, value=0.0, passed=False, detail=detail)
 
-        for key in sorted(SCHEMA_FIELDS):
+        for key in SCHEMA_FIELDS:
             reason = _type_error(key, parsed[key])
             if reason is not None:
                 detail["reason"] = reason

@@ -158,6 +158,43 @@ def test_normalizing_twice_equals_normalizing_once(func, raw):
 # --- registry ---------------------------------------------------------------
 
 
+def test_null_equivalents_are_pinned():
+    # This set decides what counts as "the model declined to invent a value"
+    # versus "the model hallucinated", so widening or narrowing it moves
+    # every hallucination number in the harness. Pinned so that change is
+    # deliberate and shows up in review rather than silently shifting scores.
+    from harness.normalize import _NULL_EQUIVALENTS
+
+    assert _NULL_EQUIVALENTS == {
+        "",
+        "null",
+        "none",
+        "n/a",
+        "na",
+        "not found",
+        "not provided",
+        "not specified",
+        "not available",
+        "unknown",
+        "-",
+        "--",
+    }
+
+
+def test_schema_fields_is_the_single_source_of_truth():
+    # tasks.py validates expected blocks against SCHEMA_FIELDS and
+    # scorers/schema.py checks response keys against it. If FIELD_NORMALIZERS
+    # ever drifts from it, one of those two would silently stop covering a
+    # field.
+    from harness.normalize import NULLABLE_FIELDS, SCHEMA_FIELDS
+
+    assert set(FIELD_NORMALIZERS) == set(SCHEMA_FIELDS)
+    assert len(SCHEMA_FIELDS) == 8
+    assert len(set(SCHEMA_FIELDS)) == 8  # no duplicates
+    assert NULLABLE_FIELDS <= set(SCHEMA_FIELDS)
+    assert NULLABLE_FIELDS == {"provider_npi", "member_id"}
+
+
 def test_field_normalizers_cover_all_eight_schema_fields():
     assert set(FIELD_NORMALIZERS) == {
         "patient_name",
