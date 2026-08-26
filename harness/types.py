@@ -44,5 +44,25 @@ class Score:
 @dataclass(frozen=True)
 class TaskResult:
     task_id: str
-    response: ModelResponse
+    response: ModelResponse | None
     scores: list[Score]
+    error: str | None = None
+    cached: bool = False
+
+
+@dataclass(frozen=True)
+class RunSummary:
+    results: list[TaskResult]
+    adapter_name: str
+    model_id: str
+    prompt_name: str
+    prompt_hash: str
+    total_cost_usd: float
+    total_tokens_in: int
+    total_tokens_out: int
+    wall_clock_seconds: float
+    succeeded: int
+    failed: int
+    cached: int
+    latency_p50_ms: float
+    latency_p95_ms: float

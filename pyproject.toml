@@ -8,6 +8,9 @@ dependencies = [
     "pyyaml>=6",
     "python-dotenv>=1",
     "anthropic>=0.40",
+    "openai>=1.50",
+    "tenacity>=8",
+    "rich>=13",
 ]
 
 [project.optional-dependencies]
@@ -18,7 +21,7 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 markers = [
-    "live: requires network access and a real ANTHROPIC_API_KEY; skipped by default",
+    "live: requires network access and a real provider API key; skipped by default",
 ]
 addopts = "-m 'not live'"
 
