@@ -6,7 +6,7 @@ import time
 
 import anthropic
 
-from harness.adapters.base import FatalError, RateLimited, TransientError
+from harness.adapters.base import FatalError, RateLimited, TransientError, retry_after_seconds
 from harness.config import compute_cost, get_api_key
 from harness.types import ModelResponse
 
@@ -36,7 +36,8 @@ class AnthropicAdapter:
                 **kwargs,
             )
         except anthropic.RateLimitError as exc:
-            raise RateLimited(str(exc)) from exc
+            retry_after = retry_after_seconds(exc)
+            raise RateLimited(str(exc), retry_after=retry_after) from exc
         except anthropic.APIConnectionError as exc:
             raise TransientError(str(exc)) from exc
         except anthropic.APIStatusError as exc:
