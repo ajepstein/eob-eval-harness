@@ -19,6 +19,8 @@ from rich.table import Table
 from harness.adapters import available_adapters, get_adapter
 from harness.cache import ResponseCache
 from harness.runner import run_tasks
+from harness.scorers.fields import FieldScorer
+from harness.scorers.schema import SchemaScorer
 from harness.tasks import load_tasks
 from harness.types import RunSummary
 
@@ -37,6 +39,7 @@ async def main_async(args: argparse.Namespace) -> list[RunSummary]:
             concurrency=args.concurrency,
             cache=cache,
             max_tokens=args.max_tokens,
+            scorers=[SchemaScorer(), FieldScorer()],
         )
         summaries.append(summary)
     return summaries
@@ -49,6 +52,8 @@ def render(summaries: list[RunSummary], console: Console) -> None:
     table.add_column("ok", justify="right")
     table.add_column("failed", justify="right")
     table.add_column("cached", justify="right")
+    table.add_column("schema", justify="right")
+    table.add_column("F1", justify="right")
     table.add_column("cost $", justify="right", no_wrap=True)
     table.add_column("p50 ms", justify="right")
     table.add_column("p95 ms", justify="right")
@@ -61,6 +66,8 @@ def render(summaries: list[RunSummary], console: Console) -> None:
             str(s.succeeded),
             str(s.failed),
             str(s.cached),
+            f"{s.schema_pass_rate:.2f}",
+            f"{s.mean_f1:.3f}",
             f"{s.total_cost_usd:.6f}",
             f"{s.latency_p50_ms:.0f}",
             f"{s.latency_p95_ms:.0f}",
@@ -68,11 +75,35 @@ def render(summaries: list[RunSummary], console: Console) -> None:
         )
 
     console.print(table)
+    render_categories(summaries, console)
 
     for s in summaries:
         for r in s.results:
             if r.error:
                 console.print(f"[red]{s.adapter_name} {r.task_id}: {r.error}[/red]")
+
+
+def render_categories(summaries: list[RunSummary], console: Console) -> None:
+    """Mean F1 per category, one column per adapter."""
+    categories = sorted(
+        {c for s in summaries for c in s.mean_f1_by_category}
+    )
+    if not categories:
+        return
+
+    table = Table(title="Mean F1 by category")
+    table.add_column("category", no_wrap=True)
+    for s in summaries:
+        table.add_column(s.adapter_name, justify="right")
+
+    for category in categories:
+        row = [category]
+        for s in summaries:
+            value = s.mean_f1_by_category.get(category)
+            row.append("—" if value is None else f"{value:.3f}")
+        table.add_row(*row)
+
+    console.print(table)
 
 
 def main() -> None:
