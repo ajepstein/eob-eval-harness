@@ -1,0 +1,30 @@
+id: eob-066
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |2
+  STRATHMORE PROVIDENT
+  Explanation of Benefits
+
+  This notice concerns a claim for MERRIWEATHER, CONSTANCE E., who appears on
+  our records under membership number SP 8820 4471 (shown without spaces on
+  some correspondence as SP88204471) and who is known to her provider simply
+  as Constance Merriweather.
+
+  The encounter took place on 2026-02-19 with Dr. Rufus Adeyemi-Lindgren,
+  National Provider Identifier 1578901239. Two procedures were submitted:
+  99213 with modifier 25, an established patient office visit, and 85025, a
+  complete blood count. The provider billed $265.00 in total.
+
+  Strathmore Provident, the trading name of Strathmore Provident Assurance
+  Company Limited, has paid $212.00 toward this claim. The balance of $53.00
+  is the member's responsibility.
+expected:
+  patient_name: "MERRIWEATHER, CONSTANCE E."
+  date_of_service: "2026-02-19"
+  provider_npi: "1578901239"
+  payer_name: "Strathmore Provident"
+  member_id: "SP 8820 4471"
+  cpt_codes: ["99213", "85025"]
+  billed_amount: 265.00
+  patient_responsibility: 53.00

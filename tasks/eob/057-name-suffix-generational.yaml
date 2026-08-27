@@ -1,0 +1,40 @@
+id: eob-057
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  WINTERBOURNE HEALTH TRUST
+  Explanation of Benefits
+
+    Patient ............. FAIRCHILD, MONTGOMERY R., III
+    Also shown .......... Montgomery Fairchild III
+    Contract ............ WH-118203
+    Certificate ......... WH-118203-C
+    Payer ............... Winterbourne Health Trust
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     06/21/2026
+  Rendering Provider:   Dr. Yevgenia Sokolova-Baptiste, NPI 1689012348
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                      Billed
+  99213-25   Office visit, established        $200.00
+  36415      Venipuncture                     $20.00
+  ----------------------------------------------------------
+  Total Billed:                                $220.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                   $176.00
+  Patient Responsibility:                      $44.00
+expected:
+  patient_name: "FAIRCHILD, MONTGOMERY R., III"
+  date_of_service: "2026-06-21"
+  provider_npi: "1689012348"
+  payer_name: "Winterbourne Health Trust"
+  member_id: "WH-118203"
+  cpt_codes: ["99213", "36415"]
+  billed_amount: 220.00
+  patient_responsibility: 44.00

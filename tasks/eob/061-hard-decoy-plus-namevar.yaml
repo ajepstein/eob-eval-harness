@@ -1,0 +1,44 @@
+id: eob-061
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  SABLECREST HEALTH  /  Sablecrest Health Underwriters Inc.
+  Explanation of Benefits
+
+    Member .............. TREMAINE, AUGUSTA W.
+    Card shows .......... Augusta Tremaine
+    Member ID ........... SC-882014
+    Individual .......... SC-882014-01
+    Payer ............... Sablecrest Health
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     03/12/2026
+  Rendering Provider:   Dr. Lazarus Okonjo-Whitfield, NPI 1023456783
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                      Billed
+  99215-25   Office visit, established, high   $285.00
+  20551-LT   Injection, tendon origin, left    $135.00
+  ----------------------------------------------------------
+  Total Billed:                                $420.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Prior Balance Carried Forward:                $95.00
+  Plan Paid:                                   $336.00
+  Patient Responsibility:                       $84.00
+
+  The prior balance relates to an earlier claim and is shown for
+  information only.
+expected:
+  patient_name: "TREMAINE, AUGUSTA W."
+  date_of_service: "2026-03-12"
+  provider_npi: "1023456783"
+  payer_name: "Sablecrest Health"
+  member_id: "SC-882014"
+  cpt_codes: ["99215", "20551"]
+  billed_amount: 420.00
+  patient_responsibility: 84.00

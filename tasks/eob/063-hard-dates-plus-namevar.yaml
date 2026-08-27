@@ -1,0 +1,40 @@
+id: eob-063
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  PENNYROYAL MUTUAL
+  Explanation of Benefits
+
+    Member .............. ASHWORTH-DIALLO, CLEMENTINE R.
+    Preferred ........... Clem Ashworth-Diallo
+    Membership .......... PM 4471 2039
+    Compact ............. PM44712039
+    Payer ............... Pennyroyal Mutual
+
+  Processing History
+  ----------------------------------------------------------
+  Claim Received:      06/02/2026
+  Claim Adjudicated:   06/09/2026
+  Statement Printed:   06/14/2026
+  Date of Service:     05/27/2026
+
+  Rendering Provider:   Dr. Anastasius Feodorov, NPI 1245678905
+
+  Services
+  ----------------------------------------------------------
+  99213-25   Office visit, established         $210.00
+  90686      Influenza vaccine                  $50.00
+  ----------------------------------------------------------
+  Total Billed:                                $260.00
+  Plan Paid:                                   $208.00
+  Patient Responsibility:                       $52.00
+expected:
+  patient_name: "ASHWORTH-DIALLO, CLEMENTINE R."
+  date_of_service: "2026-05-27"
+  provider_npi: "1245678905"
+  payer_name: "Pennyroyal Mutual"
+  member_id: "PM 4471 2039"
+  cpt_codes: ["99213", "90686"]
+  billed_amount: 260.00
+  patient_responsibility: 52.00

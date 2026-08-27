@@ -1,0 +1,39 @@
+id: eob-058
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  MARCHMONT BENEFIT PLAN
+  Explanation of Benefits
+
+    Member .............. ST JOHN-PRESTWICK, EULALIA
+    Alternate spelling .. St. John Prestwick, Eulalia
+    Member ID ........... MB-704411
+    Payer ............... Marchmont Benefit Plan
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     07/12/2026
+  Rendering Provider:   Dr. Barnabas Achterberg, NPI 1790123459
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                      Billed
+  99396-25   Preventive visit, established    $235.00
+  80061      Lipid panel                      $120.00
+  ----------------------------------------------------------
+  Total Billed:                                $355.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                   $284.00
+  Patient Responsibility:                      $71.00
+expected:
+  patient_name: "ST JOHN-PRESTWICK, EULALIA"
+  date_of_service: "2026-07-12"
+  provider_npi: "1790123459"
+  payer_name: "Marchmont Benefit Plan"
+  member_id: "MB-704411"
+  cpt_codes: ["99396", "80061"]
+  billed_amount: 355.00
+  patient_responsibility: 71.00
