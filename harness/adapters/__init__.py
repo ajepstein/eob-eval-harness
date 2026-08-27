@@ -9,6 +9,7 @@ from harness.config import MODELS
 _DEFAULT_MODEL_ALIAS = {
     "anthropic": "sonnet",
     "openai": "gpt",
+    "together": "oss",
 }
 
 
@@ -40,5 +41,10 @@ def get_adapter(name: str, model_alias: str | None = None) -> Adapter:
         from harness.adapters.openai import OpenAIAdapter
 
         return OpenAIAdapter(model_id=model_id)
+
+    if name == "together":
+        from harness.adapters.together import TogetherAdapter
+
+        return TogetherAdapter(model_id=model_id)
 
     raise AssertionError(f"unreachable: {name!r}")

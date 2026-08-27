@@ -29,10 +29,20 @@ def get_openai_api_key() -> str:
     return _require_env("OPENAI_API_KEY")
 
 
+def get_together_api_key() -> str:
+    """Return TOGETHER_API_KEY, raising a clear error if it isn't set."""
+    return _require_env("TOGETHER_API_KEY")
+
+
 # Short alias -> pinned full model version string.
 MODELS: dict[str, str] = {
     "sonnet": "claude-sonnet-5",
     "gpt": "gpt-5.6-terra",
+    # Open-weights, served by Together. Deliberately a different class from
+    # the two hosted frontier models so the cost/quality frontier has a
+    # genuinely different price point on it rather than three points in a
+    # cluster.
+    "oss": "deepseek-ai/DeepSeek-V3.1",
 }
 
 # Checked 2026-06-24 against https://platform.claude.com/docs/en/about-claude/models/overview.md
@@ -52,9 +62,17 @@ MODELS: dict[str, str] = {
 # publishes a higher "long context" rate above a request-size threshold and
 # batch/flex discounts — not modeled here, only the standard short-context
 # rate used by this harness's requests.
+#
+# Checked 2026-08-27 against https://www.together.ai/pricing
+#
+# DeepSeek V3.1 is Together's current flagship open-weights route at
+# $0.60 / $1.70 per MTok — roughly a third the input price and a sixth the
+# output price of the hosted frontier models above, which is the point of
+# including it.
 PRICING: dict[str, dict[str, float]] = {
     "claude-sonnet-5": {"input_per_mtok": 2.00, "output_per_mtok": 10.00},
     "gpt-5.6-terra": {"input_per_mtok": 2.00, "output_per_mtok": 12.00},
+    "deepseek-ai/DeepSeek-V3.1": {"input_per_mtok": 0.60, "output_per_mtok": 1.70},
 }
 
 
