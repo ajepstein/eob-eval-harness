@@ -1,0 +1,38 @@
+id: eob-076
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  ALDERGROVE HEALTH TRUST
+  Explanation of Benefits
+
+    Member ................... Octavian Brightwater-Nkemdi
+    Member ID ................ AH-664301
+    Payer .................... Aldergrove Health Trust
+
+  Date of Service:     08/11/2026
+
+  FACILITY NPI ............... 1578901230
+  Facility ................... Aldergrove Day Surgery Unit
+
+  Rendering Provider ......... Dr. Lysander Okonjo-Whitcombe
+  Rendering Provider NPI ..... 1689012341
+
+
+  Services
+  ----------------------------------------------------------
+  29826      Arthroscopy, shoulder, decompress $1,850.00
+  73221      MRI upper extremity                $580.00
+  ----------------------------------------------------------
+  Total Billed:                               $2,430.00
+  Plan Paid:                                  $2,187.00
+  Patient Responsibility:                       $243.00
+expected:
+  patient_name: "Octavian Brightwater-Nkemdi"
+  date_of_service: "2026-08-11"
+  provider_npi: "1689012341"
+  payer_name: "Aldergrove Health Trust"
+  member_id: "AH-664301"
+  cpt_codes: ["29826", "73221"]
+  billed_amount: 2430.00
+  patient_responsibility: 243.00

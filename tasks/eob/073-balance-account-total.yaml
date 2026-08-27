@@ -1,0 +1,38 @@
+id: eob-073
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  MARLOWE UNION HEALTH
+  Explanation of Benefits
+
+    Member ................... Bartholomew Ashgrove
+    Member ID ................ MU-337720
+    Payer .................... Marlowe Union Health
+
+  Date of Service:     05/09/2026
+  Rendering Provider:   Dr. Seraphina Kowalczyk-Bright, NPI 1245678906
+
+  ACCOUNT SUMMARY (all outstanding claims)
+  ----------------------------------------------------------
+  TOTAL CHARGES ON ACCOUNT:                     $915.00
+  TOTAL YOU OWE ON ACCOUNT:                     $183.00
+
+  THIS CLAIM ONLY
+  ----------------------------------------------------------
+  99204      Office visit, new patient          $320.00
+  71046      Chest X-ray, 2 views               $155.00
+  ----------------------------------------------------------
+  Total Billed (this claim):                    $475.00
+  Plan Paid (this claim):                       $380.00
+  Patient Responsibility (this claim):           $95.00
+
+expected:
+  patient_name: "Bartholomew Ashgrove"
+  date_of_service: "2026-05-09"
+  provider_npi: "1245678906"
+  payer_name: "Marlowe Union Health"
+  member_id: "MU-337720"
+  cpt_codes: ["99204", "71046"]
+  billed_amount: 475.00
+  patient_responsibility: 95.00
