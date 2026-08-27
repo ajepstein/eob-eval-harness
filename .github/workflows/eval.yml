@@ -1,0 +1,90 @@
+# Pull-request gate. Cached mode only: no secrets, no spend, no dependency
+# on a provider being up. A CI job that costs money on every push and breaks
+# on rate limits is one that gets disabled, after which it protects nothing.
+name: eval
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: eval-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -e .[dev]
+
+      - name: Unit tests
+        run: pytest -q
+
+      - name: Evaluate gates from committed cache
+        id: gates
+        # No API keys are provided to this step on purpose. The replay
+        # adapter raises if anything tries to call out, so a cache miss
+        # fails the job rather than silently becoming a bill.
+        run: |
+          python scripts/ci_eval.py \
+            --explain \
+            --db "$RUNNER_TEMP/ci.db" \
+            --markdown "$RUNNER_TEMP/gates.md"
+
+      - name: Build HTML report
+        if: always()
+        run: |
+          python scripts/run_eval.py \
+            --db "$RUNNER_TEMP/ci.db" \
+            --report \
+            --out "$RUNNER_TEMP/report.html" || true
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: ${{ runner.temp }}/report.html
+          if-no-files-found: ignore
+
+      - name: Comment gate table on the PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = `${process.env.RUNNER_TEMP}/gates.md`;
+            if (!fs.existsSync(path)) return;
+            const body = fs.readFileSync(path, 'utf8');
+            const marker = '<!-- eval-gates -->';
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body.includes(marker));
+            const payload = `${marker}\n${body}`;
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                comment_id: existing.id, body: payload,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: context.issue.number, body: payload,
+              });
+            }

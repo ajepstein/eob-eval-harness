@@ -126,7 +126,8 @@ def test_judge_is_refused_without_calibration(tmp_path: Path):
                       "--judge", "anthropic"], db)
 
     combined = done.stdout + done.stderr
-    assert "No calibration exists" in combined
+    assert "not calibrated" in combined
+    assert "no calibration exists for this rubric" in combined
     assert "--uncalibrated" in combined
 
 

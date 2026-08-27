@@ -35,6 +35,7 @@ from harness.runner import run_tasks
 from harness.scorers.fields import FieldScorer
 from harness.scorers.judge import JudgeScorer
 from harness.scorers.schema import SchemaScorer
+from harness.calibration import calibration_is_usable
 from harness.prompts import judge_prompt_hash
 from harness.store import (
     DEFAULT_DB_PATH,
@@ -168,11 +169,12 @@ def _require_calibration(args: argparse.Namespace) -> None:
     """
     rubric = judge_prompt_hash()
     calibration = find_calibration(rubric, db_path=args.db)
-    if calibration is not None:
+    usable, why_not = calibration_is_usable(calibration)
+    if usable:
         return
 
     message = (
-        f"No calibration exists for judge rubric {rubric}.\n\n"
+        f"Judge rubric {rubric} is not calibrated: {why_not}.\n\n"
         f"Judge-adjusted scores are not reportable until the judge has been\n"
         f"measured against human labels:\n"
         f"    python scripts/label.py --new --n 100\n"
@@ -185,7 +187,7 @@ def _require_calibration(args: argparse.Namespace) -> None:
     Console().print(
         Panel(
             f"[bold red]UNCALIBRATED JUDGE[/bold red]\n\n"
-            f"Rubric {rubric} has never been measured against human labels.\n"
+            f"{why_not}.\n"
             f"The judge-adjusted F1 below is of unknown reliability and must\n"
             f"not be reported as a measurement.",
             border_style="red",

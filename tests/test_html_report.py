@@ -128,10 +128,31 @@ def test_missing_calibration_produces_a_prominent_warning(db: Path, tmp_path: Pa
 
     html = _render(db, [run], tmp_path)
 
-    assert "never been measured against human" in html
+    assert "No calibration for this judge rubric" in html
     assert "unknown reliability" in html
     # The warning must appear before any score, not buried at the end.
-    assert html.index("never been measured") < html.index("Headline comparison")
+    assert html.index("unknown reliability") < html.index("Headline comparison")
+
+
+def test_a_too_small_calibration_still_shows_the_warning(db: Path, tmp_path: Path):
+    # A kappa computed on a handful of items is not a measurement, and must
+    # not turn the banner green.
+    from harness.prompts import judge_prompt_hash
+
+    run = _save(db, "anthropic", [1.0, 0.9])
+    save_calibration(
+        AgreementReport(
+            n=2, raw_agreement=0.5, kappa=0.0, kappa_ci=(0.0, 0.0),
+            band="close to useless", confusion={}, per_category={},
+            excluded={}, human_ceiling_kappa=None, human_ceiling_n=0,
+        ),
+        "ls-small", "m", judge_prompt_hash(), db_path=db,
+    )
+
+    html = _render(db, [run], tmp_path)
+
+    assert "No calibration for this judge rubric" in html
+    assert "only 2 labelled item" in html
 
 
 def test_present_calibration_is_shown_with_its_ceiling(db: Path, tmp_path: Path):

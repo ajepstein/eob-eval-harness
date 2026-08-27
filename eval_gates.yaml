@@ -1,0 +1,34 @@
+# Quality gates for CI. Version-controlled on purpose: changing what counts
+# as acceptable should be a reviewable diff, not an edit buried in code.
+#
+# baseline_run_id is promoted by scripts/set_baseline.py, which refuses runs
+# that had failures, were recorded against a dirty working tree, or have no
+# judge calibration — a baseline that is not reproducible is not a baseline.
+baseline_run_id: null
+
+gates:
+  # Structural compliance. A model that cannot hold the schema is
+  # disqualified before accuracy is worth discussing.
+  - metric: schema_pass_rate
+    min: 0.95
+
+  - metric: mean_f1
+    min: 0.80
+
+  # Regression against the baseline. require_significant is what keeps this
+  # gate trustworthy: without it, ordinary run-to-run wobble fires the gate,
+  # the team mutes it, and it protects nothing thereafter.
+  - metric: mean_f1
+    max_regression_vs_baseline: 0.03
+    require_significant: true
+
+  - metric: cost_per_task
+    max: 0.02
+
+  - metric: p95_latency_ms
+    max: 15000
+
+  # Inventing a value where the document has none is the failure mode that
+  # matters most in extraction, so it gets its own gate.
+  - metric: hallucination_rate
+    max: 0.05

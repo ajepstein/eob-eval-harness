@@ -41,6 +41,32 @@ from dataclasses import dataclass, field
 # a finding about the rubric.
 DECISIVE = ("equivalent", "different")
 
+# Below this many labelled items a calibration is not a measurement. Kappa on
+# a handful of items is dominated by noise — two items can produce a tidy
+# 0.0 or 1.0 that means nothing — and a number that *looks* measured is worse
+# than an admitted absence, because it silently unblocks every gate that
+# depends on it. Consumers treat anything below this as uncalibrated.
+MIN_CALIBRATION_N = 30
+
+
+def calibration_is_usable(calibration: dict | None) -> tuple[bool, str | None]:
+    """Whether a stored calibration may be relied on, and why not if not."""
+    if calibration is None:
+        return False, "no calibration exists for this rubric"
+    n = calibration.get("n") or 0
+    if n < MIN_CALIBRATION_N:
+        return False, (
+            f"a calibration exists but rests on only {n} labelled item(s); "
+            f"at least {MIN_CALIBRATION_N} are needed before kappa is a "
+            f"measurement rather than noise"
+        )
+    if calibration.get("kappa") is None:
+        return False, (
+            "the stored calibration has an undefined kappa (degenerate "
+            "marginals), so it establishes no reliability"
+        )
+    return True, None
+
 # Landis & Koch bands, with the honest gloss rather than the bare label.
 _BANDS = (
     (0.80, "strong"),

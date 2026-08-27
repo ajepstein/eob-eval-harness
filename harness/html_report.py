@@ -28,6 +28,7 @@ import yaml
 from jinja2 import Environment, StrictUndefined
 
 from harness import __version__
+from harness.calibration import calibration_is_usable
 from harness.charts import (
     ScatterPoint,
     barh_with_intervals,
@@ -282,6 +283,9 @@ def render_report(
 
     rubric = judge_prompt_hash()
     calibration = find_calibration(rubric, db_path=db_path)
+    usable, calibration_problem = calibration_is_usable(calibration)
+    if not usable:
+        calibration = None  # renders the warning banner, not a green one
 
     frontier_points = []
     for record, row in zip(records, _headline(records)):
@@ -319,6 +323,7 @@ def render_report(
         headline=_headline(records),
         calibration=calibration,
         rubric_hash=rubric,
+        calibration_problem=calibration_problem,
         rubric_text=load_prompt("judge_v1"),
         scatter_svg=scatter,
         frontier=frontier,
