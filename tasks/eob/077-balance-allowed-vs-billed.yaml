@@ -1,0 +1,32 @@
+id: eob-077
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |2
+  PEMBERTON CIVIC HEALTH  —  EXPLANATION OF BENEFITS
+
+    Member .......... Genevieve Ashworth-Bello
+    Member ID ....... PC-118237
+    Payer ........... Pemberton Civic Health
+    Service Date .... 09/23/2026
+    Provider ........ Dr. Thaddeus Villanueva, NPI 1790123451
+
+    ALLOWED AMOUNT (contracted rate) ............ $ 288.00
+    ---------------------------------------------------------
+    99213   Office visit, established .......... $ 240.00
+    87880   Strep A test ....................... $ 120.00
+    ---------------------------------------------------------
+    AMOUNT BILLED BY PROVIDER .................. $ 360.00
+    Provider discount .......................... $  72.00
+    Plan paid .................................. $ 216.00
+    Patient responsibility ..................... $  72.00
+
+expected:
+  patient_name: "Genevieve Ashworth-Bello"
+  date_of_service: "2026-09-23"
+  provider_npi: "1790123451"
+  payer_name: "Pemberton Civic Health"
+  member_id: "PC-118237"
+  cpt_codes: ["99213", "87880"]
+  billed_amount: 360.00
+  patient_responsibility: 72.00

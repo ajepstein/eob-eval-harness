@@ -1,0 +1,32 @@
+id: eob-078
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |2
+  HALLBROOK MUTUAL SOCIETY  —  EXPLANATION OF BENEFITS
+
+    Member .......... Cassius Pemberton-Diallo
+    Member ID ....... HM-903318
+    Payer ........... Hallbrook Mutual Society
+    Service Date .... 10/30/2026
+    Provider ........ Dr. Rosalind Achterberg, NPI 1801234562
+
+    99285   Emergency dept visit, high ......... $1,320.00
+    93010   ECG interpretation ................. $   90.00
+    ---------------------------------------------------------
+    TOTAL BILLED ............................... $1,410.00
+
+    APPLIED TO ANNUAL DEDUCTIBLE ............... $  750.00
+    Coinsurance ................................ $  132.00
+    Plan paid .................................. $  528.00
+    TOTAL PATIENT RESPONSIBILITY ............... $  882.00
+
+expected:
+  patient_name: "Cassius Pemberton-Diallo"
+  date_of_service: "2026-10-30"
+  provider_npi: "1801234562"
+  payer_name: "Hallbrook Mutual Society"
+  member_id: "HM-903318"
+  cpt_codes: ["99285", "93010"]
+  billed_amount: 1410.00
+  patient_responsibility: 882.00

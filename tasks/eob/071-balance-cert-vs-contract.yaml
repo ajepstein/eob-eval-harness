@@ -1,0 +1,34 @@
+id: eob-071
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  ROOKWOOD PROVIDENT SOCIETY
+  Explanation of Benefits
+
+    Certificate Number ....... RP-880142-C7
+    Contract Number (member) . RP-880142
+    Member ................... Aurelia Thorncastle
+    Payer .................... Rookwood Provident Society
+
+
+  Date of Service:     03/18/2026
+  Rendering Provider:   Dr. Konstantin Aleksandrov, NPI 1023456784
+
+  Services
+  ----------------------------------------------------------
+  99213      Office visit, established          $215.00
+  85025      Complete blood count                $70.00
+  ----------------------------------------------------------
+  Total Billed:                                 $285.00
+  Plan Paid:                                    $228.00
+  Patient Responsibility:                        $57.00
+expected:
+  patient_name: "Aurelia Thorncastle"
+  date_of_service: "2026-03-18"
+  provider_npi: "1023456784"
+  payer_name: "Rookwood Provident Society"
+  member_id: "RP-880142"
+  cpt_codes: ["99213", "85025"]
+  billed_amount: 285.00
+  patient_responsibility: 57.00

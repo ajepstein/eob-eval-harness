@@ -1,0 +1,34 @@
+id: eob-072
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  LINDENHURST COLLECTIVE
+  Explanation of Benefits
+
+    GROUP NUMBER ............. LC-4471-GRP
+    Member Number ............ LC-889023
+    Member ................... Percival Okonkwo-Bright
+    Payer .................... Lindenhurst Collective
+
+
+  Date of Service:     04/27/2026
+  Rendering Provider:   Dr. Hyacinth Delacroix-Mensah, NPI 1134567895
+
+  Services
+  ----------------------------------------------------------
+  99214      Office visit, established          $245.00
+  93000      Electrocardiogram, complete         $85.00
+  ----------------------------------------------------------
+  Total Billed:                                 $330.00
+  Plan Paid:                                    $264.00
+  Patient Responsibility:                        $66.00
+expected:
+  patient_name: "Percival Okonkwo-Bright"
+  date_of_service: "2026-04-27"
+  provider_npi: "1134567895"
+  payer_name: "Lindenhurst Collective"
+  member_id: "LC-889023"
+  cpt_codes: ["99214", "93000"]
+  billed_amount: 330.00
+  patient_responsibility: 66.00
