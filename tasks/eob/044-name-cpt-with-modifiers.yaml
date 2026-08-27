@@ -1,0 +1,43 @@
+id: eob-044
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  ARBORWAY MUTUAL HEALTH
+  Explanation of Benefits
+
+  Member:            Theodosia Blackwell-Nunes
+  Member ID:         AMH-905513
+  Payer:             Arborway Mutual Health
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     05/28/2026
+  Rendering Provider:   Dr. Emeka Chukwuemeka, NPI 1356789014
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                       Billed
+  99213-25   Office visit, established,         $220.00
+             significant separately
+             identifiable service
+  20610-RT   Arthrocentesis, major joint,       $180.00
+             right side
+  ----------------------------------------------------------
+  Total Billed:                                 $400.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $320.00
+  Patient Responsibility:                        $80.00
+
+  Modifiers appear appended to the procedure code above.
+expected:
+  patient_name: "Theodosia Blackwell-Nunes"
+  date_of_service: "2026-05-28"
+  provider_npi: "1356789014"
+  payer_name: "Arborway Mutual Health"
+  member_id: "AMH-905513"
+  cpt_codes: ["99213", "20610"]
+  billed_amount: 400.00
+  patient_responsibility: 80.00

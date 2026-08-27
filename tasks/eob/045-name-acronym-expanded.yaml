@@ -1,0 +1,42 @@
+id: eob-045
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  BCBSC
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Ferdinand Oyelaran-Whitlock
+  Member ID:         BC-661204
+  Payer:             BCBSC
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     06/14/2026
+  Rendering Provider:   Dr. Lavinia Marchbanks, NPI 1467890125
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99203      Office visit, new patient          $215.00
+  81002      Urinalysis, non-automated           $25.00
+  ----------------------------------------------------------
+  Total Billed:                                 $240.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $192.00
+  Patient Responsibility:                        $48.00
+
+  BCBSC is the registered trading style of Blue Cross Blue Shield
+  of Cascadia, a mutual benefit corporation.
+expected:
+  patient_name: "Ferdinand Oyelaran-Whitlock"
+  date_of_service: "2026-06-14"
+  provider_npi: "1467890125"
+  payer_name: "BCBSC"
+  member_id: "BC-661204"
+  cpt_codes: ["99203", "81002"]
+  billed_amount: 240.00
+  patient_responsibility: 48.00

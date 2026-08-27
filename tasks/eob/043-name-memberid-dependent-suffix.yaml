@@ -1,0 +1,41 @@
+id: eob-043
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  PILLARSTONE FAMILY HEALTH
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Ignatius Vandermeer
+  Member ID:         PFH-77120-03
+                     (base number PFH-77120; suffix 03 identifies the
+                      covered individual within the family contract)
+  Payer:             Pillarstone Family Health
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     04/19/2026
+  Rendering Provider:   Dr. Roswitha Engelhardt, NPI 1245678903
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99394      Preventive visit, adolescent       $195.00
+  90715      Tdap immunization                   $75.00
+  ----------------------------------------------------------
+  Total Billed:                                 $270.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $243.00
+  Patient Responsibility:                        $27.00
+expected:
+  patient_name: "Ignatius Vandermeer"
+  date_of_service: "2026-04-19"
+  provider_npi: "1245678903"
+  payer_name: "Pillarstone Family Health"
+  member_id: "PFH-77120-03"
+  cpt_codes: ["99394", "90715"]
+  billed_amount: 270.00
+  patient_responsibility: 27.00

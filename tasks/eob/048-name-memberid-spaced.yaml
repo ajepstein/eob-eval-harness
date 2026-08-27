@@ -1,0 +1,41 @@
+id: eob-048
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  STONEHAVEN COLLECTIVE HEALTH
+  Explanation of Benefits
+
+  Member:            Persimmon Aldwych
+  Member ID:         SCH 4471 0928
+  Payer:             Stonehaven Collective Health
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     09/09/2026
+  Rendering Provider:   Dr. Ptolemy Nakagawa, NPI 1790123458
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99212      Office visit, established, brief   $145.00
+  87430      Strep A antigen assay               $50.00
+  ----------------------------------------------------------
+  Total Billed:                                 $195.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $156.00
+  Patient Responsibility:                        $39.00
+
+  For claims correspondence quote your member number without
+  spaces, as SCH447 10928.
+expected:
+  patient_name: "Persimmon Aldwych"
+  date_of_service: "2026-09-09"
+  provider_npi: "1790123458"
+  payer_name: "Stonehaven Collective Health"
+  member_id: "SCH 4471 0928"
+  cpt_codes: ["99212", "87430"]
+  billed_amount: 195.00
+  patient_responsibility: 39.00

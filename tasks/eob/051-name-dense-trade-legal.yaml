@@ -1,0 +1,41 @@
+id: eob-051
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  EVERGLADE CARE
+  Explanation of Benefits
+
+    Insured person ...... MACALLISTER, CORNELIUS J.
+    Short form .......... Cornelius MacAllister
+    Policy reference .... EG-441002
+    Certificate ......... EG-441002-A
+    Underwriter ......... Everglade Care Underwriting Limited
+    Trading as .......... Everglade Care
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     12/02/2026
+  Rendering Provider:   Dr. Wilhelmina Brightwater, NPI 1023456782
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                       Billed
+  99204-25   Office visit, new patient          $330.00
+  71046-TC   Chest X-ray, technical component   $110.00
+  ----------------------------------------------------------
+  Total Billed:                                 $440.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $352.00
+  Patient Responsibility:                        $88.00
+expected:
+  patient_name: "MACALLISTER, CORNELIUS J."
+  date_of_service: "2026-12-02"
+  provider_npi: "1023456782"
+  payer_name: "Everglade Care"
+  member_id: "EG-441002"
+  cpt_codes: ["99204", "71046"]
+  billed_amount: 440.00
+  patient_responsibility: 88.00

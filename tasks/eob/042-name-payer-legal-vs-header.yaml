@@ -1,0 +1,41 @@
+id: eob-042
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  NORTHWIND HEALTH
+  Explanation of Benefits
+
+  Member:            Gideon Ravensbourne
+  Member ID:         NW-330512
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     03/06/2026
+  Rendering Provider:   Dr. Perpetua Nkemdirim, NPI 1134567892
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99214      Office visit, established          $255.00
+  93000      Electrocardiogram, complete         $95.00
+  ----------------------------------------------------------
+  Total Billed:                                 $350.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $280.00
+  Patient Responsibility:                        $70.00
+
+  Benefits administered by Northwind Health Assurance Company of
+  the Great Lakes, Incorporated. Correspondence should be directed
+  to the address printed on the reverse.
+expected:
+  patient_name: "Gideon Ravensbourne"
+  date_of_service: "2026-03-06"
+  provider_npi: "1134567892"
+  payer_name: "Northwind Health"
+  member_id: "NW-330512"
+  cpt_codes: ["99214", "93000"]
+  billed_amount: 350.00
+  patient_responsibility: 70.00

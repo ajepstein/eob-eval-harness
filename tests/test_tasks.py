@@ -81,7 +81,7 @@ def test_limit_applies_after_category_filter():
     assert [t.id for t in tasks] == ["eob-f001"]
 
 
-SUITE_SIZE = 40
+SUITE_SIZE = 52
 
 
 def test_full_task_suite_loads_with_contiguous_ids():
@@ -102,13 +102,18 @@ def test_full_task_suite_category_distribution():
     assert len(load_tasks(tasks_dir, categories=["missing_field"])) == 12
     assert len(load_tasks(tasks_dir, categories=["format_variance"])) == 8
     assert len(load_tasks(tasks_dir, categories=["hard"])) == 10
+    # name_variance exists because the deterministic scorer alone cannot
+    # settle these: the document supports two defensible renderings, so a
+    # model choosing the other one is near-missing rather than erring.
+    # This is the population the judge is calibrated against.
+    assert len(load_tasks(tasks_dir, categories=["name_variance"])) == 12
 
 
 def test_edge_case_flag_matches_category():
     tasks = load_tasks(Path(__file__).parent.parent / "tasks")
 
     for task in tasks:
-        expected_edge = task.category in {"missing_field", "hard"}
+        expected_edge = task.category in {"missing_field", "hard", "name_variance"}
         assert task.edge_case is expected_edge, f"{task.id} edge_case mismatch"
 
 

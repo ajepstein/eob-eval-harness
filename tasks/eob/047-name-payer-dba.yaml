@@ -1,0 +1,42 @@
+id: eob-047
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  HEARTHSTONE CARE
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Clementina Vasquez-Oduya
+  Member ID:         HC-552013
+  Payer:             Hearthstone Care
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     08/22/2026
+  Rendering Provider:   Dr. Casimir Dabrowski, NPI 1689012347
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99204      Office visit, new patient, mod     $325.00
+  71046      Chest X-ray, 2 views               $175.00
+  ----------------------------------------------------------
+  Total Billed:                                 $500.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $400.00
+  Patient Responsibility:                       $100.00
+
+  Hearthstone Care is a trade name used by Meridian Benefit
+  Administrators LLC in the conduct of its insurance business.
+expected:
+  patient_name: "Clementina Vasquez-Oduya"
+  date_of_service: "2026-08-22"
+  provider_npi: "1689012347"
+  payer_name: "Hearthstone Care"
+  member_id: "HC-552013"
+  cpt_codes: ["99204", "71046"]
+  billed_amount: 500.00
+  patient_responsibility: 100.00
