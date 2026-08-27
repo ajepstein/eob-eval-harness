@@ -20,7 +20,14 @@ from rich.table import Table
 
 from harness.adapters import available_adapters, get_adapter
 from harness.cache import ResponseCache
-from harness.report import render_category_table, render_diff, render_run_table
+from harness.report import (
+    render_category_table,
+    render_diff,
+    render_frontier,
+    render_mde,
+    render_paired_comparison,
+    render_run_table,
+)
 from harness.runner import run_tasks
 from harness.scorers.fields import FieldScorer
 from harness.scorers.judge import JudgeScorer
@@ -199,6 +206,21 @@ def cmd_show(args: argparse.Namespace, console: Console) -> None:
 def cmd_compare(args: argparse.Namespace, console: Console) -> None:
     run_a, run_b = args.compare
     render_diff(compare_runs(run_a, run_b, db_path=args.db), console=console)
+    # Per-task deltas say *what* changed; the paired interval says whether
+    # the change is distinguishable from noise at this sample size.
+    render_paired_comparison(run_a, run_b, db_path=args.db, console=console)
+
+
+def cmd_frontier(args: argparse.Namespace, console: Console) -> None:
+    runs = args.frontier if isinstance(args.frontier, list) and args.frontier else [
+        m.run_id for m in list_runs(limit=args.limit_runs, db_path=args.db)
+    ]
+    render_frontier(runs, db_path=args.db, console=console)
+
+
+def cmd_mde(args: argparse.Namespace, console: Console) -> None:
+    runs = [m.run_id for m in list_runs(limit=args.limit_runs, db_path=args.db)]
+    render_mde(runs, db_path=args.db, console=console)
 
 
 def cmd_rescore(args: argparse.Namespace, console: Console) -> None:
@@ -277,6 +299,17 @@ def main() -> None:
         metavar="RUN_ID",
         help="Re-run scorers over stored text (no API calls)",
     )
+    store.add_argument(
+        "--frontier",
+        nargs="*",
+        metavar="RUN_ID",
+        help="Cost per task against quality, with dominated runs flagged",
+    )
+    store.add_argument(
+        "--mde",
+        action="store_true",
+        help="Smallest difference this suite size could resolve",
+    )
 
     args = parser.parse_args()
     console = Console()
@@ -294,6 +327,10 @@ def main() -> None:
         return cmd_compare(args, console)
     if args.rescore:
         return cmd_rescore(args, console)
+    if args.frontier is not None:
+        return cmd_frontier(args, console)
+    if args.mde:
+        return cmd_mde(args, console)
 
     if not args.adapter:
         args.adapter = ["anthropic"]

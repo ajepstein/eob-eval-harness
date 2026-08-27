@@ -18,6 +18,15 @@ from pathlib import Path
 from rich.console import Console
 from rich.table import Table
 
+from harness.stats import (
+    FrontierPoint,
+    bootstrap_ci,
+    describe_difference,
+    mcnemar,
+    minimum_detectable_effect,
+    paired_bootstrap_diff,
+    pareto_frontier,
+)
 from harness.store import DEFAULT_DB_PATH, load_run
 from harness.types import RunDiff, RunRecord
 
@@ -31,6 +40,21 @@ def _percentile(values: list[float], pct: float) -> float:
         return values[0]
     quantiles = statistics.quantiles(values, n=100, method="inclusive")
     return quantiles[min(int(pct) - 1, len(quantiles) - 1)]
+
+
+def per_task_scores(record: RunRecord, scorer: str = "fields") -> dict[str, float]:
+    """One value per task — the unit the bootstrap resamples.
+
+    Deliberately not per field: the eight fields of a task come from one
+    document and fail together, so treating them as independent would give
+    intervals far too narrow.
+    """
+    out: dict[str, float] = {}
+    for result in record.results:
+        value = next((s.value for s in result.scores if s.scorer == scorer), None)
+        if value is not None:
+            out[result.task_id] = value
+    return out
 
 
 def _latencies(record: RunRecord) -> list[float]:
@@ -58,7 +82,7 @@ def render_run_table(
     table.add_column("model", no_wrap=True)
     table.add_column("n", justify="right")
     table.add_column("schema", justify="right")
-    table.add_column("F1", justify="right")
+    table.add_column("F1 [95% CI]", justify="right", no_wrap=True)
     table.add_column("cost $", justify="right", no_wrap=True)
     table.add_column("$/task", justify="right", no_wrap=True)
     table.add_column("p50 ms", justify="right")
@@ -76,7 +100,7 @@ def render_run_table(
             meta.model_id,
             str(meta.task_count),
             f"{meta.schema_pass_rate:.2f}",
-            f"{meta.mean_f1:.3f}",
+            str(bootstrap_ci(list(per_task_scores(record).values()), seed=0)),
             f"{meta.total_cost_usd:.6f}",
             f"{per_task:.6f}",
             f"{_percentile(latencies, 50):.0f}",
@@ -202,3 +226,140 @@ def render_diff(diff: RunDiff, console: Console | None = None) -> None:
         )
 
     console.print(table)
+
+
+def render_frontier(
+    run_ids: list[str],
+    db_path: str | Path = DEFAULT_DB_PATH,
+    console: Console | None = None,
+) -> None:
+    """Cost per task against quality, with dominated runs flagged.
+
+    This is the view a buyer actually wants. "Which model is best" is rarely
+    the question; "which models are worth their price for this workload" is.
+    A run that costs more *and* scores worse is never the right choice, and
+    naming it is more useful than ranking everything.
+    """
+    console = console or Console()
+    records = [load_run(run_id, db_path) for run_id in run_ids]
+
+    points = []
+    for record in records:
+        scores = list(per_task_scores(record).values())
+        if not scores:
+            continue
+        meta = record.meta
+        points.append(
+            FrontierPoint(
+                label=f"{meta.adapter} ({meta.run_id[:SHORT_ID]})",
+                cost_per_task=(
+                    meta.total_cost_usd / meta.task_count if meta.task_count else 0.0
+                ),
+                quality=meta.mean_f1,
+                quality_interval=bootstrap_ci(scores, seed=0),
+            )
+        )
+
+    if not points:
+        console.print("[yellow]No scored runs to compare.[/yellow]")
+        return
+
+    table = Table(title="Cost / quality frontier")
+    table.add_column("run", no_wrap=True)
+    table.add_column("$/task", justify="right", no_wrap=True)
+    table.add_column("mean F1 [95% CI]", justify="right", no_wrap=True)
+    table.add_column("frontier", no_wrap=True)
+
+    for point in sorted(pareto_frontier(points), key=lambda p: p.cost_per_task):
+        if point.pareto_optimal:
+            status = "[green]optimal[/green]"
+        else:
+            status = f"[dim]dominated by {', '.join(point.dominated_by)}[/dim]"
+        table.add_row(
+            point.label,
+            f"{point.cost_per_task:.6f}",
+            str(point.quality_interval),
+            status,
+        )
+
+    console.print(table)
+    console.print(
+        "[dim]A run is dominated when another is no more expensive and no "
+        "worse. Overlapping intervals mean the quality ordering is not "
+        "established.[/dim]"
+    )
+
+
+def render_paired_comparison(
+    run_id_a: str,
+    run_id_b: str,
+    db_path: str | Path = DEFAULT_DB_PATH,
+    console: Console | None = None,
+) -> None:
+    """Paired difference with an interval and a verdict spelled out in words."""
+    console = console or Console()
+    record_a = load_run(run_id_a, db_path)
+    record_b = load_run(run_id_b, db_path)
+
+    scores_a = per_task_scores(record_a)
+    scores_b = per_task_scores(record_b)
+    shared = sorted(set(scores_a) & set(scores_b))
+    if not shared:
+        console.print("[yellow]No tasks in common between these runs.[/yellow]")
+        return
+
+    a_values = [scores_a[t] for t in shared]
+    b_values = [scores_b[t] for t in shared]
+    label_a = f"{record_a.meta.adapter} ({record_a.meta.run_id[:SHORT_ID]})"
+    label_b = f"{record_b.meta.adapter} ({record_b.meta.run_id[:SHORT_ID]})"
+
+    diff = paired_bootstrap_diff(a_values, b_values, seed=0)
+    perfect = mcnemar(
+        [v == 1.0 for v in a_values], [v == 1.0 for v in b_values]
+    )
+
+    table = Table(title="Paired comparison", show_header=False)
+    table.add_column(style="bold", no_wrap=True)
+    table.add_column()
+    table.add_row("tasks compared", str(len(shared)))
+    table.add_row(label_a, f"{statistics.fmean(a_values):.3f}")
+    table.add_row(label_b, f"{statistics.fmean(b_values):.3f}")
+    table.add_row("difference", str(diff))
+    table.add_row(
+        "McNemar (task fully correct)",
+        f"b={perfect.b} c={perfect.c}  exact p={perfect.p_exact:.3f}",
+    )
+    console.print(table)
+
+    # Said in words, because a reader who skims the number and misses the
+    # interval is exactly who this is for.
+    console.print(f"\n  [bold]{describe_difference(diff, label_a, label_b)}[/bold]")
+    console.print(f"  [dim]on fully-correct tasks: {perfect.verdict}[/dim]")
+
+
+def render_mde(
+    run_ids: list[str],
+    db_path: str | Path = DEFAULT_DB_PATH,
+    console: Console | None = None,
+) -> None:
+    """How small a difference this suite could resolve, at its current size."""
+    console = console or Console()
+    records = [load_run(run_id, db_path) for run_id in run_ids]
+    if not records:
+        console.print("[yellow]No runs to size.[/yellow]")
+        return
+
+    n = max(r.meta.task_count for r in records)
+    baseline = statistics.fmean([r.meta.mean_f1 for r in records])
+
+    table = Table(title=f"Minimum detectable effect (n={n}, power 0.80)")
+    table.add_column("baseline", justify="right")
+    table.add_column("smallest resolvable difference", justify="right")
+    for candidate in sorted({round(baseline, 2), 0.50, 0.80, 0.90, 0.95}):
+        marker = "  <- this suite" if abs(candidate - round(baseline, 2)) < 1e-9 else ""
+        table.add_row(f"{candidate:.2f}", f"{minimum_detectable_effect(n, candidate):.3f}{marker}")
+    console.print(table)
+    console.print(
+        "[dim]The effect is hardest to resolve near a baseline of 0.50, where "
+        "binomial variance peaks, and easiest at the extremes.[/dim]"
+    )
