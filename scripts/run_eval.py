@@ -15,6 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from rich.console import Console
+from rich.panel import Panel
 from rich.table import Table
 
 from harness.adapters import available_adapters, get_adapter
@@ -24,8 +25,10 @@ from harness.runner import run_tasks
 from harness.scorers.fields import FieldScorer
 from harness.scorers.judge import JudgeScorer
 from harness.scorers.schema import SchemaScorer
+from harness.prompts import judge_prompt_hash
 from harness.store import (
     DEFAULT_DB_PATH,
+    find_calibration,
     compare_runs,
     list_runs,
     load_run,
@@ -41,6 +44,7 @@ async def main_async(args: argparse.Namespace, tasks: list[Task]) -> list[RunSum
 
     scorers = [SchemaScorer(), FieldScorer()]
     if args.judge:
+        _require_calibration(args)
         scorers.append(
             JudgeScorer(
                 adapter=get_adapter(args.judge, model_alias=args.judge_model),
@@ -136,6 +140,49 @@ def render_categories(summaries: list[RunSummary], console: Console) -> None:
     console.print(table)
 
 
+class UncalibratedJudge(SystemExit):
+    """Raised when judge-adjusted scores are requested without calibration."""
+
+
+def _require_calibration(args: argparse.Namespace) -> None:
+    """Refuse judge-adjusted scores unless the rubric has been calibrated.
+
+    This is the project's thesis expressed in code. A harness that reports
+    judge-adjusted numbers without knowing how far the judge can be trusted
+    is asserting something it has not measured, so producing those numbers
+    uncalibrated is made deliberately awkward rather than merely discouraged.
+
+    Keyed on the rubric hash: editing judge_v1.txt invalidates the
+    calibration, because verdicts under a new rubric are not comparable to
+    the ones that were measured.
+    """
+    rubric = judge_prompt_hash()
+    calibration = find_calibration(rubric, db_path=args.db)
+    if calibration is not None:
+        return
+
+    message = (
+        f"No calibration exists for judge rubric {rubric}.\n\n"
+        f"Judge-adjusted scores are not reportable until the judge has been\n"
+        f"measured against human labels:\n"
+        f"    python scripts/label.py --new --n 100\n"
+        f"    python scripts/calibrate.py --save\n\n"
+        f"To proceed anyway, pass --uncalibrated."
+    )
+    if not args.uncalibrated:
+        raise UncalibratedJudge(message)
+
+    Console().print(
+        Panel(
+            f"[bold red]UNCALIBRATED JUDGE[/bold red]\n\n"
+            f"Rubric {rubric} has never been measured against human labels.\n"
+            f"The judge-adjusted F1 below is of unknown reliability and must\n"
+            f"not be reported as a measurement.",
+            border_style="red",
+        )
+    )
+
+
 def cmd_list_runs(args: argparse.Namespace, console: Console) -> None:
     runs = list_runs(limit=args.limit_runs, adapter=args.adapter_filter, db_path=args.db)
     if not runs:
@@ -203,6 +250,11 @@ def main() -> None:
         help="Judge every mismatched field, not only near-misses",
     )
     parser.add_argument("--judge-model", default=None, help="MODELS alias for the judge")
+    parser.add_argument(
+        "--uncalibrated",
+        action="store_true",
+        help="Report judge-adjusted scores with no calibration (prints a warning)",
+    )
     parser.add_argument("--db", default=DEFAULT_DB_PATH, help="SQLite store path")
     parser.add_argument(
         "--no-save", action="store_true", help="Run without persisting to the store"

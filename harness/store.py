@@ -150,6 +150,26 @@ CREATE TABLE IF NOT EXISTS human_labels (
     UNIQUE(label_set_id, item_id)
 );
 
+CREATE TABLE IF NOT EXISTS calibrations (
+    id                   TEXT PRIMARY KEY,
+    label_set_id         TEXT    NOT NULL,
+    judge_model_id       TEXT    NOT NULL,
+    judge_prompt_hash    TEXT    NOT NULL,
+    n                    INTEGER NOT NULL,
+    raw_agreement        REAL    NOT NULL,
+    kappa                REAL,
+    kappa_ci_low         REAL,
+    kappa_ci_high        REAL,
+    band                 TEXT    NOT NULL,
+    human_ceiling_kappa  REAL,
+    human_ceiling_n      INTEGER NOT NULL,
+    per_category_json    TEXT    NOT NULL,
+    bias_json            TEXT    NOT NULL,
+    notes_json           TEXT    NOT NULL,
+    created_at           TEXT    NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_calib_hash  ON calibrations(judge_prompt_hash);
 CREATE INDEX IF NOT EXISTS idx_items_set    ON label_items(label_set_id, position);
 CREATE INDEX IF NOT EXISTS idx_labels_set   ON human_labels(label_set_id);
 CREATE INDEX IF NOT EXISTS idx_judge_run    ON judge_calls(run_id);
@@ -598,3 +618,78 @@ def rescore_run(
             _insert_scores(conn, row["id"], score_result(task, response, scorers))
 
     return load_run(full_id, db_path)
+
+
+# --- calibrations -----------------------------------------------------------
+
+
+def save_calibration(
+    report,
+    label_set_id: str,
+    judge_model_id: str,
+    judge_prompt_hash: str,
+    bias_results: dict | None = None,
+    db_path: str | Path = DEFAULT_DB_PATH,
+) -> str:
+    """Persist a calibration, keyed to the rubric it was measured against."""
+    init_db(db_path)
+    calibration_id = str(uuid.uuid4())
+    with _session(db_path) as conn:
+        conn.execute(
+            """INSERT INTO calibrations (id, label_set_id, judge_model_id,
+                   judge_prompt_hash, n, raw_agreement, kappa, kappa_ci_low,
+                   kappa_ci_high, band, human_ceiling_kappa, human_ceiling_n,
+                   per_category_json, bias_json, notes_json, created_at)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+            (
+                calibration_id, label_set_id, judge_model_id, judge_prompt_hash,
+                report.n, report.raw_agreement,
+                None if report.kappa != report.kappa else report.kappa,
+                None if report.kappa_ci[0] != report.kappa_ci[0] else report.kappa_ci[0],
+                None if report.kappa_ci[1] != report.kappa_ci[1] else report.kappa_ci[1],
+                report.band, report.human_ceiling_kappa, report.human_ceiling_n,
+                json.dumps({k: v.kappa for k, v in report.per_category.items()},
+                           default=str),
+                json.dumps(bias_results or {}, default=str),
+                json.dumps(report.notes),
+                datetime.now(timezone.utc).isoformat(),
+            ),
+        )
+    return calibration_id
+
+
+def find_calibration(
+    judge_prompt_hash: str, db_path: str | Path = DEFAULT_DB_PATH
+) -> dict | None:
+    """The most recent calibration for a given rubric, if any.
+
+    Keyed on the rubric hash deliberately: verdicts produced under a
+    different rubric are not comparable, so an edited rubric has no
+    calibration until it is measured again.
+    """
+    if not Path(db_path).exists():
+        return None
+
+    def _query() -> dict | None:
+        with _session(db_path) as conn:
+            row = conn.execute(
+                """SELECT * FROM calibrations WHERE judge_prompt_hash = ?
+                   ORDER BY created_at DESC LIMIT 1""",
+                (judge_prompt_hash,),
+            ).fetchone()
+            return dict(row) if row else None
+
+    try:
+        return _query()
+    except sqlite3.OperationalError:
+        pass
+
+    # The table is missing. A store written before calibrations existed is
+    # still a valid store, so add it and retry rather than failing. If the
+    # store is too different to migrate, treat it as uncalibrated — the gate
+    # then refuses, which is the safe direction.
+    try:
+        init_db(db_path)
+        return _query()
+    except sqlite3.OperationalError:
+        return None
