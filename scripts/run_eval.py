@@ -10,6 +10,8 @@ import argparse
 import asyncio
 import sys
 import warnings
+import webbrowser
+from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -20,6 +22,7 @@ from rich.table import Table
 
 from harness.adapters import available_adapters, get_adapter
 from harness.cache import ResponseCache
+from harness.html_report import render_report
 from harness.report import (
     render_category_table,
     render_diff,
@@ -218,6 +221,26 @@ def cmd_frontier(args: argparse.Namespace, console: Console) -> None:
     render_frontier(runs, db_path=args.db, console=console)
 
 
+def cmd_report(args: argparse.Namespace, console: Console) -> None:
+    runs = args.report or [
+        m.run_id for m in list_runs(limit=args.limit_runs, db_path=args.db)
+    ]
+    if not runs:
+        console.print("[red]No runs to report on.[/red]")
+        return
+
+    out = Path(args.out) if args.out else Path(
+        f"reports/eval-{datetime.now().strftime('%Y-%m-%d')}.html"
+    )
+    written = render_report(runs, out, db_path=args.db)
+    size_kb = written.stat().st_size / 1024
+    console.print(
+        f"Wrote [bold]{written}[/bold] ({size_kb:.0f} KB, {len(runs)} run(s))"
+    )
+    if args.open:
+        webbrowser.open(written.resolve().as_uri())
+
+
 def cmd_mde(args: argparse.Namespace, console: Console) -> None:
     runs = [m.run_id for m in list_runs(limit=args.limit_runs, db_path=args.db)]
     render_mde(runs, db_path=args.db, console=console)
@@ -310,6 +333,16 @@ def main() -> None:
         action="store_true",
         help="Smallest difference this suite size could resolve",
     )
+    store.add_argument(
+        "--report",
+        nargs="*",
+        metavar="RUN_ID",
+        help="Render a self-contained HTML report (defaults to recent runs)",
+    )
+    store.add_argument("--out", default=None, help="Report output path")
+    store.add_argument(
+        "--open", action="store_true", help="Open the report in a browser"
+    )
 
     args = parser.parse_args()
     console = Console()
@@ -331,6 +364,8 @@ def main() -> None:
         return cmd_frontier(args, console)
     if args.mde:
         return cmd_mde(args, console)
+    if args.report is not None:
+        return cmd_report(args, console)
 
     if not args.adapter:
         args.adapter = ["anthropic"]

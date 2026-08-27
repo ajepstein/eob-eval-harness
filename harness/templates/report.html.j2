@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EOB extraction eval — {{ generated_at }}</title>
+<style>
+  :root { --ink:#16191d; --muted:#6b7280; --line:#e3e5e8; --bg:#ffffff;
+          --warn-bg:#fff4e5; --warn-line:#c2761a; --bad-bg:#fdecea; --bad-line:#b3261e;
+          --ok-bg:#e9f6ef; --ok-line:#0f7b46; }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:0 20px 80px; background:var(--bg); color:var(--ink);
+         font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  .wrap { max-width:980px; margin:0 auto; }
+  h1 { font-size:28px; margin:36px 0 6px; letter-spacing:-0.01em; }
+  h2 { font-size:21px; margin:44px 0 10px; padding-top:14px; border-top:1px solid var(--line); }
+  h3 { font-size:16px; margin:22px 0 6px; }
+  p.sub { color:var(--muted); margin:0 0 22px; }
+  table { border-collapse:collapse; width:100%; margin:14px 0; font-size:14px; }
+  th,td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); }
+  th { font-weight:600; color:var(--muted); font-size:12px; text-transform:uppercase;
+       letter-spacing:0.04em; }
+  td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+  .banner { padding:16px 18px; border-radius:8px; margin:20px 0; border-left:5px solid; }
+  .banner.ok   { background:var(--ok-bg);   border-color:var(--ok-line); }
+  .banner.warn { background:var(--warn-bg); border-color:var(--warn-line); }
+  .banner.bad  { background:var(--bad-bg);  border-color:var(--bad-line); }
+  .banner h2 { border:0; margin:0 0 6px; padding:0; font-size:17px; }
+  .chart { display:block; margin:10px 0 4px; }
+  .tick { font-size:11px; fill:#6b7280; }
+  .axis-label { font-size:12px; fill:#3a3f46; }
+  .point-label { font-size:12px; fill:#16191d; font-weight:600; }
+  .cell-light { font-size:12px; fill:#16191d; }
+  .cell-dark  { font-size:12px; fill:#ffffff; }
+  .cell-null  { font-size:11px; fill:#9ca3af; }
+  .legend, .note { color:var(--muted); font-size:13px; margin:4px 0 18px; }
+  code, pre { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px; }
+  pre { background:#f6f7f9; padding:14px; border-radius:6px; overflow-x:auto;
+        white-space:pre-wrap; word-break:break-word; }
+  details { border:1px solid var(--line); border-radius:6px; padding:10px 14px; margin:10px 0; }
+  summary { cursor:pointer; font-weight:600; }
+  .pill { display:inline-block; padding:1px 8px; border-radius:99px; font-size:12px;
+          border:1px solid var(--line); color:var(--muted); }
+  .pill.opt { background:var(--ok-bg); border-color:var(--ok-line); color:var(--ok-line); }
+  .zero { color:var(--muted); }
+</style>
+</head>
+<body><div class="wrap">
+
+<h1>EOB extraction evaluation</h1>
+<p class="sub">
+  Generated {{ generated_at }} · harness v{{ harness_version }} ·
+  suite {{ suite_size }} tasks · {{ headline|length }} run(s)
+</p>
+<table>
+  <tr><th>run</th><th>adapter</th><th>model</th><th>commit</th><th>prompt</th></tr>
+  {% for row in headline %}
+  <tr>
+    <td><code>{{ row.short_id }}</code></td>
+    <td>{{ row.adapter }}</td>
+    <td><code>{{ row.model_id }}</code></td>
+    <td><code>{{ row.git_commit }}</code>{% if row.git_dirty %}
+        <span class="pill">dirty tree — not reproducible</span>{% endif %}</td>
+    <td><code>{{ row.prompt }}</code></td>
+  </tr>
+  {% endfor %}
+</table>
+
+{# Calibration sits above every score on purpose: the reader should learn
+   how far the judge can be trusted before seeing numbers that depend on it. #}
+{% if calibration %}
+<div class="banner ok">
+  <h2>Judge calibration</h2>
+  <p style="margin:0">
+    Cohen's kappa <strong>{{ "%.3f"|format(calibration.kappa) if calibration.kappa is not none else "undefined" }}</strong>
+    {% if calibration.kappa_ci_low is not none %}
+      [{{ "%.3f"|format(calibration.kappa_ci_low) }}, {{ "%.3f"|format(calibration.kappa_ci_high) }}]
+    {% endif %}
+    — <strong>{{ calibration.band }}</strong>, over {{ calibration.n }} labelled items.
+    Human self-agreement ceiling
+    {{ "%.3f"|format(calibration.human_ceiling_kappa) if calibration.human_ceiling_kappa is not none else "not measured" }}
+    (from {{ calibration.human_ceiling_n }} repeated items).
+  </p>
+  <p class="note" style="margin:8px 0 0">
+    Read the judge's kappa against the ceiling, not against 1.0: no human labels
+    perfectly consistently, so the ceiling bounds what any judge could reach.
+  </p>
+</div>
+{% else %}
+<div class="banner bad">
+  <h2>No calibration for this judge rubric</h2>
+  <p style="margin:0">
+    Rubric <code>{{ rubric_hash }}</code> has never been measured against human
+    labels. Any judge-adjusted figure below is of <strong>unknown reliability</strong>
+    and must not be reported as a measurement.
+  </p>
+  <p class="note" style="margin:8px 0 0">
+    Produce one with <code>scripts/label.py --new</code> then
+    <code>scripts/calibrate.py --save</code>.
+  </p>
+</div>
+{% endif %}
+
+<h2>Headline comparison</h2>
+<p class="sub">Every figure carries a 95% bootstrap interval over tasks.</p>
+<table>
+  <tr>
+    <th>run</th><th>adapter</th><th class="num">n</th><th class="num">schema</th>
+    <th class="num">mean F1 [95% CI]</th><th class="num">cost</th>
+    <th class="num">$/task</th><th class="num">failures</th>
+  </tr>
+  {% for row in headline %}
+  <tr>
+    <td><code>{{ row.short_id }}</code></td>
+    <td>{{ row.adapter }}</td>
+    <td class="num">{{ row.n }}</td>
+    <td class="num">{{ "%.2f"|format(row.schema_pass_rate) }}</td>
+    <td class="num">{{ "%.3f"|format(row.f1) }}
+        [{{ "%.3f"|format(row.f1_low) }}, {{ "%.3f"|format(row.f1_high) }}]</td>
+    <td class="num">${{ "%.4f"|format(row.cost) }}</td>
+    <td class="num">${{ "%.6f"|format(row.cost_per_task) }}</td>
+    <td class="num">{{ row.failures }}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>Cost against quality</h2>
+<p class="sub">Which runs are worth their price, rather than which scored highest.</p>
+{{ scatter_svg|safe }}
+<table>
+  <tr><th>run</th><th class="num">$/task</th><th class="num">mean F1</th><th>frontier</th></tr>
+  {% for point in frontier %}
+  <tr>
+    <td>{{ point.label }}</td>
+    <td class="num">${{ "%.6f"|format(point.cost_per_task) }}</td>
+    <td class="num">{{ "%.3f"|format(point.quality) }}</td>
+    <td>{% if point.pareto_optimal %}<span class="pill opt">on the frontier</span>
+        {% else %}<span class="pill">dominated by {{ point.dominated_by|join(", ") }}</span>
+        {% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+
+<h2>By category</h2>
+<p class="sub">
+  Exploratory. These are many comparisons on one dataset; treat them as
+  directions to look, not findings.
+</p>
+{{ heatmap_svg|safe }}
+
+<h2>By field</h2>
+<p class="sub">
+  Which fields drag which models down. Hallucination is reported separately,
+  against the cases where the document genuinely had no value — the only
+  cases where a value can be invented.
+</p>
+{% for field in fields %}
+<h3><code>{{ field.field }}</code></h3>
+<table>
+  <tr>
+    <th>adapter</th><th class="num">correct</th><th class="num">wrong</th>
+    <th class="num">missed</th><th class="num">hallucinated</th>
+    <th class="num">hallucination rate</th>
+  </tr>
+  {% for run in field.per_run %}
+  <tr>
+    <td>{{ run.adapter }}</td>
+    <td class="num">{{ run.correct }}</td>
+    <td class="num">{{ run.wrong }}</td>
+    <td class="num">{{ run.missed }}</td>
+    <td class="num">{{ run.hallucinated }}</td>
+    <td class="num">
+      {% if run.hallucination_rate is not none %}
+        {{ "%.1f"|format(run.hallucination_rate * 100) }}%
+        <span class="zero">({{ run.hallucinated }}/{{ run.nullable_cases }})</span>
+      {% else %}—{% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endfor %}
+
+<h2>Paired comparisons</h2>
+{% if comparisons %}
+<p class="sub">
+  Both models see identical tasks, so the comparison is paired and the
+  task-to-task variation cancels.
+</p>
+{{ comparison_chart|safe }}
+<table>
+  <tr>
+    <th>comparison</th><th class="num">n</th><th class="num">difference [95% CI]</th>
+    <th class="num">McNemar p</th><th class="num">Holm p</th><th>verdict</th>
+  </tr>
+  {% for c in comparisons %}
+  <tr>
+    <td>{{ c.label }}</td>
+    <td class="num">{{ c.n }}</td>
+    <td class="num">{{ "%+.4f"|format(c.diff) }}
+        [{{ "%+.4f"|format(c.low) }}, {{ "%+.4f"|format(c.high) }}]</td>
+    <td class="num">{{ "%.3f"|format(c.p_raw) }}</td>
+    <td class="num">{{ "%.3f"|format(c.p_holm) }}</td>
+    <td>{% if c.spans_zero %}<span class="zero">not distinguishable from zero</span>
+        {% else %}{{ c.verdict }}{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="note">Only one run — nothing to compare against.</p>
+{% endif %}
+
+<h2>Failures</h2>
+<p class="sub">
+  Every task any run scored below 1.0, with the document, the answer key,
+  and each model's output.
+</p>
+{% if failures %}
+{% for failure in failures %}
+<details>
+  <summary>{{ failure.task_id }} — {{ failure.category }}</summary>
+  <h3>Document</h3>
+  <pre>{{ failure.document }}</pre>
+  <h3>Expected</h3>
+  <pre>{{ failure.expected }}</pre>
+  {% for run in failure.runs %}
+  <h3>{{ run.adapter }}{% if run.f1 is not none %} — F1 {{ "%.3f"|format(run.f1) }}{% endif %}</h3>
+  {% if run.error %}<p class="note">Task errored: <code>{{ run.error }}</code></p>{% endif %}
+  {% if run.bad_fields %}
+  <table>
+    <tr><th>field</th><th>outcome</th><th>judge verdict</th><th>judge reasoning</th></tr>
+    {% for field, outcome in run.bad_fields.items() %}
+    <tr>
+      <td><code>{{ field }}</code></td>
+      <td>{{ outcome }}</td>
+      <td>{{ run.judge[field].verdict if run.judge.get(field) else "—" }}</td>
+      <td>{{ run.judge[field].reason if run.judge.get(field) else "—" }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% endif %}
+  <pre>{{ run.response_text }}</pre>
+  {% endfor %}
+</details>
+{% endfor %}
+{% else %}
+<p class="note">No run scored below 1.0 on any task.</p>
+{% endif %}
+
+<h2>Methods</h2>
+
+<h3>Task suite</h3>
+<table>
+  <tr><th>category</th><th class="num">tasks</th></tr>
+  {% for name, count in task_distribution %}
+  <tr><td>{{ name }}</td><td class="num">{{ count }}</td></tr>
+  {% endfor %}
+  <tr><td><strong>total</strong></td><td class="num"><strong>{{ suite_size }}</strong></td></tr>
+</table>
+
+<h3>Scoring</h3>
+<p>
+  Micro-averaged precision, recall and F1 over the eight schema fields. A value
+  that is wrong counts as both a false positive and a false negative, since a
+  confidently wrong answer is worse than an abstention. A value invented where
+  the document has none is a false positive. Correctly-null fields are excluded
+  from the average so that leaving nullable fields empty cannot inflate a score.
+</p>
+
+<h3>Document provenance</h3>
+<p>
+  Documents in the failure gallery are read from the task files on disk, not
+  from the run record. If a task has been edited since a run, the document
+  shown is the current one while the scores are the historical ones. The
+  commit recorded against each run above identifies which version was
+  actually evaluated.
+</p>
+
+<h3>Normalization</h3>
+<pre>{{ normalization_rules }}</pre>
+
+<h3>Judge rubric (verbatim)</h3>
+<pre>{{ rubric_text }}</pre>
+
+<h3>Statistics</h3>
+<p>
+  Intervals are percentile bootstrap, {{ bootstrap_iterations }} iterations,
+  seed {{ bootstrap_seed }}, resampling <em>tasks</em> rather than fields — the
+  eight fields of a task come from one document and fail together, so
+  resampling fields would treat correlated observations as independent and
+  produce intervals far too narrow. Comparisons are paired, since every model
+  sees identical tasks. Per-category p-values are Holm-corrected across the
+  comparison family.
+</p>
+<p>
+  At n={{ n_tasks }} and a baseline of {{ "%.2f"|format(baseline) }}, the
+  unpaired minimum detectable effect is {{ "%.3f"|format(mde) }}. The paired
+  comparisons above resolve considerably finer differences, because both models
+  see the same tasks and most per-task differences are exactly zero.
+</p>
+
+<h3>Calibration</h3>
+<p>
+  {% if calibration %}
+    Cohen's kappa against blind human labels, bootstrap interval, and an
+    intra-rater ceiling from double-labelled items. Kappa is reported rather
+    than raw agreement because raw agreement is inflated by whichever class
+    dominates.
+  {% else %}
+    Not performed for rubric <code>{{ rubric_hash }}</code>. Judge-adjusted
+    figures in this report are uncalibrated.
+  {% endif %}
+</p>
+
+</div></body>
+</html>
