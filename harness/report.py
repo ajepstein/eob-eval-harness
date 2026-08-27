@@ -363,3 +363,34 @@ def render_mde(
         "[dim]The effect is hardest to resolve near a baseline of 0.50, where "
         "binomial variance peaks, and easiest at the extremes.[/dim]"
     )
+
+    # The table above uses the standard *unpaired* formula, which is what
+    # "how big should my suite be" usually means. It substantially
+    # understates this harness, because every model sees identical tasks and
+    # the comparison is paired. When two models agree on most tasks their
+    # per-task differences are nearly all zero, the variance of the
+    # difference collapses, and the achievable resolution is far finer than
+    # the unpaired formula implies. Report the achieved number too, or the
+    # suite looks much blunter than it is.
+    if len(records) >= 2:
+        scored = [(r, per_task_scores(r)) for r in records]
+        scored = [(r, s) for r, s in scored if s]
+        if len(scored) >= 2:
+            (rec_a, a), (rec_b, b) = scored[0], scored[1]
+            shared = sorted(set(a) & set(b))
+            if shared:
+                diff = paired_bootstrap_diff(
+                    [a[t] for t in shared], [b[t] for t in shared], seed=0
+                )
+                achieved = max(abs(diff.low), abs(diff.high))
+                console.print(
+                    f"\n  [bold]Achieved paired resolution: {achieved:.4f}[/bold] "
+                    f"(n={len(shared)}, "
+                    f"{rec_a.meta.adapter} vs {rec_b.meta.adapter})"
+                )
+                console.print(
+                    "  [dim]This is the number that answers 'is my suite big "
+                    "enough'. The paired comparison resolves differences this "
+                    "large; the unpaired table above is the general case and "
+                    "is conservative here.[/dim]"
+                )
