@@ -1,0 +1,41 @@
+id: eob-065
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  GLENMORAY HEALTH  /  Glenmoray Health Assurance PLC
+  Explanation of Benefits
+
+    Member .............. KILDARE-NWACHUKWU, THEOPHILUS
+    Card shows .......... Theo Kildare-Nwachukwu
+    Member ID ........... GM-990311
+    Individual .......... GM-990311/02
+    Payer ............... Glenmoray Health
+
+  Date of Service:     08/30/2026
+
+  Provider of Record for This Claim
+    Dr. Ottoline Marchetti-Sandoval  (rendering physician)
+    NPI: 1467890127
+
+  Additional identifiers, for claim routing only:
+    Billing NPI .......... 1578901238
+    Referring NPI ........ 1689012349
+
+  Services
+  ----------------------------------------------------------
+  99204-25   Office visit, new patient         $335.00
+  73221-TC   MRI upper extremity, technical    $625.00
+  ----------------------------------------------------------
+  Total Billed:                                $960.00
+  Plan Paid:                                   $768.00
+  Patient Responsibility:                      $192.00
+expected:
+  patient_name: "KILDARE-NWACHUKWU, THEOPHILUS"
+  date_of_service: "2026-08-30"
+  provider_npi: "1467890127"
+  payer_name: "Glenmoray Health"
+  member_id: "GM-990311"
+  cpt_codes: ["99204", "73221"]
+  billed_amount: 960.00
+  patient_responsibility: 192.00

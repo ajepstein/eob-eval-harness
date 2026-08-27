@@ -1,0 +1,41 @@
+id: eob-056
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  UHCP
+  Explanation of Benefits
+
+    Member .............. Aurelius Thornbury-Vance
+    Member ID ........... UH 6620 4417
+    Compact ............. UH66204417
+    Payer ............... UHCP
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     05/15/2026
+  Rendering Provider:   Dr. Marguerite Delacroix, NPI 1578901237
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                      Billed
+  99215-25   Office visit, high complexity    $290.00
+  94010      Spirometry                       $85.00
+  ----------------------------------------------------------
+  Total Billed:                                $375.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                   $300.00
+  Patient Responsibility:                      $75.00
+
+  UHCP stands for United Highlands Care Partnership.
+expected:
+  patient_name: "Aurelius Thornbury-Vance"
+  date_of_service: "2026-05-15"
+  provider_npi: "1578901237"
+  payer_name: "UHCP"
+  member_id: "UH 6620 4417"
+  cpt_codes: ["99215", "94010"]
+  billed_amount: 375.00
+  patient_responsibility: 75.00

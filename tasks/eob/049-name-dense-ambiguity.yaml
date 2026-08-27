@@ -1,0 +1,41 @@
+id: eob-049
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  GREYSTONE ASSURANCE  /  Greystone Assurance Group, Inc.
+  Explanation of Benefits
+
+    Enrolled as ......... PENHALIGON, ROSAMUND ELIZABETH
+    Preferred name ...... Rosamund Penhaligon
+    Contract number ..... GA-88014
+    Individual number ... GA-88014-01
+    Plan administered by  Greystone Assurance Group, Inc.
+    Marketed as ......... Greystone Assurance
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     10/13/2026
+  Rendering Provider:   Dr. Aurelio Santangelo, NPI 1801234569
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                       Billed
+  99214-25   Office visit, established          $250.00
+  36415      Venipuncture                        $20.00
+  ----------------------------------------------------------
+  Total Billed:                                 $270.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $216.00
+  Patient Responsibility:                        $54.00
+expected:
+  patient_name: "PENHALIGON, ROSAMUND ELIZABETH"
+  date_of_service: "2026-10-13"
+  provider_npi: "1801234569"
+  payer_name: "Greystone Assurance"
+  member_id: "GA-88014"
+  cpt_codes: ["99214", "36415"]
+  billed_amount: 270.00
+  patient_responsibility: 54.00

@@ -1,0 +1,37 @@
+id: eob-067
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |2
+       * * * BRIARCLIFFE HEALTH PLAN * * *
+           EXPLANATION OF BENEFITS
+
+    PAYER ....... Briarcliffe Health Plan
+    LEGAL ....... Briarcliffe Health Plan Holdings Ltd
+    MEMBER ...... PENDERGAST, HORATIO M.
+    ALSO ........ Horatio Pendergast
+    MEMBER NO ... BC-114820
+    INDIVIDUAL .. BC-114820-01
+    SVC DATE .... 04/03/2026
+    PROVIDER .... Dr. Xiomara Beauchamp-Otieno
+    NPI ......... 1689012340
+
+    --------------------------------------
+    CODE       DESCRIPTION          CHARGED
+    --------------------------------------
+    99214-25   Office visit, est.   $ 240.00
+    81002-QW   Urinalysis, CLIA     $  35.00
+    --------------------------------------
+                BILLED TOTAL        $ 275.00
+                PLAN PAYMENT        $ 220.00
+                YOU OWE             $  55.00
+    --------------------------------------
+expected:
+  patient_name: "PENDERGAST, HORATIO M."
+  date_of_service: "2026-04-03"
+  provider_npi: "1689012340"
+  payer_name: "Briarcliffe Health Plan"
+  member_id: "BC-114820"
+  cpt_codes: ["99214", "81002"]
+  billed_amount: 275.00
+  patient_responsibility: 55.00

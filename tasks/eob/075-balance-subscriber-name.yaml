@@ -1,0 +1,35 @@
+id: eob-075
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  KESTREL FAMILY ASSURANCE
+  Explanation of Benefits
+
+    PRIMARY SUBSCRIBER ....... Reginald Fairweather-Blythe
+    Subscriber ID ............ KF-220914
+    Patient (this claim) ..... Cordelia Fairweather-Blythe
+    Relationship ............. Daughter
+    Payer .................... Kestrel Family Assurance
+
+
+  Date of Service:     07/16/2026
+  Rendering Provider:   Dr. Emmeline Sørensen-Adebayo, NPI 1467890128
+
+  Services
+  ----------------------------------------------------------
+  99393      Preventive visit, child            $180.00
+  90460      Immunization administration         $50.00
+  ----------------------------------------------------------
+  Total Billed:                                 $230.00
+  Plan Paid:                                    $207.00
+  Patient Responsibility:                        $23.00
+expected:
+  patient_name: "Cordelia Fairweather-Blythe"
+  date_of_service: "2026-07-16"
+  provider_npi: "1467890128"
+  payer_name: "Kestrel Family Assurance"
+  member_id: "KF-220914"
+  cpt_codes: ["99393", "90460"]
+  billed_amount: 230.00
+  patient_responsibility: 23.00

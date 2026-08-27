@@ -1,0 +1,42 @@
+id: eob-054
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  BRAMBLEWOOD CARE
+  Explanation of Benefits
+
+    Patient ............. HOLLOWAY-NDIAYE, SERAPHINE M.
+    Short form .......... Seraphine Holloway-Ndiaye
+    Member ID ........... BW-990142
+    Individual ref ...... BW-990142/01
+    Payer ............... Bramblewood Care
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     03/30/2026
+  Rendering Provider:   Dr. Fionnuala O'Shaughnessy, NPI 1356789015
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                      Billed
+  99214-25   Office visit, established        $245.00
+  93000-26   ECG, professional                $70.00
+  ----------------------------------------------------------
+  Total Billed:                                $315.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                   $252.00
+  Patient Responsibility:                      $63.00
+
+  Bramblewood Care is a division of Thornfield Health Group PLC.
+expected:
+  patient_name: "HOLLOWAY-NDIAYE, SERAPHINE M."
+  date_of_service: "2026-03-30"
+  provider_npi: "1356789015"
+  payer_name: "Bramblewood Care"
+  member_id: "BW-990142"
+  cpt_codes: ["99214", "93000"]
+  billed_amount: 315.00
+  patient_responsibility: 63.00

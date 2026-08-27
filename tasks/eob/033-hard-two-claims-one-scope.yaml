@@ -1,0 +1,50 @@
+id: eob-033
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  BLACKSTONE UNION HEALTH
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Cornelius Ravensworth
+  Member ID:         BUH-402913
+  Payer:             Blackstone Union Health
+
+  CURRENT CLAIM — PROCESSED THIS STATEMENT
+  ==========================================================
+  Date of Service:     05/12/2026
+  Rendering Provider:   Dr. Millicent Farraday, NPI 1912345678
+
+  CPT Code   Description                       Billed
+  99214      Office visit, established          $245.00
+  96372      Therapeutic injection               $85.00
+  ----------------------------------------------------------
+  Total Billed:                                 $330.00
+  Plan Paid:                                    $264.00
+  Patient Responsibility:                        $66.00
+
+  PREVIOUSLY PROCESSED — FOR REFERENCE ONLY
+  ==========================================================
+  The claim below appeared on your statement dated 03/2026 and
+  is reproduced here for your records. No action is required and
+  no new amount is owed.
+
+  Date of Service:     02/28/2026
+  Rendering Provider:   Dr. Josiah Pemberton-Vale, NPI 1023456780
+
+  CPT Code   Description                       Billed
+  99396      Preventive visit                   $215.00
+  ----------------------------------------------------------
+  Total Billed:                                 $215.00
+  Plan Paid:                                    $215.00
+  Patient Responsibility:                         $0.00
+expected:
+  patient_name: "Cornelius Ravensworth"
+  date_of_service: "2026-05-12"
+  provider_npi: "1912345678"
+  payer_name: "Blackstone Union Health"
+  member_id: "BUH-402913"
+  cpt_codes: ["99214", "96372"]
+  billed_amount: 330.00
+  patient_responsibility: 66.00

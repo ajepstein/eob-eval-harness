@@ -1,0 +1,39 @@
+id: eob-014
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  SILVERBROOK HEALTH ALLIANCE
+  Explanation of Benefits
+
+  Member Name:       Ingrid Vasquez-Lund
+  Member Number:     SHA-77412
+  Payer Name:        Silverbrook Health Alliance
+
+  Claim Detail
+  ------------------------------------------------------------------
+  Date of Service:     07/02/2026
+  Rendering Provider:   Dr. Omar Fitzwilliam, NPI 5678901234
+
+  Services Rendered
+  ------------------------------------------------------------------
+  CPT Code   Description                Billed    Allowed   Adjustment
+  99395      Preventive visit, est.     $225.00   $190.00      $35.00
+  80061      Lipid panel                $130.00   $110.00      $20.00
+  83036      Hemoglobin A1C              $55.00    $48.00       $7.00
+  ------------------------------------------------------------------
+  Total Billed Amount:                  $410.00
+
+  Cost Breakdown
+  ------------------------------------------------------------------
+  Amount Paid by Plan:                  $340.00
+  Patient Responsibility:                $70.00
+expected:
+  patient_name: "Ingrid Vasquez-Lund"
+  date_of_service: "2026-07-02"
+  provider_npi: "5678901234"
+  payer_name: "Silverbrook Health Alliance"
+  member_id: "SHA-77412"
+  cpt_codes: ["99395", "80061", "83036"]
+  billed_amount: 410.00
+  patient_responsibility: 70.00

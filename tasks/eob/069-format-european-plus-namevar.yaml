@@ -1,0 +1,40 @@
+id: eob-069
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |2
+  DUNRAVEN PROVIDENT HEALTH
+  Explanation of Benefits
+
+    Member ......... O'CALLAGHAN-MBEKI, FIONNUALA
+    Card name ...... Fionnuala O'Callaghan-Mbeki
+    Member ID ...... DP-337102
+    Certificate .... DP-337102-A
+    Payer .......... Dunraven Provident Health
+
+  CLAIM DETAIL
+  ==========================================================
+  Date of Service : 27/06/2026        (DD/MM/YYYY)
+  Provider        : Dr. Aloysius Ferreira-Nakashima
+  NPI             : 1801234561
+
+  SERVICES
+  ==========================================================
+    99213-25  Office visit, established        $ 225.00
+    20605-RT  Arthrocentesis, right            $ 170.00
+  ==========================================================
+    TOTAL BILLED                               $ 395.00
+
+  BENEFIT SUMMARY
+  ==========================================================
+    Paid by plan                               $ 316.00
+    Member responsibility                      $  79.00
+expected:
+  patient_name: "O'CALLAGHAN-MBEKI, FIONNUALA"
+  date_of_service: "2026-06-27"
+  provider_npi: "1801234561"
+  payer_name: "Dunraven Provident Health"
+  member_id: "DP-337102"
+  cpt_codes: ["99213", "20605"]
+  billed_amount: 395.00
+  patient_responsibility: 79.00

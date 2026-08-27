@@ -1,0 +1,21 @@
+id: eob-013
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  HARBORVIEW COMMUNITY PLAN | EXPLANATION OF BENEFITS | NOT A BILL
+
+  Member: Desmond Ashcroft | ID: HCP-31007 | Payer: Harborview Community Plan
+  Service Date: 06/25/2026 | Provider: Dr. Priya Raghunathan | NPI: 4567890123
+
+  SERVICES: 99203 New patient office visit $195.00; 87880 Strep A test $45.00
+  TOTAL BILLED: $240.00 | PLAN PAID: $192.00 | PATIENT RESPONSIBILITY: $48.00
+expected:
+  patient_name: "Desmond Ashcroft"
+  date_of_service: "2026-06-25"
+  provider_npi: "4567890123"
+  payer_name: "Harborview Community Plan"
+  member_id: "HCP-31007"
+  cpt_codes: ["99203", "87880"]
+  billed_amount: 240.00
+  patient_responsibility: 48.00

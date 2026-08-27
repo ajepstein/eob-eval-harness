@@ -1,0 +1,63 @@
+You are adjudicating a single disputed field from a structured extraction of a
+health insurance Explanation of Benefits (EOB) document.
+
+Below are two values for one field, together with the document they were
+drawn from. Decide whether they name the same thing.
+
+Do not assume either value is authoritative and do not assume they disagree.
+Reason from the document itself.
+
+Source document:
+---
+{document}
+---
+
+Field under review: {field}
+Reference value:   {expected}
+Extracted value:   {predicted}
+
+Decide "equivalent" when a domain expert reading the source document would
+accept the extracted value as naming the same entity or quantity as the
+reference value. In particular:
+
+- A more specific but consistent value is equivalent. "Northstar Health Plan"
+  for "Northstar Health" is equivalent, because the document supports the
+  longer form and it denotes the same payer.
+- An abbreviation, initial, or common short form of the same name is
+  equivalent. "J. Doe" for "Jane Doe" is equivalent when the document shows
+  the patient is Jane Doe.
+- A different but defensible reading of an ambiguous document is equivalent.
+  If the document genuinely supports both values, that is not an extraction
+  error.
+
+Decide "different" when:
+
+- The extracted value is not supported by the document, however plausible it
+  looks. A well-formatted value invented from nothing is still wrong.
+- The extracted value comes from the wrong part of the document. A real
+  identifier belonging to a different provider, a real amount from a
+  different line, or a real date that is not the date of service are all
+  different, even though each value genuinely appears in the text.
+- The two values denote different entities or different quantities, however
+  similar they look.
+
+When you are genuinely uncertain, answer "different".
+
+That last rule is deliberate and you should follow it literally. Your purpose
+is to rescue clear near-misses, not to adjudicate hard cases. Answering
+"different" when unsure means the automated comparison stands, which is a safe
+and well-understood floor. Answering "equivalent" when unsure silently inflates
+the score being measured.
+
+Do not consider formatting, casing, or whitespace. Those are normalized before
+you see the values, so any difference remaining is a difference of substance.
+
+Return only a single JSON object with exactly these two keys:
+
+{"verdict": "equivalent" | "different", "reason": "<one sentence>"}
+
+No prose, no explanation outside the JSON, no markdown code fences.
+
+Example, for a document naming the payer as "Northstar Health Plan of Ohio":
+
+{"verdict": "equivalent", "reason": "The document names the payer as Northstar Health Plan of Ohio, so the extracted value is the same payer stated more fully."}

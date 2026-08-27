@@ -1,0 +1,39 @@
+id: eob-012
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  KEYSTONE MUTUAL BENEFIT
+  Explanation of Benefits Statement
+
+  Patient:           Yolanda Brightwater
+  Subscriber ID:     KMB-99120
+  Health Plan:       Keystone Mutual Benefit
+
+  Claim Information
+  ----------------------------------------------------------
+  Service Date:        05/19/2026
+  Provider:            Dr. Curtis Nakashima, NPI 3456789012
+
+  Line Items
+  ----------------------------------------------------------
+  CPT     Mod   Description                     Charge
+  99214   25    Office visit, established       $240.00
+  20610   LT    Arthrocentesis, major joint     $175.00
+  73562   LT    X-ray knee, 3 views              $95.00
+  ----------------------------------------------------------
+  Total Charges:                                $510.00
+
+  Payment Summary
+  ----------------------------------------------------------
+  Insurance Paid:                               $410.00
+  You Owe:                                      $100.00
+expected:
+  patient_name: "Yolanda Brightwater"
+  date_of_service: "2026-05-19"
+  provider_npi: "3456789012"
+  payer_name: "Keystone Mutual Benefit"
+  member_id: "KMB-99120"
+  cpt_codes: ["99214", "20610", "73562"]
+  billed_amount: 510.00
+  patient_responsibility: 100.00

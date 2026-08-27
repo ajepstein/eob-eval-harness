@@ -1,0 +1,36 @@
+id: eob-074
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  FAIRHAVEN GENERAL ASSURANCE
+  Explanation of Benefits
+
+    Member ................... Wilhelmina Achterberg-Osei
+    Member ID ................ FG-551209
+    Payer .................... Fairhaven General Assurance
+
+  ADMISSION DATE:            06/02/2026
+  DISCHARGE DATE:            06/07/2026
+  Date of Service (billed):  06/05/2026
+
+
+  Rendering Provider:   Dr. Aurelio Vasquez-Nakamura, NPI 1356789017
+
+  Services
+  ----------------------------------------------------------
+  99232      Subsequent hospital care           $290.00
+  71046      Chest X-ray, 2 views               $160.00
+  ----------------------------------------------------------
+  Total Billed:                                 $450.00
+  Plan Paid:                                    $360.00
+  Patient Responsibility:                        $90.00
+expected:
+  patient_name: "Wilhelmina Achterberg-Osei"
+  date_of_service: "2026-06-05"
+  provider_npi: "1356789017"
+  payer_name: "Fairhaven General Assurance"
+  member_id: "FG-551209"
+  cpt_codes: ["99232", "71046"]
+  billed_amount: 450.00
+  patient_responsibility: 90.00

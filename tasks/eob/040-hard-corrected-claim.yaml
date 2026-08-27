@@ -1,0 +1,49 @@
+id: eob-040
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  PENDLETON SAFEGUARD HEALTH
+  CORRECTED Explanation of Benefits
+  This statement replaces the version issued 08/12/2026.
+
+  Member:            Leopold Vandersteen
+  Member ID:         PSH-771903
+  Payer:             Pendleton Safeguard Health
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     08/04/2026
+  Rendering Provider:   Dr. Wilhelmina Okonjo-Barrett, NPI 1012098789
+
+  ORIGINAL SUBMISSION (superseded — do not use)
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99214      Office visit, established          $250.00
+  71046      Chest X-ray, 2 views               $190.00
+  93000      Electrocardiogram                  $110.00
+  ----------------------------------------------------------
+  Total Billed (original):                      $550.00
+  Patient Responsibility (original):            $110.00
+
+  CORRECTED SUBMISSION (authoritative)
+  ----------------------------------------------------------
+  CPT 93000 was submitted in error and has been removed. The
+  corrected claim reflects only the services actually rendered.
+
+  CPT Code   Description                       Billed
+  99214      Office visit, established          $250.00
+  71046      Chest X-ray, 2 views               $190.00
+  ----------------------------------------------------------
+  Total Billed (corrected):                     $440.00
+  Plan Paid:                                    $352.00
+  Patient Responsibility (corrected):            $88.00
+expected:
+  patient_name: "Leopold Vandersteen"
+  date_of_service: "2026-08-04"
+  provider_npi: "1012098789"
+  payer_name: "Pendleton Safeguard Health"
+  member_id: "PSH-771903"
+  cpt_codes: ["99214", "71046"]
+  billed_amount: 440.00
+  patient_responsibility: 88.00

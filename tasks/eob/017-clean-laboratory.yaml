@@ -1,0 +1,39 @@
+id: eob-017
+category: clean
+difficulty: easy
+edge_case: false
+input: |
+  PRAIRIE STATE HEALTH COOPERATIVE
+  Explanation of Benefits
+
+  Patient:           Terrence Ballard
+  Member ID:         PSH-45590
+  Payer:             Prairie State Health Cooperative
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     10/21/2026
+  Rendering Provider:   Meadowlark Clinical Laboratory, NPI 8901234567
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  80053      Comprehensive metabolic panel       $95.00
+  85025      Complete blood count                $65.00
+  84443      Thyroid stimulating hormone         $80.00
+  ----------------------------------------------------------
+  Total Billed:                                 $240.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $216.00
+  Patient Responsibility:                        $24.00
+expected:
+  patient_name: "Terrence Ballard"
+  date_of_service: "2026-10-21"
+  provider_npi: "8901234567"
+  payer_name: "Prairie State Health Cooperative"
+  member_id: "PSH-45590"
+  cpt_codes: ["80053", "85025", "84443"]
+  billed_amount: 240.00
+  patient_responsibility: 24.00

@@ -1,0 +1,37 @@
+id: eob-064
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  THORNBRIDGE FAMILY PLAN
+  Explanation of Benefits
+
+    Subscriber .......... WEATHERBY, JEDEDIAH P.
+    Patient ............. WEATHERBY, ARABELLA J.  (daughter)
+    Patient short form .. Arabella Weatherby
+    Subscriber ID ....... TF-772208
+    Patient ref ......... TF-772208-04
+    Payer ............... Thornbridge Family Plan
+
+  The services below were rendered to the patient, not the subscriber.
+
+  Date of Service:     07/08/2026
+  Rendering Provider:   Dr. Ignacio Berhanu-Castellano, NPI 1356789016
+
+  Services
+  ----------------------------------------------------------
+  99392-25   Preventive visit, child           $190.00
+  90460      Immunization administration        $45.00
+  ----------------------------------------------------------
+  Total Billed:                                $235.00
+  Plan Paid:                                   $211.50
+  Patient Responsibility:                       $23.50
+expected:
+  patient_name: "WEATHERBY, ARABELLA J."
+  date_of_service: "2026-07-08"
+  provider_npi: "1356789016"
+  payer_name: "Thornbridge Family Plan"
+  member_id: "TF-772208"
+  cpt_codes: ["99392", "90460"]
+  billed_amount: 235.00
+  patient_responsibility: 23.50

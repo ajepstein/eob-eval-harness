@@ -1,0 +1,45 @@
+id: eob-035
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  WESTERLY MUTUAL HEALTH
+  Explanation of Benefits
+  This is not a bill.
+
+  Member:            Ambrose Kettleworth
+  Member ID:         WMH-118820
+  Payer:             Westerly Mutual Health
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     06/03/2026
+  Rendering Provider:   Dr. Theodora Blackwood, NPI 1345098761
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99205      Office visit, new patient, high    $395.00
+  94060      Bronchodilator responsiveness      $180.00
+  ----------------------------------------------------------
+  Total Billed:                                 $575.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Estimated amount you may owe
+    (quoted at check-in, before adjustments):   $310.00
+  Provider discount applied:                    $155.00
+  Plan Paid:                                    $420.00
+  Patient Responsibility:                       $155.00
+
+  The estimate quoted at check-in does not reflect the negotiated
+  rate and has been superseded by the amount shown above.
+expected:
+  patient_name: "Ambrose Kettleworth"
+  date_of_service: "2026-06-03"
+  provider_npi: "1345098761"
+  payer_name: "Westerly Mutual Health"
+  member_id: "WMH-118820"
+  cpt_codes: ["99205", "94060"]
+  billed_amount: 575.00
+  patient_responsibility: 155.00

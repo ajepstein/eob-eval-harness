@@ -1,0 +1,41 @@
+id: eob-052
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  KINGFISHER HEALTH SOCIETY
+  Explanation of Benefits
+
+    Member .............. D'ARCY-BOATENG, PHILOMENA N.
+    Card shows .......... P. D'Arcy-Boateng
+    Membership .......... KH-772041
+    Group/member ........ KH-772041/002
+    Payer ............... Kingfisher Health Society
+    Formal entity ....... Kingfisher Health Society of the Eastern Counties
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     01/16/2026
+  Rendering Provider:   Dr. Sebastián Ferreira-Lindqvist, NPI 1134567893
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                       Billed
+  99213-25   Office visit, established          $205.00
+  80053-90   Comprehensive metabolic panel       $95.00
+  ----------------------------------------------------------
+  Total Billed:                                 $300.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $240.00
+  Patient Responsibility:                        $60.00
+expected:
+  patient_name: "D'ARCY-BOATENG, PHILOMENA N."
+  date_of_service: "2026-01-16"
+  provider_npi: "1134567893"
+  payer_name: "Kingfisher Health Society"
+  member_id: "KH-772041"
+  cpt_codes: ["99213", "80053"]
+  billed_amount: 300.00
+  patient_responsibility: 60.00
