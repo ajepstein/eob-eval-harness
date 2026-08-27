@@ -267,9 +267,21 @@ def main() -> int:
             judge_model_id=next(iter(model_ids), "unknown"),
             judge_prompt_hash=judge_prompt_hash(),
             bias_results={r.name: r.statistic for r in bias_results},
+            labelers=[row["labeler"] for row in labels],
             db_path=args.db,
         )
         console.print(f"\nSaved calibration [bold]{calibration_id[:8]}[/bold]")
+        from harness.calibration import calibration_is_usable
+        from harness.store import find_calibration
+
+        usable, why_not = calibration_is_usable(
+            find_calibration(judge_prompt_hash(), db_path=args.db)
+        )
+        if not usable:
+            console.print(
+                f"  [yellow]This calibration will not be treated as "
+                f"establishing reliability: {why_not}.[/yellow]"
+            )
     return 0
 
 

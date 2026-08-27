@@ -48,6 +48,13 @@ DECISIVE = ("equivalent", "different")
 # depends on it. Consumers treat anything below this as uncalibrated.
 MIN_CALIBRATION_N = 30
 
+# Labellers whose verdicts are not human ground truth. A calibration derived
+# from any of them measures one model agreeing with another, which is exactly
+# the thing this whole layer exists to avoid asserting. Such records may be
+# stored — they are useful for exercising the pipeline — but they can never
+# establish reliability, so every consumer refuses them.
+NON_HUMAN_LABELERS = frozenset({"synthetic", "model", "generated"})
+
 
 def calibration_is_usable(calibration: dict | None) -> tuple[bool, str | None]:
     """Whether a stored calibration may be relied on, and why not if not."""
@@ -60,6 +67,22 @@ def calibration_is_usable(calibration: dict | None) -> tuple[bool, str | None]:
             f"at least {MIN_CALIBRATION_N} are needed before kappa is a "
             f"measurement rather than noise"
         )
+    labelers = calibration.get("labelers_json")
+    if labelers:
+        import json as _json
+
+        try:
+            names = set(_json.loads(labelers))
+        except (TypeError, ValueError):
+            names = set()
+        tainted = sorted(names & NON_HUMAN_LABELERS)
+        if tainted:
+            return False, (
+                f"this calibration was computed from {', '.join(tainted)} labels, "
+                f"not human ones. It measures one model agreeing with another and "
+                f"establishes nothing about judge reliability"
+            )
+
     if calibration.get("kappa") is None:
         return False, (
             "the stored calibration has an undefined kappa (degenerate "

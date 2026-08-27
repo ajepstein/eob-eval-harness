@@ -165,6 +165,7 @@ CREATE TABLE IF NOT EXISTS calibrations (
     human_ceiling_n      INTEGER NOT NULL,
     per_category_json    TEXT    NOT NULL,
     bias_json            TEXT    NOT NULL,
+    labelers_json        TEXT    NOT NULL DEFAULT '[]',
     notes_json           TEXT    NOT NULL,
     created_at           TEXT    NOT NULL
 );
@@ -214,11 +215,25 @@ def _session(db_path: str | Path) -> Iterator[sqlite3.Connection]:
         conn.close()
 
 
+# Columns added after a table first shipped. CREATE TABLE IF NOT EXISTS
+# will not add a column to a table that already exists, so stores written by
+# an earlier version need them applied explicitly.
+_ADDED_COLUMNS = (
+    ("calibrations", "labelers_json", "TEXT NOT NULL DEFAULT '[]'"),
+)
+
+
 def init_db(path: str | Path = DEFAULT_DB_PATH) -> None:
-    """Create the schema. Idempotent — safe to call on every startup."""
+    """Create the schema and apply additive migrations. Idempotent."""
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     with _session(path) as conn:
         conn.executescript(_SCHEMA)
+        for table, column, spec in _ADDED_COLUMNS:
+            existing = {
+                row[1] for row in conn.execute(f"PRAGMA table_info({table})")
+            }
+            if existing and column not in existing:
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {spec}")
 
 
 # --- git provenance ---------------------------------------------------------
@@ -629,6 +644,7 @@ def save_calibration(
     judge_model_id: str,
     judge_prompt_hash: str,
     bias_results: dict | None = None,
+    labelers: list[str] | None = None,
     db_path: str | Path = DEFAULT_DB_PATH,
 ) -> str:
     """Persist a calibration, keyed to the rubric it was measured against."""
@@ -639,8 +655,9 @@ def save_calibration(
             """INSERT INTO calibrations (id, label_set_id, judge_model_id,
                    judge_prompt_hash, n, raw_agreement, kappa, kappa_ci_low,
                    kappa_ci_high, band, human_ceiling_kappa, human_ceiling_n,
-                   per_category_json, bias_json, notes_json, created_at)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                   per_category_json, bias_json, notes_json, created_at,
+                   labelers_json)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             (
                 calibration_id, label_set_id, judge_model_id, judge_prompt_hash,
                 report.n, report.raw_agreement,
@@ -653,6 +670,7 @@ def save_calibration(
                 json.dumps(bias_results or {}, default=str),
                 json.dumps(report.notes),
                 datetime.now(timezone.utc).isoformat(),
+                json.dumps(sorted(set(labelers or []))),
             ),
         )
     return calibration_id

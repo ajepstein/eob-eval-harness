@@ -353,3 +353,80 @@ def test_promoting_twice_does_not_duplicate_the_provenance_comment(db: Path, tmp
                        "--allow-uncalibrated"])
 
     assert config.read_text().count("baseline promoted by") == 1
+
+
+# --- synthetic labels can never establish calibration ------------------------
+
+
+def test_synthetic_labels_do_not_establish_calibration():
+    # The whole point of the guard: a kappa derived from model-generated
+    # labels measures one model agreeing with another.
+    usable, why = calibration_is_usable(
+        {"n": 100, "kappa": 0.8, "labelers_json": '["synthetic"]'}
+    )
+
+    assert not usable
+    assert "synthetic labels" in why
+
+
+def test_a_single_synthetic_labeller_taints_a_mixed_set():
+    # Mixing a few real labels in must not launder the rest.
+    usable, _ = calibration_is_usable(
+        {"n": 100, "kappa": 0.8, "labelers_json": '["self", "synthetic"]'}
+    )
+
+    assert not usable
+
+
+def test_human_labels_still_establish_calibration():
+    usable, why = calibration_is_usable(
+        {"n": 100, "kappa": 0.8, "labelers_json": '["self", "second-rater"]'}
+    )
+
+    assert usable and why is None
+
+
+def test_absent_or_malformed_labeller_record_does_not_crash():
+    for value in (None, "", "not json", "[]"):
+        usable, _ = calibration_is_usable(
+            {"n": 100, "kappa": 0.8, "labelers_json": value}
+        )
+        assert usable is True
+
+
+def test_labellers_round_trip_through_the_store(tmp_path: Path):
+    from harness.calibration import AgreementReport
+    from harness.store import find_calibration
+
+    db = tmp_path / "lab.db"
+    init_db(db)
+    report = AgreementReport(
+        n=50, raw_agreement=0.8, kappa=0.5, kappa_ci=(0.3, 0.7),
+        band="weak", confusion={}, per_category={}, excluded={},
+    )
+    save_calibration(report, "ls", "m", "rubric-x",
+                     labelers=["synthetic", "synthetic", "self"], db_path=db)
+
+    stored = find_calibration("rubric-x", db_path=db)
+
+    assert stored["labelers_json"] == '["self", "synthetic"]'
+    assert not calibration_is_usable(stored)[0]
+
+
+def test_migration_adds_the_labeller_column_to_an_older_store(tmp_path: Path):
+    # A store written before the column existed must gain it rather than
+    # failing, and CREATE TABLE IF NOT EXISTS will not do that on its own.
+    import sqlite3
+
+    db = tmp_path / "old.db"
+    init_db(db)
+    with sqlite3.connect(db) as conn:
+        conn.execute("ALTER TABLE calibrations DROP COLUMN labelers_json")
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(calibrations)")}
+        assert "labelers_json" not in cols
+
+    init_db(db)
+
+    with sqlite3.connect(db) as conn:
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(calibrations)")}
+    assert "labelers_json" in cols
