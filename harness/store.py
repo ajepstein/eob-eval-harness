@@ -108,6 +108,50 @@ CREATE TABLE IF NOT EXISTS judge_calls (
     created_at         TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS label_sets (
+    id                 TEXT PRIMARY KEY,
+    created_at         TEXT    NOT NULL,
+    seed               INTEGER NOT NULL,
+    requested_n        INTEGER NOT NULL,
+    double_label_frac  REAL    NOT NULL,
+    run_ids_json       TEXT    NOT NULL
+);
+
+-- NOTE: this table deliberately has no judge-verdict column. The verdict is
+-- read while *sampling* (to stratify) and then dropped. The labelling UI
+-- reads only from here, so blinding is a property of the schema rather than
+-- of anyone remembering to hide a field.
+CREATE TABLE IF NOT EXISTS label_items (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    label_set_id   TEXT    NOT NULL REFERENCES label_sets(id) ON DELETE CASCADE,
+    position       INTEGER NOT NULL,
+    item_key       TEXT    NOT NULL,
+    run_id         TEXT    NOT NULL,
+    task_id        TEXT    NOT NULL,
+    field          TEXT    NOT NULL,
+    expected       TEXT,
+    predicted      TEXT,
+    pass_number    INTEGER NOT NULL,
+    UNIQUE(label_set_id, position)
+);
+
+CREATE TABLE IF NOT EXISTS human_labels (
+    id             INTEGER PRIMARY KEY AUTOINCREMENT,
+    label_set_id   TEXT    NOT NULL REFERENCES label_sets(id) ON DELETE CASCADE,
+    item_id        INTEGER NOT NULL REFERENCES label_items(id) ON DELETE CASCADE,
+    run_id         TEXT    NOT NULL,
+    task_id        TEXT    NOT NULL,
+    field          TEXT    NOT NULL,
+    verdict        TEXT    NOT NULL,
+    seconds        REAL    NOT NULL,
+    labeled_at     TEXT    NOT NULL,
+    pass_number    INTEGER NOT NULL,
+    labeler        TEXT    NOT NULL,
+    UNIQUE(label_set_id, item_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_items_set    ON label_items(label_set_id, position);
+CREATE INDEX IF NOT EXISTS idx_labels_set   ON human_labels(label_set_id);
 CREATE INDEX IF NOT EXISTS idx_judge_run    ON judge_calls(run_id);
 CREATE INDEX IF NOT EXISTS idx_results_run   ON results(run_id);
 CREATE INDEX IF NOT EXISTS idx_scores_result ON scores(result_id);
