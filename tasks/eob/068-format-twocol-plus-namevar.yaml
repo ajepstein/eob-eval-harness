@@ -1,0 +1,36 @@
+id: eob-068
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |2
+  CARRICKMORE UNION                    EXPLANATION OF BENEFITS
+
+  MEMBER INFORMATION                   CLAIM INFORMATION
+  -----------------------------------  -----------------------------
+  Name:     FONTAINE-ADEBAYO, MARGUERITE V.
+  Short:    Marguerite Fontaine-Adebayo
+  ID:       CU 5520 8814                Service Date: 05/21/2026
+  Compact:  CU55208814                  Provider: Dr. Casimir Oyelowo
+  Indiv:    CU 5520 8814-03              NPI: 1790123450
+  Payer:    Carrickmore Union
+  Legal:    Carrickmore Union Friendly Society
+
+  PROCEDURE DETAIL
+  --------------------------------------------------------
+    99205-25  Office visit, new patient, high     $390.00
+    93306-26  Echocardiogram, professional        $210.00
+  --------------------------------------------------------
+                               TOTAL BILLED       $600.00
+
+  FINANCIAL SUMMARY
+  --------------------------------------------------------
+    Plan payment .... $480.00     Your share .... $120.00
+expected:
+  patient_name: "FONTAINE-ADEBAYO, MARGUERITE V."
+  date_of_service: "2026-05-21"
+  provider_npi: "1790123450"
+  payer_name: "Carrickmore Union"
+  member_id: "CU 5520 8814"
+  cpt_codes: ["99205", "93306"]
+  billed_amount: 600.00
+  patient_responsibility: 120.00

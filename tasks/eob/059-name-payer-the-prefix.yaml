@@ -1,0 +1,40 @@
+id: eob-059
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  THE CALDERWOOD SOCIETY
+  Explanation of Benefits
+
+    Insured ............. OYELARAN, BENEDICTA A.
+    Preferred ........... Benedicta Oyelaran
+    Policy .............. CW 3390 1128
+    Without spaces ...... CW33901128
+    Payer ............... The Calderwood Society
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     08/18/2026
+  Rendering Provider:   Dr. Ptolemy Vasquez-Lund, NPI 1801234560
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                      Billed
+  99203-25   Office visit, new patient        $210.00
+  87880      Strep A test                     $45.00
+  ----------------------------------------------------------
+  Total Billed:                                $255.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                   $204.00
+  Patient Responsibility:                      $51.00
+expected:
+  patient_name: "OYELARAN, BENEDICTA A."
+  date_of_service: "2026-08-18"
+  provider_npi: "1801234560"
+  payer_name: "The Calderwood Society"
+  member_id: "CW 3390 1128"
+  cpt_codes: ["99203", "87880"]
+  billed_amount: 255.00
+  patient_responsibility: 51.00

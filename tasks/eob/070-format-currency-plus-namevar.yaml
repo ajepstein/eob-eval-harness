@@ -1,0 +1,38 @@
+id: eob-070
+category: format_variance
+difficulty: medium
+edge_case: false
+input: |2
+  FENWICK CASTLE ASSURANCE
+  EXPLANATION OF BENEFITS
+
+    Patient .................. WYNDHAM-BOATENG, ALOYSIA T.
+    Known as ................. Aloysia Wyndham-Boateng
+    Member Identifier ........ FC 9902 3317
+    Unspaced ................. FC99023317
+    Insurance Carrier ........ Fenwick Castle Assurance
+    Registered entity ........ Fenwick Castle Assurance Group PLC
+    Date of Service .......... 07/29/2026
+    Servicing Provider ....... Dr. Emmanuelle Sørensen-Adeyemi
+    Provider NPI ............. 1912345672
+
+    PROCEDURES BILLED
+    ......................................................
+    (1) 99223-25 Initial hospital care, high     USD 1,180.00
+    (2) 71260-TC CT chest, technical component   USD   740.00
+    ......................................................
+    AMOUNT BILLED IN TOTAL ..................... USD 1,920.00
+
+    BENEFIT DETERMINATION
+    ......................................................
+    Carrier payment ............................ USD 1,536.00
+    Amount owed by patient ..................... USD   384.00
+expected:
+  patient_name: "WYNDHAM-BOATENG, ALOYSIA T."
+  date_of_service: "2026-07-29"
+  provider_npi: "1912345672"
+  payer_name: "Fenwick Castle Assurance"
+  member_id: "FC 9902 3317"
+  cpt_codes: ["99223", "71260"]
+  billed_amount: 1920.00
+  patient_responsibility: 384.00

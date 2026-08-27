@@ -1,0 +1,39 @@
+id: eob-053
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  ASHFORD COVENANT HEALTH
+  Explanation of Benefits
+
+    Member .............. REV. DR. OSWALD PEMBERTON-HALE
+    Listed on card as ... Oswald Pemberton-Hale
+    Member ID ........... AC-330871
+    Payer ............... Ashford Covenant Health
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     02/24/2026
+  Rendering Provider:   Dr. Ingeborg Lindqvist, NPI 1245678904
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                      Billed
+  99213-25   Office visit, established        $215.00
+  85025      Complete blood count             $65.00
+  ----------------------------------------------------------
+  Total Billed:                                $280.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                   $224.00
+  Patient Responsibility:                      $56.00
+expected:
+  patient_name: "REV. DR. OSWALD PEMBERTON-HALE"
+  date_of_service: "2026-02-24"
+  provider_npi: "1245678904"
+  payer_name: "Ashford Covenant Health"
+  member_id: "AC-330871"
+  cpt_codes: ["99213", "85025"]
+  billed_amount: 280.00
+  patient_responsibility: 56.00

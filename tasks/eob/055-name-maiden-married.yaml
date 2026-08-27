@@ -1,0 +1,39 @@
+id: eob-055
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  LOCHRIDGE ASSURANCE
+  Explanation of Benefits
+
+    Enrolled as ......... CARRUTHERS (NEE ABIODUN), TEMPERANCE
+    Currently known as .. Temperance Carruthers
+    Member ID ........... LA-447209
+    Payer ............... Lochridge Assurance
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     04/07/2026
+  Rendering Provider:   Dr. Anselm Kowalczyk, NPI 1467890126
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                      Billed
+  99204-25   Office visit, new patient        $310.00
+  81002      Urinalysis                       $30.00
+  ----------------------------------------------------------
+  Total Billed:                                $340.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                   $272.00
+  Patient Responsibility:                      $68.00
+expected:
+  patient_name: "CARRUTHERS (NEE ABIODUN), TEMPERANCE"
+  date_of_service: "2026-04-07"
+  provider_npi: "1467890126"
+  payer_name: "Lochridge Assurance"
+  member_id: "LA-447209"
+  cpt_codes: ["99204", "81002"]
+  billed_amount: 340.00
+  patient_responsibility: 68.00

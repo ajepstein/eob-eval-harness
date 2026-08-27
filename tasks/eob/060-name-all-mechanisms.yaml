@@ -1,0 +1,39 @@
+id: eob-060
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  REDMAYNE MUTUAL  /  Redmayne Mutual Assurance Society Limited
+  Explanation of Benefits
+
+    Enrolled ............ VILLENEUVE-ABARA, MAXIMILIAN P.
+    Card name ........... Max Villeneuve-Abara
+    Contract ............ RM-550128
+    Payer ............... Redmayne Mutual
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     09/26/2026
+  Rendering Provider:   Dr. Cressida Nakamura-Oduya, NPI 1912345671
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                      Billed
+  99214-25   Office visit, established        $260.00
+  93010-26   ECG interpretation               $65.00
+  ----------------------------------------------------------
+  Total Billed:                                $325.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                   $260.00
+  Patient Responsibility:                      $65.00
+expected:
+  patient_name: "VILLENEUVE-ABARA, MAXIMILIAN P."
+  date_of_service: "2026-09-26"
+  provider_npi: "1912345671"
+  payer_name: "Redmayne Mutual"
+  member_id: "RM-550128"
+  cpt_codes: ["99214", "93010"]
+  billed_amount: 325.00
+  patient_responsibility: 65.00

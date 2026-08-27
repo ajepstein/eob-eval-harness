@@ -1,0 +1,45 @@
+id: eob-062
+category: hard
+difficulty: hard
+edge_case: true
+input: |2
+  HALLOWFIELD CARE
+  CORRECTED Explanation of Benefits
+
+    Insured ............. BRANNIGAN-OSEI, PERPETUA L.
+    Short form .......... Perpetua Brannigan-Osei
+    Contract ............ HF-660227
+    Certificate ......... HF-660227-B
+    Payer ............... Hallowfield Care
+    Underwritten by ..... Hallowfield Care Assurance Limited
+
+  Date of Service:     04/23/2026
+  Rendering Provider:   Dr. Evander Kristiansen, NPI 1134567894
+
+  ORIGINAL SUBMISSION (superseded)
+  ----------------------------------------------------------
+  99214-25   Office visit, established         $250.00
+  71046-TC   Chest X-ray, technical            $150.00
+  93000-26   ECG, professional                  $80.00
+  ----------------------------------------------------------
+  Total Billed (original):                     $480.00
+
+  CORRECTED SUBMISSION (authoritative)
+  ----------------------------------------------------------
+  93000 was submitted in error and has been removed.
+
+  99214-25   Office visit, established         $250.00
+  71046-TC   Chest X-ray, technical            $150.00
+  ----------------------------------------------------------
+  Total Billed (corrected):                    $400.00
+  Plan Paid:                                   $320.00
+  Patient Responsibility (corrected):           $80.00
+expected:
+  patient_name: "BRANNIGAN-OSEI, PERPETUA L."
+  date_of_service: "2026-04-23"
+  provider_npi: "1134567894"
+  payer_name: "Hallowfield Care"
+  member_id: "HF-660227"
+  cpt_codes: ["99214", "71046"]
+  billed_amount: 400.00
+  patient_responsibility: 80.00
