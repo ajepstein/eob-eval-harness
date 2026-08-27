@@ -330,3 +330,102 @@ def test_human_drift_does_not_fire_on_a_steady_session():
     result = human_drift(labels)
 
     assert not result.fired
+
+
+# --- minimum-time filter -----------------------------------------------------
+
+
+def test_min_seconds_excludes_reflexive_labels():
+    # A label placed in a fraction of a second is not a fast judgement, it
+    # is the absence of one.
+    labels = _labels([
+        ("t1", "f", EQ, 4.0), ("t2", "f", DIFF, 3.0),
+        ("t3", "f", EQ, 0.2), ("t4", "f", EQ, 0.3),
+    ])
+    verdicts = {("r", f"t{i}", "f"): EQ for i in range(1, 5)}
+
+    report = agreement(labels, verdicts, bootstrap_iterations=100, min_seconds=1.0)
+
+    assert report.n == 2
+    assert report.excluded["too_fast"] == 2
+
+
+def test_min_seconds_zero_keeps_everything():
+    labels = _labels([("t1", "f", EQ, 0.1), ("t2", "f", DIFF, 0.1)])
+    verdicts = {("r", "t1", "f"): EQ, ("r", "t2", "f"): DIFF}
+
+    report = agreement(labels, verdicts, bootstrap_iterations=100, min_seconds=0.0)
+
+    assert report.n == 2
+    assert "too_fast" not in report.excluded
+
+
+def test_min_seconds_counts_exclusions_separately_from_unsure():
+    labels = _labels([
+        ("t1", "f", EQ, 5.0), ("t2", "f", "unsure", 5.0), ("t3", "f", EQ, 0.1),
+    ])
+    verdicts = {("r", f"t{i}", "f"): EQ for i in range(1, 4)}
+
+    report = agreement(labels, verdicts, bootstrap_iterations=100, min_seconds=1.0)
+
+    assert report.excluded == {"unsure": 1, "too_fast": 1}
+
+
+def test_min_seconds_treats_a_missing_time_as_zero():
+    labels = [{"run_id": "r", "task_id": "t1", "field": "f",
+               "verdict": EQ, "pass_number": 1}]
+
+    report = agreement(labels, {("r", "t1", "f"): EQ},
+                       bootstrap_iterations=100, min_seconds=1.0)
+
+    assert report.n == 0
+    assert report.excluded["too_fast"] == 1
+
+
+# --- timing collapse ---------------------------------------------------------
+
+
+def test_drift_fires_when_time_per_label_collapses():
+    # The pattern the original drift test missed: verdicts stay stable while
+    # the time spent on each falls away.
+    labels = (
+        [{"verdict": EQ if i % 3 else DIFF, "seconds": 4.0} for i in range(20)]
+        + [{"verdict": EQ if i % 3 else DIFF, "seconds": 0.3} for i in range(20)]
+    )
+    result = human_drift(labels)
+
+    assert result.fired
+    assert result.detail["time_collapsed"] is True
+    assert result.detail["verdicts_drifted"] is False
+    assert "too quickly to involve reading" in result.interpretation
+
+
+def test_drift_does_not_fire_on_a_steady_pace():
+    labels = [
+        {"verdict": EQ if i % 2 else DIFF, "seconds": 4.0} for i in range(30)
+    ]
+    result = human_drift(labels)
+
+    assert not result.fired
+    assert result.detail["time_collapsed"] is False
+
+
+def test_drift_tolerates_a_modest_speedup():
+    # Getting somewhat faster with practice is normal and must not fire.
+    labels = (
+        [{"verdict": EQ if i % 2 else DIFF, "seconds": 4.0} for i in range(20)]
+        + [{"verdict": EQ if i % 2 else DIFF, "seconds": 3.0} for i in range(20)]
+    )
+
+    assert not human_drift(labels).fired
+
+
+def test_drift_reports_both_half_medians():
+    labels = (
+        [{"verdict": EQ, "seconds": 6.0} for _ in range(10)]
+        + [{"verdict": DIFF, "seconds": 1.0} for _ in range(10)]
+    )
+    detail = human_drift(labels).detail
+
+    assert detail["median_seconds_first_half"] == pytest.approx(6.0)
+    assert detail["median_seconds_second_half"] == pytest.approx(1.0)

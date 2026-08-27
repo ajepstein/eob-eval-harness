@@ -199,6 +199,13 @@ def main() -> int:
     parser.add_argument("--judge", default="anthropic", help="Adapter for bias tests")
     parser.add_argument("--sample", type=int, default=25,
                         help="Items to use for the position-bias test")
+    parser.add_argument(
+        "--min-seconds",
+        type=float,
+        default=0.0,
+        help="Drop labels decided faster than this (a sub-second label cannot "
+             "have involved reading the document)",
+    )
     parser.add_argument("--save", action="store_true", help="Persist the calibration")
     parser.add_argument("--db", default=DEFAULT_DB_PATH)
     args = parser.parse_args()
@@ -216,12 +223,15 @@ def main() -> int:
     report = agreement(
         labels, verdicts, categories=categories,
         double_labelled=_double_labelled(label_set, labels),
+        min_seconds=args.min_seconds,
     )
 
     console.print(
         f"[bold]Label set[/bold] {label_set.id[:8]}   "
         f"{len(labels)}/{len(label_set.items)} labelled   "
         f"rubric {judge_prompt_hash()}"
+        + (f"   [yellow]min-seconds {args.min_seconds}[/yellow]"
+           if args.min_seconds else "")
     )
     render(report, console)
 

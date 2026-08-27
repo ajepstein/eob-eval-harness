@@ -26,6 +26,9 @@ from harness.prompts import load_prompt
 POSITION_FLIP_THRESHOLD = 0.05
 # Point-biserial correlation past this is a material length effect.
 LENGTH_CORRELATION_THRESHOLD = 0.30
+# Median time-per-label in the back half of a session falling below this
+# fraction of the front half indicates the labeller stopped deliberating.
+TIME_COLLAPSE_RATIO = 0.5
 
 
 @dataclass(frozen=True)
@@ -278,7 +281,22 @@ def human_drift(labels: list[dict]) -> BiasResult:
 
     r_position = _pearson(positions, verdicts)
     r_time = _pearson(positions, seconds)
-    fired = r_position == r_position and abs(r_position) > LENGTH_CORRELATION_THRESHOLD
+
+    # Verdict drift alone misses the most damaging pattern: a session whose
+    # verdicts stay superficially stable while the time spent on each
+    # collapses. A label placed in a fraction of a second is not a faster
+    # judgement, it is the absence of one, so a large drop in median time
+    # across the session fires this test in its own right.
+    half = max(1, len(seconds) // 2)
+    first_median = statistics.median(seconds[:half]) if seconds[:half] else 0.0
+    second_median = statistics.median(seconds[half:]) if seconds[half:] else 0.0
+    collapsed = (
+        first_median > 0
+        and second_median < first_median * TIME_COLLAPSE_RATIO
+    )
+
+    drifted = r_position == r_position and abs(r_position) > LENGTH_CORRELATION_THRESHOLD
+    fired = drifted or collapsed
 
     return BiasResult(
         name="human_drift",
@@ -290,15 +308,27 @@ def human_drift(labels: list[dict]) -> BiasResult:
             "verdict_vs_position_r": r_position,
             "seconds_vs_position_r": r_time,
             "median_seconds": statistics.median(seconds) if seconds else None,
+            "median_seconds_first_half": first_median,
+            "median_seconds_second_half": second_median,
+            "time_collapsed": collapsed,
+            "verdicts_drifted": drifted,
         },
         interpretation=(
             f"Verdict against queue position r = {r_position:.2f}; time per "
             f"label against position r = {r_time:.2f}. "
             + (
-                "Verdicts drifted over the session, so the human ceiling rests "
-                "on inconsistent labels and should be reported with that caveat."
-                if fired
-                else "No material drift over the session."
+                f"Median time per label fell from {first_median:.1f}s to "
+                f"{second_median:.1f}s across the session — the later labels "
+                f"were placed too quickly to involve reading the document, and "
+                f"the human ceiling rests on them. "
+                if collapsed
+                else ""
+            )
+            + (
+                "Verdicts drifted with position, so the ceiling rests on "
+                "inconsistent labels and should be reported with that caveat."
+                if drifted
+                else ("" if collapsed else "No material drift over the session.")
             )
         ),
     )

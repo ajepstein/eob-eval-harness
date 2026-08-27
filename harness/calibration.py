@@ -245,12 +245,20 @@ def agreement(
     seed: int = 0,
     bootstrap_iterations: int = 10_000,
     min_category_n: int = 10,
+    min_seconds: float = 0.0,
 ) -> AgreementReport:
     """Compare human labels against judge verdicts.
 
     `labels`      rows from human_labels
     `verdicts`    (run_id, task_id, field) -> judge verdict
     `categories`  (run_id, task_id) -> category, for the per-category split
+    `min_seconds` drop labels decided faster than this
+
+    `min_seconds` exists because a label placed in a fraction of a second
+    cannot have involved reading the document. Such labels are not noise
+    around a real judgement — they are the absence of one, and including
+    them drags kappa toward whatever key was being held down. They are
+    excluded and counted rather than silently averaged in.
     """
     categories = categories or {}
     pairs: list[tuple[str, str]] = []
@@ -265,6 +273,9 @@ def agreement(
         key = (row["run_id"], row["task_id"], row["field"])
         if row["verdict"] not in DECISIVE:
             excluded[row["verdict"]] += 1
+            continue
+        if min_seconds and float(row.get("seconds") or 0.0) < min_seconds:
+            excluded["too_fast"] += 1
             continue
         if row.get("pass_number", 1) != 1 or key in seen:
             continue
