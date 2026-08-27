@@ -1,0 +1,41 @@
+id: eob-050
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  THE WILLOWBROOK PLAN
+  (a division of Willowbrook Health Holdings PLC)
+  Explanation of Benefits
+
+    Patient ............. FAIRWEATHER-OKONKWO, AUGUSTINE T.
+    Also shown as ....... Augustine Fairweather-Okonkwo
+    Member reference .... WB 5520 1147
+    Compact form ........ WB55201147
+    Payer ............... The Willowbrook Plan
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     11/25/2026
+  Rendering Provider:   Dr. Henrietta Villanueva-Sørensen, NPI 1912345670
+
+  Services
+  ----------------------------------------------------------
+  Code       Description                       Billed
+  99215-25   Office visit, established, high    $300.00
+  93010-26   ECG interpretation, professional    $60.00
+  ----------------------------------------------------------
+  Total Billed:                                 $360.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $288.00
+  Patient Responsibility:                        $72.00
+expected:
+  patient_name: "FAIRWEATHER-OKONKWO, AUGUSTINE T."
+  date_of_service: "2026-11-25"
+  provider_npi: "1912345670"
+  payer_name: "The Willowbrook Plan"
+  member_id: "WB 5520 1147"
+  cpt_codes: ["99215", "93010"]
+  billed_amount: 360.00
+  patient_responsibility: 72.00

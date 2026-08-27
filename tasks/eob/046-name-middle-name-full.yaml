@@ -1,0 +1,39 @@
+id: eob-046
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  QUILLFEATHER REGIONAL PLAN
+  Explanation of Benefits
+
+  Patient (as enrolled):  Bartholomew Reginald Ashcombe-Pryor
+  Known also as:          Bart Ashcombe-Pryor
+  Member ID:              QRP-118840
+  Payer:                  Quillfeather Regional Plan
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     07/31/2026
+  Rendering Provider:   Dr. Solveig Haraldsdottir, NPI 1578901236
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99215      Office visit, established, high    $295.00
+  94010      Spirometry                          $90.00
+  ----------------------------------------------------------
+  Total Billed:                                 $385.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $308.00
+  Patient Responsibility:                        $77.00
+expected:
+  patient_name: "Bartholomew Reginald Ashcombe-Pryor"
+  date_of_service: "2026-07-31"
+  provider_npi: "1578901236"
+  payer_name: "Quillfeather Regional Plan"
+  member_id: "QRP-118840"
+  cpt_codes: ["99215", "94010"]
+  billed_amount: 385.00
+  patient_responsibility: 77.00

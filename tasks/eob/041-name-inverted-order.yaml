@@ -1,0 +1,39 @@
+id: eob-041
+category: name_variance
+difficulty: hard
+edge_case: true
+input: |2
+  CASCADE SUMMIT HEALTH
+  Explanation of Benefits
+  This is not a bill.
+
+  SUBSCRIBER:        WHITFIELD, MARGUERITE A.
+  MEMBER ID:         CSH-448201
+  PAYER:             Cascade Summit Health
+
+  Claim Detail
+  ----------------------------------------------------------
+  Date of Service:     02/11/2026
+  Rendering Provider:   Dr. Anton Koslowski, NPI 1023456781
+
+  Services
+  ----------------------------------------------------------
+  CPT Code   Description                       Billed
+  99213      Office visit, established          $210.00
+  85025      Complete blood count                $70.00
+  ----------------------------------------------------------
+  Total Billed:                                 $280.00
+
+  Summary of Costs
+  ----------------------------------------------------------
+  Plan Paid:                                    $224.00
+  Patient Responsibility:                        $56.00
+expected:
+  patient_name: "WHITFIELD, MARGUERITE A."
+  date_of_service: "2026-02-11"
+  provider_npi: "1023456781"
+  payer_name: "Cascade Summit Health"
+  member_id: "CSH-448201"
+  cpt_codes: ["99213", "85025"]
+  billed_amount: 280.00
+  patient_responsibility: 56.00
