@@ -318,3 +318,145 @@ def test_building_with_no_judged_fields_fails_clearly(tmp_path: Path):
 
     with pytest.raises(ValueError, match="Run with --judge first"):
         build_label_set(["r"], n=10, db_path=path)
+
+
+# --- clearing machine-generated labels ---------------------------------------
+
+
+def test_clear_synthetic_removes_only_machine_labels(seeded_db: Path):
+    # Human labels are real work; a synthetic cleanup must never destroy them.
+    from harness.labeling import clear_labels
+
+    label_set = build_label_set(["run1"], n=10, seed=0, db_path=seeded_db)
+    for i, item in enumerate(label_set.items):
+        save_label(
+            label_set.id, item, "equivalent", 1.0,
+            labeler="synthetic" if i % 2 else "self", db_path=seeded_db,
+        )
+    before = len(load_labels(label_set.id, seeded_db))
+
+    removed, kept = clear_labels(label_set.id, db_path=seeded_db)
+
+    remaining = load_labels(label_set.id, seeded_db)
+    assert removed + kept == before
+    assert len(remaining) == kept
+    assert {row["labeler"] for row in remaining} == {"self"}
+
+
+def test_clear_synthetic_is_a_no_op_when_all_labels_are_human(seeded_db: Path):
+    from harness.labeling import clear_labels
+
+    label_set = build_label_set(["run1"], n=6, seed=0, db_path=seeded_db)
+    for item in label_set.items:
+        save_label(label_set.id, item, "different", 1.0,
+                   labeler="self", db_path=seeded_db)
+
+    removed, kept = clear_labels(label_set.id, db_path=seeded_db)
+
+    assert removed == 0
+    assert kept == len(label_set.items)
+
+
+def test_clear_synthetic_drops_calibrations_built_from_those_labels(seeded_db: Path):
+    # A calibration whose inputs no longer exist is confusing to leave behind.
+    from harness.calibration import AgreementReport
+    from harness.labeling import clear_labels
+    from harness.store import find_calibration, save_calibration
+
+    label_set = build_label_set(["run1"], n=6, seed=0, db_path=seeded_db)
+    save_label(label_set.id, label_set.items[0], "equivalent", 1.0,
+               labeler="synthetic", db_path=seeded_db)
+    save_calibration(
+        AgreementReport(n=6, raw_agreement=0.8, kappa=0.4, kappa_ci=(0.1, 0.7),
+                        band="weak", confusion={}, per_category={}, excluded={}),
+        label_set.id, "m", "rubric-z", labelers=["synthetic"], db_path=seeded_db,
+    )
+    assert find_calibration("rubric-z", db_path=seeded_db) is not None
+
+    clear_labels(label_set.id, db_path=seeded_db)
+
+    assert find_calibration("rubric-z", db_path=seeded_db) is None
+
+
+def test_clear_synthetic_keeps_calibrations_built_from_human_labels(seeded_db: Path):
+    from harness.calibration import AgreementReport
+    from harness.labeling import clear_labels
+    from harness.store import find_calibration, save_calibration
+
+    label_set = build_label_set(["run1"], n=6, seed=0, db_path=seeded_db)
+    save_calibration(
+        AgreementReport(n=6, raw_agreement=0.9, kappa=0.6, kappa_ci=(0.3, 0.8),
+                        band="usable with caveats", confusion={},
+                        per_category={}, excluded={}),
+        label_set.id, "m", "rubric-h", labelers=["self"], db_path=seeded_db,
+    )
+
+    clear_labels(label_set.id, db_path=seeded_db)
+
+    assert find_calibration("rubric-h", db_path=seeded_db) is not None
+
+
+def test_clear_labels_resolves_a_short_id(seeded_db: Path):
+    from harness.labeling import clear_labels
+
+    label_set = build_label_set(["run1"], n=4, seed=0, db_path=seeded_db)
+    save_label(label_set.id, label_set.items[0], "equivalent", 1.0,
+               labeler="synthetic", db_path=seeded_db)
+
+    removed, _ = clear_labels(label_set.id[:8], db_path=seeded_db)
+
+    assert removed == 1
+
+
+def test_clear_labels_on_an_unknown_set_raises(seeded_db: Path):
+    from harness.labeling import clear_labels
+
+    with pytest.raises(LookupError):
+        clear_labels("no-such-set", db_path=seeded_db)
+
+
+def test_sampling_terminates_when_n_is_smaller_than_the_stratum_count(seeded_db: Path):
+    # Six strata and n=4: one-per-stratum is impossible, and the drift
+    # correction used to spin forever trying to reach n.
+    label_set = build_label_set(["run1"], n=4, seed=0,
+                                double_label_frac=0.0, db_path=seeded_db)
+
+    assert len(label_set.items) == 4
+
+
+def test_sampling_of_a_single_item_terminates(seeded_db: Path):
+    label_set = build_label_set(["run1"], n=1, seed=0,
+                                double_label_frac=0.0, db_path=seeded_db)
+
+    assert len(label_set.items) == 1
+
+
+def test_small_samples_keep_the_largest_strata(seeded_db: Path):
+    # When strata must be dropped, the biggest should survive.
+    label_set = build_label_set(["run1"], n=3, seed=0,
+                                double_label_frac=0.0, db_path=seeded_db)
+
+    assert len(label_set.items) == 3
+
+
+def test_every_accessor_resolves_a_short_label_set_id(seeded_db: Path):
+    # Accessors that matched exactly while others resolved prefixes made a
+    # short id silently report zero labels — indistinguishable from having
+    # labelled nothing.
+    from harness.labeling import labelled_item_ids
+
+    label_set = build_label_set(["run1"], n=6, seed=0, db_path=seeded_db)
+    save_label(label_set.id, label_set.items[0], "equivalent", 1.0, db_path=seeded_db)
+    short = label_set.id[:8]
+
+    assert load_label_set(short, seeded_db).id == label_set.id
+    assert len(load_labels(short, seeded_db)) == 1
+    assert len(labelled_item_ids(short, seeded_db)) == 1
+
+
+def test_accessors_raise_on_an_unknown_label_set(seeded_db: Path):
+    from harness.labeling import labelled_item_ids
+
+    for fn in (load_labels, labelled_item_ids, load_label_set):
+        with pytest.raises(LookupError):
+            fn("no-such-set", seeded_db)

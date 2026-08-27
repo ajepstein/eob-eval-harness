@@ -29,6 +29,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
+from harness.calibration import NON_HUMAN_LABELERS
 from harness.store import DEFAULT_DB_PATH, _resolve_run_id, _session, init_db
 
 # Minimum queue distance between the two passes of a double-labelled item.
@@ -104,22 +105,43 @@ def _stratified_sample(rows: list[dict], n: int, rng: random.Random) -> list[dic
     for key, bucket in strata.items():
         allocation[key] = min(len(bucket), max(1, round(n * len(bucket) / total)))
 
-    # Proportional rounding rarely lands exactly on n; correct the drift
-    # against the largest (or smallest) strata rather than silently
-    # returning the wrong sample size.
+    # Proportional rounding rarely lands exactly on n, so correct the drift
+    # rather than silently returning the wrong sample size.
+    #
+    # Both loops check that they made progress. Without that, a request for
+    # fewer items than there are strata spins forever: every stratum sits at
+    # its floor of one, the total stays above n, and nothing is decrementable.
     order = sorted(strata, key=lambda k: -len(strata[k]))
+
     while sum(allocation.values()) > n:
+        reduced = False
         for key in order:
             if sum(allocation.values()) <= n:
                 break
             if allocation[key] > 1:
                 allocation[key] -= 1
+                reduced = True
+        if not reduced:
+            # More strata than requested items. One per stratum is no longer
+            # possible, so drop whole strata smallest-first, keeping the
+            # largest represented.
+            for key in sorted(order, key=lambda k: len(strata[k])):
+                if sum(allocation.values()) <= n:
+                    break
+                allocation.pop(key, None)
+            break
+
     while sum(allocation.values()) < n:
+        grew = False
         for key in order:
             if sum(allocation.values()) >= n:
                 break
             if allocation[key] < len(strata[key]):
                 allocation[key] += 1
+                grew = True
+        if not grew:
+            # Every stratum is exhausted; n exceeds what the population holds.
+            break
 
     picked: list[dict] = []
     for key, count in allocation.items():
@@ -206,6 +228,24 @@ def build_label_set(
     return load_label_set(set_id, db_path)
 
 
+def _resolve_set_id(conn, set_id: str) -> str:
+    """Accept a full label-set id or an unambiguous prefix.
+
+    Every public function that takes a set id goes through this. Without it
+    the accessors disagree: some resolve prefixes and others match exactly,
+    so a short id silently returns no labels rather than raising — which
+    reads as "nothing has been labelled" and is the worst possible way to be
+    wrong about that.
+    """
+    row = conn.execute(
+        "SELECT id FROM label_sets WHERE id = ? OR id LIKE ? || '%'",
+        (set_id, set_id),
+    ).fetchone()
+    if row is None:
+        raise LookupError(f"No label set matching {set_id!r}")
+    return row["id"]
+
+
 def load_label_set(set_id: str, db_path: str | Path = DEFAULT_DB_PATH) -> LabelSet:
     with _session(db_path) as conn:
         row = conn.execute(
@@ -254,22 +294,24 @@ def save_label(
 
 def labelled_item_ids(label_set_id: str, db_path: str | Path = DEFAULT_DB_PATH) -> set[int]:
     with _session(db_path) as conn:
+        full_id = _resolve_set_id(conn, label_set_id)
         return {
             r["item_id"]
             for r in conn.execute(
                 "SELECT item_id FROM human_labels WHERE label_set_id = ?",
-                (label_set_id,),
+                (full_id,),
             ).fetchall()
         }
 
 
 def load_labels(label_set_id: str, db_path: str | Path = DEFAULT_DB_PATH) -> list[dict]:
     with _session(db_path) as conn:
+        full_id = _resolve_set_id(conn, label_set_id)
         return [
             dict(r)
             for r in conn.execute(
                 "SELECT * FROM human_labels WHERE label_set_id = ? ORDER BY id",
-                (label_set_id,),
+                (full_id,),
             ).fetchall()
         ]
 
@@ -284,3 +326,61 @@ def list_label_sets(db_path: str | Path = DEFAULT_DB_PATH) -> list[dict]:
                 "SELECT * FROM label_sets ORDER BY created_at DESC"
             ).fetchall()
         ]
+
+
+def clear_labels(
+    label_set_id: str,
+    labelers: frozenset[str] | set[str] = NON_HUMAN_LABELERS,
+    db_path: str | Path = DEFAULT_DB_PATH,
+) -> tuple[int, int]:
+    """Delete labels from the named labellers. Returns (removed, kept).
+
+    Defaults to the non-human labellers only. Human labels are real work and
+    are never touched by this — clearing a synthetic run must not destroy
+    verdicts somebody actually sat and made.
+
+    Calibrations computed from the removed labels are dropped alongside
+    them. Leaving one behind would be harmless (the guard already refuses
+    synthetic calibrations) but confusing: the store would carry a record
+    whose inputs no longer exist.
+    """
+    if not labelers:
+        return 0, 0
+
+    placeholders = ",".join("?" for _ in labelers)
+    names = sorted(labelers)
+
+    with _session(db_path) as conn:
+        full_id = _resolve_set_id(conn, label_set_id)
+
+        removed = conn.execute(
+            f"SELECT COUNT(*) AS n FROM human_labels "
+            f"WHERE label_set_id = ? AND labeler IN ({placeholders})",
+            (full_id, *names),
+        ).fetchone()["n"]
+        conn.execute(
+            f"DELETE FROM human_labels "
+            f"WHERE label_set_id = ? AND labeler IN ({placeholders})",
+            (full_id, *names),
+        )
+        kept = conn.execute(
+            "SELECT COUNT(*) AS n FROM human_labels WHERE label_set_id = ?",
+            (full_id,),
+        ).fetchone()["n"]
+
+        # Drop calibrations whose inputs have just been deleted.
+        stale = []
+        for row in conn.execute(
+            "SELECT id, labelers_json FROM calibrations WHERE label_set_id = ?",
+            (full_id,),
+        ).fetchall():
+            try:
+                contributors = set(json.loads(row["labelers_json"] or "[]"))
+            except (TypeError, ValueError):
+                contributors = set()
+            if contributors & set(names):
+                stale.append(row["id"])
+        for calibration_id in stale:
+            conn.execute("DELETE FROM calibrations WHERE id = ?", (calibration_id,))
+
+    return removed, kept

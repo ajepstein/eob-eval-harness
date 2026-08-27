@@ -37,6 +37,7 @@ from rich.table import Table
 
 from harness.labeling import (
     build_label_set,
+    clear_labels,
     labelled_item_ids,
     list_label_sets,
     load_label_set,
@@ -88,6 +89,12 @@ def main() -> int:
     parser.add_argument("--labeler", default="self", help="Who is labelling")
     parser.add_argument("--db", default=DEFAULT_DB_PATH)
     parser.add_argument("--list", action="store_true", help="List label sets")
+    parser.add_argument(
+        "--clear-synthetic",
+        action="store_true",
+        help="Delete machine-generated labels before labelling. Human labels "
+             "are never touched.",
+    )
     args = parser.parse_args()
 
     console = Console()
@@ -104,6 +111,21 @@ def main() -> int:
                 f"labelled={done}  {s['created_at'][:19]}"
             )
         return 0
+
+    if args.clear_synthetic:
+        target = args.label_set or (
+            list_label_sets(args.db)[0]["id"] if list_label_sets(args.db) else None
+        )
+        if target is None:
+            console.print("[yellow]No label sets to clear.[/yellow]")
+            return 1
+        removed, kept = clear_labels(target, db_path=args.db)
+        console.print(
+            f"Removed [bold]{removed}[/bold] machine-generated label(s); "
+            f"[bold]{kept}[/bold] human label(s) kept."
+        )
+        if not (args.new or args.label_set):
+            return 0
 
     if args.new:
         run_ids = [m.run_id for m in list_runs(limit=50, db_path=args.db)]
