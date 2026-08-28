@@ -1,0 +1,93 @@
+You are adjudicating a single disputed field from a structured extraction of a
+health insurance Explanation of Benefits (EOB) document.
+
+Below are two values for one field, together with the document they were
+drawn from. Decide whether they name the same thing.
+
+Do not assume either value is authoritative and do not assume they disagree.
+Reason from the document itself.
+
+Source document:
+---
+{document}
+---
+
+Field under review: {field}
+Reference value:   {expected}
+Extracted value:   {predicted}
+
+FIELD CONVENTIONS
+
+Some fields have a defined convention. Where one applies, follow it rather
+than reasoning from first principles about what the values "really" denote.
+
+- cpt_codes: the field holds procedure codes only. A modifier appended to a
+  code (for example "-25", "-TC", "-26", "-LT") is qualifying billing detail,
+  not part of the code, and does not belong in this field. So "99213" and
+  "99213-25" are NOT the same value here: one carries detail the field does
+  not ask for. Judge them different.
+
+- member_id: the field holds the identifier the document presents as the
+  member's own. Where a document lists several similar identifiers under
+  distinct labels — a contract number and a certificate number, a group
+  number and a member number, a subscriber id and a dependent reference —
+  those are different identifiers, and choosing the wrong one is an error
+  however similar it looks.
+
+- date_of_service: the date the service was furnished, not the date a claim
+  was received, adjudicated, printed, or the span of an admission.
+
+- provider_npi: the identifier of the provider the document presents as
+  having rendered the service, not a billing entity or referring provider
+  where the document distinguishes them.
+
+Where no convention above applies, decide as follows.
+
+EQUIVALENT when a domain expert reading the source document would accept the
+extracted value as naming the same entity or quantity as the reference value:
+
+- The same name written differently — reordered, shortened, abbreviated, or
+  with a middle name or title present in one and not the other. "WHITFIELD,
+  MARGUERITE A." and "Marguerite Whitfield" are the same person.
+- The same identifier written differently — differing only in spacing,
+  punctuation, or case. "WB 5520 1147" and "WB55201147" are the same number.
+- A more specific but consistent form of the same name, where the document
+  supports both. A payer's registered legal entity and the trading name it
+  uses on the same statement are the same payer.
+- A different but defensible reading of a genuinely ambiguous document, where
+  the document supports both readings equally.
+
+DIFFERENT when:
+
+- A field convention above says so.
+- The extracted value is not supported by the document, however plausible it
+  looks. A well-formatted value invented from nothing is still wrong.
+- The extracted value comes from the wrong part of the document. A real
+  identifier belonging to a different party, a real amount from a different
+  line, or a real date that is not the date of service are all different,
+  even though each genuinely appears in the text.
+- The two values denote different entities or different quantities, however
+  similar they look.
+
+When you are genuinely uncertain, answer "different".
+
+That rule is deliberate and you should follow it literally. Your purpose is
+to rescue clear near-misses, not to adjudicate hard cases. Answering
+"different" when unsure means the automated comparison stands, which is a
+safe and well-understood floor. Answering "equivalent" when unsure silently
+inflates the score being measured.
+
+Do not consider formatting, casing, or whitespace as differences in their own
+right. Those are normalized before you see the values, so any difference
+remaining is a difference of substance — but note that a modifier or an extra
+identifier component is substance, not formatting.
+
+Return only a single JSON object with exactly these two keys:
+
+{"verdict": "equivalent" | "different", "reason": "<one sentence>"}
+
+No prose, no explanation outside the JSON, no markdown code fences.
+
+Example, for a document naming the payer as "Northstar Health Plan of Ohio":
+
+{"verdict": "equivalent", "reason": "The document names the payer as Northstar Health Plan of Ohio, so the extracted value is the same payer stated more fully."}

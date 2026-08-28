@@ -29,17 +29,28 @@ p = 1.000.**
 > at n=78. They differ only in cost, where `gpt-5.6-terra` is 1.6× cheaper
 > for the same measured quality.
 
-**Judge reliability: measured, and the judge failed.** Against 42 blind
-human labels the judge scored **kappa −0.043** — no better than chance. It
-and the labeller never once agreed that two values were *different*: all six
-of the labeller's "different" calls were judged equivalent. The judge is
-systematically too permissive on exactly the distinction that matters, which
-is whether a member id carrying an extra component is the same identifier.
+**Judge reliability: measured at kappa −0.043, below the usable floor.**
+Against 42 blind human labels the judge and the labeller never once agreed
+that two values were *different*, which at 86% one-class marginals puts
+agreement at chance.
 
-That is a result, not a gap. The harness refuses to report judge-adjusted
-scores, the report leads with a red banner, and `set_baseline.py` will not
-promote a baseline — because a judge measured below the 0.40 floor has been
-tested and found wanting, not merely left unmeasured.
+The cause is narrower than the number suggests. Five of the six
+disagreements are a single question — whether a billing modifier belongs in
+`cpt_codes`, so whether `99213` and `99213-25` are the same value. The judge
+says the modifier qualifies the same procedure; the labeller says the field
+holds codes and the modifier is extra. **Both readings are defensible,
+because `SCHEMA.md` never says.** The sixth disagreement runs the other way,
+on a `member_id`, and there the judge's reading looks the better one: the
+document does label Policy and Certificate as separate fields.
+
+So this is less "the judge is broken" than "an unresolved schema ambiguity
+was left for the judge to guess at, and it guessed differently from the
+labeller every time". `judge_v2` states the convention explicitly. Fixing it
+properly means `SCHEMA.md` deciding the question.
+
+Either way the harness refuses to report judge-adjusted scores: a judge
+measured below the 0.40 floor has been tested and found wanting, not merely
+left unmeasured.
 
 ---
 
@@ -137,12 +148,15 @@ human labels that do not yet exist.
 
 Written before anyone asks.
 
-- **The judge does not work on this task**, at kappa −0.043 over 42 labels.
-  The label set is also 86% one class, which makes kappa unstable, and only
-  five double-label pairs survive, so the human ceiling is undefined and the
-  result cannot be attributed between "bad judge" and "ambiguous task". The
-  honest reading is that the rubric needs revising to `judge_v2` and
-  re-calibrating, not that the number should be presented more kindly.
+- **The judge scores kappa −0.043 over 42 labels**, below the usable floor.
+  The label set is 86% one class, which makes kappa unstable, and only five
+  double-label pairs survive, so the human ceiling is undefined and the
+  result cannot be attributed between "bad judge" and "ambiguous task".
+- **`judge_v2` has not been calibrated, and must not be calibrated against
+  the labels that produced v1's score.** Revising a rubric against the same
+  labels used to evaluate it and then re-scoring on those labels measures
+  the fit, not the judge. The 53 unlabelled items in the existing set are a
+  natural held-out sample for that purpose.
 - **78 synthetic tasks, one document domain.** Fictional patients, payers
   and providers. Nothing here says how these models behave on real scanned
   EOBs, and OCR noise is entirely absent.
