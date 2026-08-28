@@ -29,10 +29,13 @@ p = 1.000.**
 > at n=78. They differ only in cost, where `gpt-5.6-terra` is 1.6× cheaper
 > for the same measured quality.
 
-**Judge reliability: measured at kappa −0.043, below the usable floor.**
-Against 42 blind human labels the judge and the labeller never once agreed
-that two values were *different*, which at 86% one-class marginals puts
-agreement at chance.
+**Judge reliability: measured at kappa −0.043, and the measurement was then
+discarded.** Against 42 blind human labels the judge and the labeller never
+once agreed that two values were *different*. The cause turned out to be a
+`cpt_codes` convention `SCHEMA.md` had never stated, so the number was
+measuring a schema gap rather than the judge. The gap is now closed and the
+labels are being recollected; the harness reports the judge as uncalibrated
+in the meantime.
 
 The cause is narrower than the number suggests. Five of the six
 disagreements are a single question — whether a billing modifier belongs in
@@ -118,10 +121,13 @@ documents specifically to trick a model, which would be gaming the eval.
 
 ## How judge reliability is established
 
-The method below has been run: 48 of 101 sampled items are labelled, 42 of
-them scored, and the result is kappa −0.043 — a judge that does not work.
-That number is a product of this method, not an excuse for skipping it, and
-the machinery it feeds is described under Limitations.
+The method below has been run once, on 48 of 101 sampled items. It returned
+kappa −0.043 and then had to be thrown away: the disagreement concentrated
+on a `cpt_codes` question `SCHEMA.md` had not answered, so the number was
+measuring a missing definition rather than the judge. The definition now
+exists, the contaminated labels are cleared, and 69 items await labelling
+against it. Producing a number and then discarding it on those grounds is
+the method working, not failing.
 
 - **Near-miss only.** The judge sees a field only where the deterministic
   scorer already found a mismatch and both values are non-null. It cannot
@@ -142,9 +148,9 @@ the machinery it feeds is described under Limitations.
   labels themselves.
 - **The kappa paradox is detected**, not glossed. Above 85% single-class
   marginals kappa is unstable even at high agreement, and the report says
-  so. The scored population is 86/14, so this fires — raw agreement is
-  0.833 while kappa is −0.043, and reporting the former alone would have
-  read as a working judge.
+  so. It fired on the discarded calibration — raw agreement 0.833 against
+  kappa −0.043 — and reporting the former alone would have read as a
+  working judge.
 
 ---
 
@@ -161,19 +167,23 @@ Written before anyone asks.
   the most consequential gap on the list, because a systematic error in the
   key would move both models identically and could manufacture the
   indistinguishability result reported above.
-- **The judge scores kappa −0.043 over 42 labels**, below the usable floor.
-  The label set is 86% one class, which makes kappa unstable, and only five
-  double-label pairs survive, so the human ceiling is undefined. The
-  disagreement is now largely attributable: it concentrates in `cpt_codes`,
-  where the judge was consistent across all 34 calls and the human was not,
-  on a modifier question `SCHEMA.md` did not answer at the time. That
-  question is now decided, which invalidates these 42 labels for calibrating
-  `judge_v2` — they were collected against an undefined rule.
+- **There is currently no calibration, by choice.** The one that existed
+  scored kappa −0.043 and was discarded: the disagreement concentrated in
+  `cpt_codes`, where the judge was consistent across all 34 calls and the
+  labeller was not, on a modifier question `SCHEMA.md` did not answer at the
+  time. Every consumer correctly reports the judge as uncalibrated and
+  refuses to act on it.
+- **The replacement calibration will read better than it deserves.** 36 of
+  the 69 items to be labelled are `cpt_codes` comparisons now settled by a
+  rule `judge_v2` states in its own rubric, so the judge will score them
+  without exercising judgment. Read the `patient_name` and `member_id`
+  items, not the headline kappa.
 - **`judge_v2` has not been calibrated, and must not be calibrated against
   the labels that produced v1's score.** Revising a rubric against the same
   labels used to evaluate it and then re-scoring on those labels measures
-  the fit, not the judge. The 53 unlabelled items in the existing set are a
-  natural held-out sample for that purpose.
+  the fit, not the judge. The 69 unlabelled items in the existing set — the
+  53 never labelled, plus the 16 `cpt_codes` labels cleared as contaminated
+  — are the held-out sample for that purpose.
 - **78 synthetic tasks, one document domain.** Fictional patients, payers
   and providers. Nothing here says how these models behave on real scanned
   EOBs, and OCR noise is entirely absent.

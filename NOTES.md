@@ -169,12 +169,12 @@ several ambiguous fields at once slipped on one. Engineering documents
 specifically to trick a model would be gaming the eval rather than measuring
 it, so the attempt was abandoned and recorded.
 
-**The judge is calibrated, and the calibration says it does not work.** 48
-of 101 items are labelled; 42 of them scored a calibration at kappa −0.043 —
-band "close to useless", below the `MIN_USABLE_KAPPA` floor of 0.40. So the
-downstream machinery — the calibration banner, the baseline promotion, the
-regression gate — is built and correctly refuses to operate, but now on a
-measurement rather than on an absence.
+**The judge was calibrated once, and the calibration said it does not
+work.** 48 of 101 items were labelled; 42 of them scored a calibration at
+kappa −0.043 — band "close to useless", below the `MIN_USABLE_KAPPA` floor
+of 0.40. The downstream machinery — the calibration banner, the baseline
+promotion, the regression gate — refused to operate on it, which is what it
+is for.
 
 The refusal is only half the story, and the attribution turned out to be
 recoverable. All 34 of the judge's `cpt_codes` calls returned `equivalent`,
@@ -184,6 +184,16 @@ same question split 11 `equivalent` to 5 `different`, and gave opposite
 verdicts on structurally identical pairs: eob-051 and eob-062 both compare
 bare codes against `-25` and `-TC`, and were labelled differently.
 
+"Inconsistent" is too blunt, though, and the repeat labels say something
+sharper. Four `cpt_codes` items were sampled twice for the intra-rater
+ceiling, and every repeat agreed with itself: eob-051 `equivalent` twice,
+eob-054 `equivalent` three times, eob-056 `equivalent` twice, eob-070
+`different` twice. The labeller was stable when re-shown the same item and
+unstable only across structurally identical *different* items — a rule
+applied consistently within each item and reinvented between them. That is
+the signature of a missing definition, not a careless labeller, and it is
+better evidence for the diagnosis than the raw 11/5 split.
+
 So the judge was perfectly consistent and the human was not, on a question
 `SCHEMA.md` had never answered. Kappa −0.043 is substantially a measurement
 of that missing definition rather than of judge reliability — which is the
@@ -192,10 +202,16 @@ comparison.
 
 `SCHEMA.md` now defines the field as codes-only. That makes the judge's rule
 the wrong one on all 34 calls and the five `different` labels the right ones.
-It does not rescue the label set: those 42 items were labelled before the
-rule existed, so they cannot calibrate `judge_v2` either. The calibration
-should be discarded rather than superseded, and rerun on the 53 held-out
-items now that there is a defined answer to label against.
+It does not rescue the label set: those items were labelled before the rule
+existed. The calibration was discarded rather than superseded, and the 16
+`cpt_codes` labels cleared — leaving 32 labels on questions the schema gap
+never touched, and 69 items to label against a defined rule.
+
+One caveat belongs with that next calibration before it is read. 36 of the
+69 items are `cpt_codes` comparisons whose answer now follows mechanically
+from a rule `judge_v2` states in its own rubric. The judge will get them
+right, and kappa will improve for a reason that is not judgment. The signal
+worth reading lives in the `patient_name` and `member_id` items.
 
 ---
 
