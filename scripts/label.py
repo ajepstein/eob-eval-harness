@@ -38,6 +38,7 @@ from rich.table import Table
 from harness.labeling import (
     build_label_set,
     clear_labels,
+    count_faster_than,
     labelled_item_ids,
     list_label_sets,
     load_label_set,
@@ -90,6 +91,17 @@ def main() -> int:
     parser.add_argument("--db", default=DEFAULT_DB_PATH)
     parser.add_argument("--list", action="store_true", help="List label sets")
     parser.add_argument(
+        "--clear-faster-than",
+        type=float,
+        default=None,
+        metavar="SECONDS",
+        help="Delete labels decided faster than this so they can be redone. "
+             "Asks before removing anything.",
+    )
+    parser.add_argument(
+        "--yes", action="store_true", help="Skip the confirmation prompt"
+    )
+    parser.add_argument(
         "--clear-synthetic",
         action="store_true",
         help="Delete machine-generated labels before labelling. Human labels "
@@ -111,6 +123,52 @@ def main() -> int:
                 f"labelled={done}  {s['created_at'][:19]}"
             )
         return 0
+
+    if args.clear_faster_than is not None:
+        target = args.label_set or (
+            list_label_sets(args.db)[0]["id"] if list_label_sets(args.db) else None
+        )
+        if target is None:
+            console.print("[yellow]No label sets to clear.[/yellow]")
+            return 1
+
+        matched = count_faster_than(target, args.clear_faster_than, args.db)
+        total = sum(matched.values())
+        if not total:
+            console.print(
+                f"No labels faster than {args.clear_faster_than}s. Nothing to do."
+            )
+            return 0
+
+        # These are real work, so say exactly what goes before it goes.
+        console.print(
+            f"[yellow]{total} label(s) were decided in under "
+            f"{args.clear_faster_than}s:[/yellow]"
+        )
+        for labeler, n in sorted(matched.items()):
+            console.print(f"    {n:>4}  by {labeler}")
+        console.print(
+            "  They will be deleted so they can be labelled again, along with "
+            "any calibration computed over this set."
+        )
+        if not args.yes:
+            try:
+                if input("  Proceed? [y/N] ").strip().lower() != "y":
+                    console.print("Nothing removed.")
+                    return 0
+            except (EOFError, KeyboardInterrupt):
+                console.print("\nNothing removed.")
+                return 0
+
+        removed, kept = clear_labels(
+            target, labelers=None,
+            faster_than=args.clear_faster_than, db_path=args.db,
+        )
+        console.print(
+            f"Removed [bold]{removed}[/bold]; [bold]{kept}[/bold] label(s) kept."
+        )
+        if not (args.new or args.label_set):
+            return 0
 
     if args.clear_synthetic:
         target = args.label_set or (

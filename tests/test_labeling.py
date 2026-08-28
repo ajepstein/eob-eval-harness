@@ -460,3 +460,112 @@ def test_accessors_raise_on_an_unknown_label_set(seeded_db: Path):
     for fn in (load_labels, labelled_item_ids, load_label_set):
         with pytest.raises(LookupError):
             fn("no-such-set", seeded_db)
+
+
+# --- clearing by decision time ------------------------------------------------
+
+
+def _label_with_times(seeded_db: Path, times: list[float], labeler="self"):
+    label_set = build_label_set(["run1"], n=len(times), seed=0,
+                                double_label_frac=0.0, db_path=seeded_db)
+    for item, seconds in zip(label_set.items, times):
+        save_label(label_set.id, item, "equivalent", seconds,
+                   labeler=labeler, db_path=seeded_db)
+    return label_set
+
+
+def test_count_faster_than_reports_the_breakdown(seeded_db: Path):
+    from harness.labeling import count_faster_than
+
+    label_set = _label_with_times(seeded_db, [4.0, 3.0, 0.2, 0.3, 0.9])
+
+    matched = count_faster_than(label_set.id, 1.0, seeded_db)
+
+    assert matched == {"self": 3}
+
+
+def test_count_faster_than_does_not_delete(seeded_db: Path):
+    from harness.labeling import count_faster_than
+
+    label_set = _label_with_times(seeded_db, [0.1, 0.1, 5.0])
+    count_faster_than(label_set.id, 1.0, seeded_db)
+
+    assert len(load_labels(label_set.id, seeded_db)) == 3
+
+
+def test_clear_faster_than_removes_only_the_fast_ones(seeded_db: Path):
+    from harness.labeling import clear_labels
+
+    label_set = _label_with_times(seeded_db, [4.0, 3.0, 0.2, 0.3, 0.9])
+
+    removed, kept = clear_labels(
+        label_set.id, labelers=None, faster_than=1.0, db_path=seeded_db
+    )
+
+    assert (removed, kept) == (3, 2)
+    assert all(row["seconds"] >= 1.0 for row in load_labels(label_set.id, seeded_db))
+
+
+def test_clear_faster_than_spans_every_labeller(seeded_db: Path):
+    # A fast synthetic label is no more evidence than a fast human one.
+    from harness.labeling import clear_labels
+
+    label_set = build_label_set(["run1"], n=4, seed=0,
+                                double_label_frac=0.0, db_path=seeded_db)
+    for item, (seconds, who) in zip(
+        label_set.items, [(5.0, "self"), (0.1, "self"), (0.0, "synthetic"), (9.0, "synthetic")]
+    ):
+        save_label(label_set.id, item, "equivalent", seconds,
+                   labeler=who, db_path=seeded_db)
+
+    removed, kept = clear_labels(
+        label_set.id, labelers=None, faster_than=1.0, db_path=seeded_db
+    )
+
+    assert (removed, kept) == (2, 2)
+
+
+def test_clear_faster_than_zero_removes_nothing(seeded_db: Path):
+    from harness.labeling import clear_labels
+
+    label_set = _label_with_times(seeded_db, [0.1, 0.2])
+
+    removed, kept = clear_labels(
+        label_set.id, labelers=None, faster_than=0.0, db_path=seeded_db
+    )
+
+    assert (removed, kept) == (0, 2)
+
+
+def test_clear_faster_than_drops_calibrations_over_the_set(seeded_db: Path):
+    # Any calibration over this set may have counted a removed label.
+    from harness.calibration import AgreementReport
+    from harness.labeling import clear_labels
+    from harness.store import find_calibration, save_calibration
+
+    label_set = _label_with_times(seeded_db, [0.1, 4.0])
+    save_calibration(
+        AgreementReport(n=2, raw_agreement=1.0, kappa=1.0, kappa_ci=(1.0, 1.0),
+                        band="strong", confusion={}, per_category={}, excluded={}),
+        label_set.id, "m", "rubric-t", labelers=["self"], db_path=seeded_db,
+    )
+
+    clear_labels(label_set.id, labelers=None, faster_than=1.0, db_path=seeded_db)
+
+    assert find_calibration("rubric-t", db_path=seeded_db) is None
+
+
+def test_clear_by_labeller_still_works(seeded_db: Path):
+    # The original behaviour must be unchanged by the new parameter.
+    from harness.labeling import clear_labels
+
+    label_set = build_label_set(["run1"], n=4, seed=0,
+                                double_label_frac=0.0, db_path=seeded_db)
+    for i, item in enumerate(label_set.items):
+        save_label(label_set.id, item, "equivalent", 5.0,
+                   labeler="synthetic" if i % 2 else "self", db_path=seeded_db)
+
+    removed, kept = clear_labels(label_set.id, db_path=seeded_db)
+
+    assert removed == 2 and kept == 2
+    assert {r["labeler"] for r in load_labels(label_set.id, seeded_db)} == {"self"}

@@ -328,9 +328,35 @@ def list_label_sets(db_path: str | Path = DEFAULT_DB_PATH) -> list[dict]:
         ]
 
 
+def count_faster_than(
+    label_set_id: str,
+    seconds: float,
+    db_path: str | Path = DEFAULT_DB_PATH,
+) -> dict[str, int]:
+    """How many labels fall below a time threshold, broken down by labeller.
+
+    Separated from the delete so a caller can show what is about to go
+    before it goes. These are real work, however quickly they were made.
+    """
+    with _session(db_path) as conn:
+        row = conn.execute(
+            "SELECT id FROM label_sets WHERE id = ? OR id LIKE ? || '%'",
+            (label_set_id, label_set_id),
+        ).fetchone()
+        if row is None:
+            raise LookupError(f"No label set matching {label_set_id!r}")
+        rows = conn.execute(
+            "SELECT labeler, COUNT(*) AS n FROM human_labels "
+            "WHERE label_set_id = ? AND seconds < ? GROUP BY labeler",
+            (row["id"], seconds),
+        ).fetchall()
+    return {r["labeler"]: r["n"] for r in rows}
+
+
 def clear_labels(
     label_set_id: str,
-    labelers: frozenset[str] | set[str] = NON_HUMAN_LABELERS,
+    labelers: frozenset[str] | set[str] | None = NON_HUMAN_LABELERS,
+    faster_than: float | None = None,
     db_path: str | Path = DEFAULT_DB_PATH,
 ) -> tuple[int, int]:
     """Delete labels from the named labellers. Returns (removed, kept).
@@ -339,29 +365,37 @@ def clear_labels(
     are never touched by this — clearing a synthetic run must not destroy
     verdicts somebody actually sat and made.
 
+    Pass `faster_than` instead to remove labels below a time threshold,
+    whoever made them. A label placed in a fraction of a second did not
+    involve reading the document, so removing it and labelling again is
+    recovering evidence rather than discarding it.
+
     Calibrations computed from the removed labels are dropped alongside
     them. Leaving one behind would be harmless (the guard already refuses
     synthetic calibrations) but confusing: the store would carry a record
     whose inputs no longer exist.
     """
-    if not labelers:
+    if faster_than is None and not labelers:
         return 0, 0
 
-    placeholders = ",".join("?" for _ in labelers)
-    names = sorted(labelers)
+    names = sorted(labelers or [])
+    if faster_than is not None:
+        where, params = "seconds < ?", [faster_than]
+    else:
+        where = f"labeler IN ({','.join('?' for _ in names)})"
+        params = list(names)
 
     with _session(db_path) as conn:
         full_id = _resolve_set_id(conn, label_set_id)
 
         removed = conn.execute(
             f"SELECT COUNT(*) AS n FROM human_labels "
-            f"WHERE label_set_id = ? AND labeler IN ({placeholders})",
-            (full_id, *names),
+            f"WHERE label_set_id = ? AND {where}",
+            (full_id, *params),
         ).fetchone()["n"]
         conn.execute(
-            f"DELETE FROM human_labels "
-            f"WHERE label_set_id = ? AND labeler IN ({placeholders})",
-            (full_id, *names),
+            f"DELETE FROM human_labels WHERE label_set_id = ? AND {where}",
+            (full_id, *params),
         )
         kept = conn.execute(
             "SELECT COUNT(*) AS n FROM human_labels WHERE label_set_id = ?",
@@ -378,7 +412,9 @@ def clear_labels(
                 contributors = set(json.loads(row["labelers_json"] or "[]"))
             except (TypeError, ValueError):
                 contributors = set()
-            if contributors & set(names):
+            # A time-based clear invalidates every calibration over this
+            # set, since any of them may have counted a removed label.
+            if faster_than is not None or contributors & set(names):
                 stale.append(row["id"])
         for calibration_id in stale:
             conn.execute("DELETE FROM calibrations WHERE id = ?", (calibration_id,))
