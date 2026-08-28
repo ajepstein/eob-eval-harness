@@ -169,10 +169,19 @@ several ambiguous fields at once slipped on one. Engineering documents
 specifically to trick a model would be gaming the eval rather than measuring
 it, so the attempt was abandoned and recorded.
 
-**The judge is not calibrated.** 2 of 101 items are labelled, which is far
-below the threshold at which kappa is a measurement. Everything downstream —
-the calibration banner, the baseline promotion, the regression gate — is
-built and correctly refuses to operate.
+**The judge is calibrated, and the calibration says it does not work.** 48
+of 101 items are labelled; 42 of them scored a calibration at kappa −0.043 —
+band "close to useless", below the `MIN_USABLE_KAPPA` floor of 0.40. So the
+downstream machinery — the calibration banner, the baseline promotion, the
+regression gate — is built and correctly refuses to operate, but now on a
+measurement rather than on an absence.
+
+The refusal is only half the story. Five of the six judge/human
+disagreements are `cpt_codes`, all in the same direction, and they trace to
+`SCHEMA.md` never saying whether modifiers belong in that field. That is a
+schema defect being charged to the judge, and no rubric revision can fix
+it. `judge_v2` states the convention explicitly; it must be calibrated on
+the 53 unlabelled items, never on the 42 that produced this number.
 
 ---
 

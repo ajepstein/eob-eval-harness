@@ -116,10 +116,12 @@ documents specifically to trick a model, which would be gaming the eval.
 
 ---
 
-## How judge reliability is meant to be established
+## How judge reliability is established
 
-The method is built and tested; it has not been run, because it depends on
-human labels that do not yet exist.
+The method below has been run: 48 of 101 sampled items are labelled, 42 of
+them scored, and the result is kappa −0.043 — a judge that does not work.
+That number is a product of this method, not an excuse for skipping it, and
+the machinery it feeds is described under Limitations.
 
 - **Near-miss only.** The judge sees a field only where the deterministic
   scorer already found a mismatch and both values are non-null. It cannot
@@ -140,7 +142,9 @@ human labels that do not yet exist.
   labels themselves.
 - **The kappa paradox is detected**, not glossed. Above 85% single-class
   marginals kappa is unstable even at high agreement, and the report says
-  so. The current label population is 93/7, so this will fire.
+  so. The scored population is 86/14, so this fires — raw agreement is
+  0.833 while kappa is −0.043, and reporting the former alone would have
+  read as a working judge.
 
 ---
 
@@ -148,6 +152,15 @@ human labels that do not yet exist.
 
 Written before anyone asks.
 
+- **The answer key has not been human-verified.** None of the 78 tasks
+  carries a `verified` flag, so every number above — the 0.929 means, the
+  paired difference of 0.000, the 0.0000 hallucination rate — is measured
+  against expected values written alongside the documents and never
+  independently reviewed. `scripts/verify_tasks.py` exists for exactly this
+  and has not been run; the test suite warns on every invocation. This is
+  the most consequential gap on the list, because a systematic error in the
+  key would move both models identically and could manufacture the
+  indistinguishability result reported above.
 - **The judge scores kappa −0.043 over 42 labels**, below the usable floor.
   The label set is 86% one class, which makes kappa unstable, and only five
   double-label pairs survive, so the human ceiling is undefined and the
@@ -191,7 +204,7 @@ That runs the full 78-task suite against both adapters and checks every
 quality gate in under a second. To go further:
 
 ```bash
-pytest -q                                        # 390 tests, offline
+pytest -q                                        # 427 tests, offline
 python scripts/run_eval.py --report --open       # self-contained HTML report
 python scripts/run_eval.py --mde                 # what this suite can resolve
 python scripts/run_eval.py --frontier            # cost against quality
