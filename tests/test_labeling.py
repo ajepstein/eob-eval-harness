@@ -247,7 +247,13 @@ def test_status_script_cannot_reach_judge_verdicts():
 
 
 def test_labelling_scripts_import_nothing_that_exposes_verdicts():
-    for script in ("scripts/label.py", "scripts/label_status.py"):
+    # export_labels.py is on this list because a backup is a display path
+    # too: whatever it writes can be read, committed, and reviewed.
+    for script in (
+        "scripts/label.py",
+        "scripts/label_status.py",
+        "scripts/export_labels.py",
+    ):
         code = _executable_source(script)
         assert "judge" not in code.lower(), f"{script} references judge data"
 

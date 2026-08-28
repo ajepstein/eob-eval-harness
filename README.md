@@ -218,11 +218,20 @@ That runs the full 78-task suite against both adapters and checks every
 quality gate in under a second. To go further:
 
 ```bash
-pytest -q                                        # 427 tests, offline
+pytest -q                                        # 434 tests, offline
 python scripts/run_eval.py --report --open       # self-contained HTML report
 python scripts/run_eval.py --mde                 # what this suite can resolve
 python scripts/run_eval.py --frontier            # cost against quality
+python scripts/export_labels.py                  # back up the hand labels
 ```
+
+`eval_runs.db` is gitignored because everything in it is derived — runs
+replay from the cache, scores recompute, calibrations follow from labels.
+The human labels are the exception, so they are exported to
+`labels/labels.json` and committed: deterministic JSON, keyed by sample
+position rather than row id, and restorable into an empty database with
+`--restore`. It carries no judge verdicts, for the same reason
+`label_items` has no column for one.
 
 Live runs need keys in `.env` (see `.env.example`) and cost roughly $0.25
 for the full suite across two providers.

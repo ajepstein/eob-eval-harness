@@ -1,0 +1,1254 @@
+{
+  "format_version": 1,
+  "label_sets": [
+    {
+      "created_at": "2026-08-27T17:07:02.017354+00:00",
+      "double_label_frac": 0.15,
+      "id": "04c7eeea-7bb4-4609-a2db-bb9d79a43f60",
+      "items": [
+        {
+          "expected": "['99204', '71046']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-051:cpt_codes",
+          "pass_number": 1,
+          "position": 0,
+          "predicted": "['99204-25', '71046-tc']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-051"
+        },
+        {
+          "expected": "eg-441002",
+          "field": "member_id",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-051:member_id",
+          "pass_number": 1,
+          "position": 1,
+          "predicted": "eg-441002-a",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-051"
+        },
+        {
+          "expected": "weatherby, arabella j.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-064:patient_name",
+          "pass_number": 1,
+          "position": 2,
+          "predicted": "arabella weatherby",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-064"
+        },
+        {
+          "expected": "northwind health",
+          "field": "payer_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-042:payer_name",
+          "pass_number": 1,
+          "position": 3,
+          "predicted": "northwind health assurance company of the great lakes, incorporated",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-042"
+        },
+        {
+          "expected": "oyelaran, benedicta a.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-059:patient_name",
+          "pass_number": 1,
+          "position": 4,
+          "predicted": "benedicta oyelaran",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-059"
+        },
+        {
+          "expected": "['99214', '93000']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-054:cpt_codes",
+          "pass_number": 1,
+          "position": 5,
+          "predicted": "['99214-25', '93000-26']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-054"
+        },
+        {
+          "expected": "hf-660227",
+          "field": "member_id",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-062:member_id",
+          "pass_number": 1,
+          "position": 6,
+          "predicted": "hf-660227-b",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-062"
+        },
+        {
+          "expected": "weatherby, arabella j.",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-064:patient_name",
+          "pass_number": 1,
+          "position": 7,
+          "predicted": "arabella weatherby",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-064"
+        },
+        {
+          "expected": "wyndham-boateng, aloysia t.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-070:patient_name",
+          "pass_number": 1,
+          "position": 8,
+          "predicted": "aloysia wyndham-boateng",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-070"
+        },
+        {
+          "expected": "holloway-ndiaye, seraphine m.",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-054:patient_name",
+          "pass_number": 1,
+          "position": 9,
+          "predicted": "seraphine holloway-ndiaye",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-054"
+        },
+        {
+          "expected": "ga-88014",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-049:member_id",
+          "pass_number": 1,
+          "position": 10,
+          "predicted": "ga-88014-01",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-049"
+        },
+        {
+          "expected": "hf-660227",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-062:member_id",
+          "pass_number": 1,
+          "position": 11,
+          "predicted": "hf-660227-b",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-062"
+        },
+        {
+          "expected": "wb 5520 1147",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-050:member_id",
+          "pass_number": 1,
+          "position": 12,
+          "predicted": "wb55201147",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-050"
+        },
+        {
+          "expected": "['99215', '94010']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-056:cpt_codes",
+          "pass_number": 1,
+          "position": 13,
+          "predicted": "['99215-25', '94010']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-056"
+        },
+        {
+          "expected": "penhaligon, rosamund elizabeth",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-049:patient_name",
+          "pass_number": 1,
+          "position": 14,
+          "predicted": "rosamund elizabeth penhaligon",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-049"
+        },
+        {
+          "expected": "sp 8820 4471",
+          "field": "member_id",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-066:member_id",
+          "pass_number": 1,
+          "position": 15,
+          "predicted": "sp88204471",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-066"
+        },
+        {
+          "expected": "oyelaran, benedicta a.",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-059:patient_name",
+          "pass_number": 1,
+          "position": 16,
+          "predicted": "benedicta oyelaran",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-059"
+        },
+        {
+          "expected": "sp 8820 4471",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-066:member_id",
+          "pass_number": 1,
+          "position": 17,
+          "predicted": "sp88204471",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-066"
+        },
+        {
+          "expected": "fontaine-adebayo, marguerite v.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-068:patient_name",
+          "pass_number": 1,
+          "position": 18,
+          "predicted": "marguerite fontaine-adebayo",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-068"
+        },
+        {
+          "expected": "['99223', '71260']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-070:cpt_codes",
+          "pass_number": 1,
+          "position": 19,
+          "predicted": "['99223-25', '71260-tc']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-070"
+        },
+        {
+          "expected": "['99214', '93010']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-060:cpt_codes",
+          "pass_number": 1,
+          "position": 20,
+          "predicted": "['99214-25', '93010-26']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-060"
+        },
+        {
+          "expected": "merriweather, constance e.",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-066:patient_name",
+          "pass_number": 1,
+          "position": 21,
+          "predicted": "constance merriweather",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-066"
+        },
+        {
+          "expected": "tremaine, augusta w.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-061:patient_name",
+          "pass_number": 1,
+          "position": 22,
+          "predicted": "augusta tremaine",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-061"
+        },
+        {
+          "expected": "['99213', '90686']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-063:cpt_codes",
+          "pass_number": 1,
+          "position": 23,
+          "predicted": "['99213-25', '90686']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-063"
+        },
+        {
+          "expected": "['99214', '71046']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-062:cpt_codes",
+          "pass_number": 1,
+          "position": 24,
+          "predicted": "['99214-25', '71046-tc']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-062"
+        },
+        {
+          "expected": "['99223', '71260']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-070:cpt_codes",
+          "pass_number": 1,
+          "position": 25,
+          "predicted": "['99223-25', '71260-tc']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-070"
+        },
+        {
+          "expected": "['99214', '81002']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-067:cpt_codes",
+          "pass_number": 1,
+          "position": 26,
+          "predicted": "['99214-25', '81002-qw']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-067"
+        },
+        {
+          "expected": "macallister, cornelius j.",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-051:patient_name",
+          "pass_number": 1,
+          "position": 27,
+          "predicted": "cornelius macallister",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-051"
+        },
+        {
+          "expected": "['99213', '85025']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-053:cpt_codes",
+          "pass_number": 1,
+          "position": 28,
+          "predicted": "['99213-25', '85025']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-053"
+        },
+        {
+          "expected": "fc 9902 3317",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-070:member_id",
+          "pass_number": 1,
+          "position": 29,
+          "predicted": "fc99023317",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-070"
+        },
+        {
+          "expected": "['99214', '93000']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-054:cpt_codes",
+          "pass_number": 2,
+          "position": 30,
+          "predicted": "['99214-25', '93000-26']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-054"
+        },
+        {
+          "expected": "eg-441002",
+          "field": "member_id",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-051:member_id",
+          "pass_number": 2,
+          "position": 31,
+          "predicted": "eg-441002-a",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-051"
+        },
+        {
+          "expected": "greystone assurance",
+          "field": "payer_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-049:payer_name",
+          "pass_number": 1,
+          "position": 32,
+          "predicted": "greystone assurance group, inc.",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-049"
+        },
+        {
+          "expected": "['99204', '71046']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-051:cpt_codes",
+          "pass_number": 1,
+          "position": 33,
+          "predicted": "['99204-25', '71046-tc']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-051"
+        },
+        {
+          "expected": "o'callaghan-mbeki, fionnuala",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-069:patient_name",
+          "pass_number": 1,
+          "position": 34,
+          "predicted": "fionnuala o'callaghan-mbeki",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-069"
+        },
+        {
+          "expected": "weatherby, arabella j.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-064:patient_name",
+          "pass_number": 2,
+          "position": 35,
+          "predicted": "arabella weatherby",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-064"
+        },
+        {
+          "expected": "pendergast, horatio m.",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-067:patient_name",
+          "pass_number": 1,
+          "position": 36,
+          "predicted": "horatio pendergast",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-067"
+        },
+        {
+          "expected": "hf-660227",
+          "field": "member_id",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-062:member_id",
+          "pass_number": 2,
+          "position": 37,
+          "predicted": "hf-660227-b",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-062"
+        },
+        {
+          "expected": "['99215', '94010']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-056:cpt_codes",
+          "pass_number": 1,
+          "position": 38,
+          "predicted": "['99215-25', '94010']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-056"
+        },
+        {
+          "expected": "tremaine, augusta w.",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-061:patient_name",
+          "pass_number": 1,
+          "position": 39,
+          "predicted": "augusta tremaine",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-061"
+        },
+        {
+          "expected": "['99214', '36415']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-049:cpt_codes",
+          "pass_number": 1,
+          "position": 40,
+          "predicted": "['99214-25', '36415']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-049"
+        },
+        {
+          "expected": "['99204', '81002']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-055:cpt_codes",
+          "pass_number": 1,
+          "position": 41,
+          "predicted": "['99204-25', '81002']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-055"
+        },
+        {
+          "expected": "northwind health",
+          "field": "payer_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-042:payer_name",
+          "pass_number": 2,
+          "position": 42,
+          "predicted": "northwind health assurance company of the great lakes, incorporated",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-042"
+        },
+        {
+          "expected": "fairchild, montgomery r., iii",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-057:patient_name",
+          "pass_number": 1,
+          "position": 43,
+          "predicted": "montgomery fairchild iii",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-057"
+        },
+        {
+          "expected": "['99203', '87880']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-059:cpt_codes",
+          "pass_number": 1,
+          "position": 44,
+          "predicted": "['99203-25', '87880']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-059"
+        },
+        {
+          "expected": "['99392', '90460']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-064:cpt_codes",
+          "pass_number": 1,
+          "position": 45,
+          "predicted": "['99392-25', '90460']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-064"
+        },
+        {
+          "expected": "oyelaran, benedicta a.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-059:patient_name",
+          "pass_number": 2,
+          "position": 46,
+          "predicted": "benedicta oyelaran",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-059"
+        },
+        {
+          "expected": "carruthers (nee abiodun), temperance",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-055:patient_name",
+          "pass_number": 1,
+          "position": 47,
+          "predicted": "temperance carruthers",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-055"
+        },
+        {
+          "expected": "['99214', '36415']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-049:cpt_codes",
+          "pass_number": 1,
+          "position": 48,
+          "predicted": "['99214-25', '36415']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-049"
+        },
+        {
+          "expected": "['99214', '93000']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-054:cpt_codes",
+          "pass_number": 1,
+          "position": 49,
+          "predicted": "['99214-25', '93000-26']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-054"
+        },
+        {
+          "expected": "['99392', '90460']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-064:cpt_codes",
+          "pass_number": 1,
+          "position": 50,
+          "predicted": "['99392-25', '90460']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-064"
+        },
+        {
+          "expected": "brannigan-osei, perpetua l.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-062:patient_name",
+          "pass_number": 1,
+          "position": 51,
+          "predicted": "perpetua brannigan-osei",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-062"
+        },
+        {
+          "expected": "wyndham-boateng, aloysia t.",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-070:patient_name",
+          "pass_number": 1,
+          "position": 52,
+          "predicted": "aloysia wyndham-boateng",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-070"
+        },
+        {
+          "expected": "['99213', '20610']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-044:cpt_codes",
+          "pass_number": 1,
+          "position": 53,
+          "predicted": "['99213-25', '20610-rt']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-044"
+        },
+        {
+          "expected": "rev. dr. oswald pemberton-hale",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-053:patient_name",
+          "pass_number": 1,
+          "position": 54,
+          "predicted": "oswald pemberton-hale",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-053"
+        },
+        {
+          "expected": "ga-88014",
+          "field": "member_id",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-049:member_id",
+          "pass_number": 1,
+          "position": 55,
+          "predicted": "ga-88014-01",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-049"
+        },
+        {
+          "expected": "wh-118203",
+          "field": "member_id",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-057:member_id",
+          "pass_number": 1,
+          "position": 56,
+          "predicted": "wh-118203-c",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-057"
+        },
+        {
+          "expected": "['99213', '20605']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-069:cpt_codes",
+          "pass_number": 1,
+          "position": 57,
+          "predicted": "['99213-25', '20605-rt']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-069"
+        },
+        {
+          "expected": "pm 4471 2039",
+          "field": "member_id",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-063:member_id",
+          "pass_number": 1,
+          "position": 58,
+          "predicted": "pm44712039",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-063"
+        },
+        {
+          "expected": "tf-772208",
+          "field": "member_id",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-064:member_id",
+          "pass_number": 1,
+          "position": 59,
+          "predicted": "tf-772208-04",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-064"
+        },
+        {
+          "expected": "wb 5520 1147",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-050:member_id",
+          "pass_number": 2,
+          "position": 60,
+          "predicted": "wb55201147",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-050"
+        },
+        {
+          "expected": "fontaine-adebayo, marguerite v.",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-068:patient_name",
+          "pass_number": 1,
+          "position": 61,
+          "predicted": "marguerite fontaine-adebayo",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-068"
+        },
+        {
+          "expected": "['99204', '81002']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-055:cpt_codes",
+          "pass_number": 1,
+          "position": 62,
+          "predicted": "['99204-25', '81002']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-055"
+        },
+        {
+          "expected": "hf-660227",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-062:member_id",
+          "pass_number": 2,
+          "position": 63,
+          "predicted": "hf-660227-b",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-062"
+        },
+        {
+          "expected": "['99213', '20605']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-069:cpt_codes",
+          "pass_number": 1,
+          "position": 64,
+          "predicted": "['99213-25', '20605-rt']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-069"
+        },
+        {
+          "expected": "['99215', '20551']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-061:cpt_codes",
+          "pass_number": 1,
+          "position": 65,
+          "predicted": "['99215-25', '20551-lt']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-061"
+        },
+        {
+          "expected": "cw 3390 1128",
+          "field": "member_id",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-059:member_id",
+          "pass_number": 1,
+          "position": 66,
+          "predicted": "cw33901128",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-059"
+        },
+        {
+          "expected": "holloway-ndiaye, seraphine m.",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-054:patient_name",
+          "pass_number": 2,
+          "position": 67,
+          "predicted": "seraphine holloway-ndiaye",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-054"
+        },
+        {
+          "expected": "kildare-nwachukwu, theophilus",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-065:patient_name",
+          "pass_number": 1,
+          "position": 68,
+          "predicted": "theo kildare-nwachukwu",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-065"
+        },
+        {
+          "expected": "villeneuve-abara, maximilian p.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-060:patient_name",
+          "pass_number": 1,
+          "position": 69,
+          "predicted": "max villeneuve-abara",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-060"
+        },
+        {
+          "expected": "macallister, cornelius j.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-051:patient_name",
+          "pass_number": 1,
+          "position": 70,
+          "predicted": "cornelius macallister",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-051"
+        },
+        {
+          "expected": "pendergast, horatio m.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-067:patient_name",
+          "pass_number": 1,
+          "position": 71,
+          "predicted": "horatio pendergast",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-067"
+        },
+        {
+          "expected": "wh-118203",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-057:member_id",
+          "pass_number": 1,
+          "position": 72,
+          "predicted": "wh-118203-c",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-057"
+        },
+        {
+          "expected": "fc 9902 3317",
+          "field": "member_id",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-070:member_id",
+          "pass_number": 1,
+          "position": 73,
+          "predicted": "fc99023317",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-070"
+        },
+        {
+          "expected": "d'arcy-boateng, philomena n.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-052:patient_name",
+          "pass_number": 1,
+          "position": 74,
+          "predicted": "philomena n. d'arcy-boateng",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-052"
+        },
+        {
+          "expected": "pm 4471 2039",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-063:member_id",
+          "pass_number": 1,
+          "position": 75,
+          "predicted": "pm44712039",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-063"
+        },
+        {
+          "expected": "o'callaghan-mbeki, fionnuala",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-069:patient_name",
+          "pass_number": 1,
+          "position": 76,
+          "predicted": "fionnuala o'callaghan-mbeki",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-069"
+        },
+        {
+          "expected": "['99396', '80061']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-058:cpt_codes",
+          "pass_number": 1,
+          "position": 77,
+          "predicted": "['99396-25', '80061']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-058"
+        },
+        {
+          "expected": "brannigan-osei, perpetua l.",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-062:patient_name",
+          "pass_number": 1,
+          "position": 78,
+          "predicted": "perpetua brannigan-osei",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-062"
+        },
+        {
+          "expected": "kildare-nwachukwu, theophilus",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-065:patient_name",
+          "pass_number": 1,
+          "position": 79,
+          "predicted": "theophilus kildare-nwachukwu",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-065"
+        },
+        {
+          "expected": "carruthers (nee abiodun), temperance",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-055:patient_name",
+          "pass_number": 1,
+          "position": 80,
+          "predicted": "temperance carruthers",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-055"
+        },
+        {
+          "expected": "weatherby, arabella j.",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-064:patient_name",
+          "pass_number": 2,
+          "position": 81,
+          "predicted": "arabella weatherby",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-064"
+        },
+        {
+          "expected": "['99204', '73221']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-065:cpt_codes",
+          "pass_number": 1,
+          "position": 82,
+          "predicted": "['99204-25', '73221-tc']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-065"
+        },
+        {
+          "expected": "['99214', '81002']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-067:cpt_codes",
+          "pass_number": 1,
+          "position": 83,
+          "predicted": "['99214-25', '81002-qw']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-067"
+        },
+        {
+          "expected": "['99213', '36415']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-057:cpt_codes",
+          "pass_number": 1,
+          "position": 84,
+          "predicted": "['99213-25', '36415']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-057"
+        },
+        {
+          "expected": "cw 3390 1128",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-059:member_id",
+          "pass_number": 1,
+          "position": 85,
+          "predicted": "cw33901128",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-059"
+        },
+        {
+          "expected": "ashworth-diallo, clementine r.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-063:patient_name",
+          "pass_number": 1,
+          "position": 86,
+          "predicted": "clementine r. ashworth-diallo",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-063"
+        },
+        {
+          "expected": "tf-772208",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-064:member_id",
+          "pass_number": 1,
+          "position": 87,
+          "predicted": "tf-772208-04",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-064"
+        },
+        {
+          "expected": "penhaligon, rosamund elizabeth",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-049:patient_name",
+          "pass_number": 1,
+          "position": 88,
+          "predicted": "rosamund penhaligon",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-049"
+        },
+        {
+          "expected": "st john-prestwick, eulalia",
+          "field": "patient_name",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-058:patient_name",
+          "pass_number": 1,
+          "position": 89,
+          "predicted": "eulalia st. john-prestwick",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-058"
+        },
+        {
+          "expected": "['99205', '93306']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-068:cpt_codes",
+          "pass_number": 1,
+          "position": 90,
+          "predicted": "['99205-25', '93306-26']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-068"
+        },
+        {
+          "expected": "['99204', '71046']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-051:cpt_codes",
+          "pass_number": 2,
+          "position": 91,
+          "predicted": "['99204-25', '71046-tc']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-051"
+        },
+        {
+          "expected": "eg-441002",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-051:member_id",
+          "pass_number": 1,
+          "position": 92,
+          "predicted": "eg-441002-a",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-051"
+        },
+        {
+          "expected": "['99396', '80061']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-058:cpt_codes",
+          "pass_number": 1,
+          "position": 93,
+          "predicted": "['99396-25', '80061']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-058"
+        },
+        {
+          "expected": "['99214', '93010']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-060:cpt_codes",
+          "pass_number": 1,
+          "position": 94,
+          "predicted": "['99214-25', '93010-26']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-060"
+        },
+        {
+          "expected": "merriweather, constance e.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-066:patient_name",
+          "pass_number": 1,
+          "position": 95,
+          "predicted": "constance merriweather",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-066"
+        },
+        {
+          "expected": "['99215', '93010']",
+          "field": "cpt_codes",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-050:cpt_codes",
+          "pass_number": 1,
+          "position": 96,
+          "predicted": "['99215-25', '93010-26']",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-050"
+        },
+        {
+          "expected": "['99213', '80053']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-052:cpt_codes",
+          "pass_number": 1,
+          "position": 97,
+          "predicted": "['99213-25', '80053-90']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-052"
+        },
+        {
+          "expected": "['99215', '93010']",
+          "field": "cpt_codes",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-050:cpt_codes",
+          "pass_number": 1,
+          "position": 98,
+          "predicted": "['99215-25', '93010-26']",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-050"
+        },
+        {
+          "expected": "ga-88014",
+          "field": "member_id",
+          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-049:member_id",
+          "pass_number": 2,
+          "position": 99,
+          "predicted": "ga-88014-01",
+          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
+          "task_id": "eob-049"
+        },
+        {
+          "expected": "wyndham-boateng, aloysia t.",
+          "field": "patient_name",
+          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-070:patient_name",
+          "pass_number": 2,
+          "position": 100,
+          "predicted": "aloysia wyndham-boateng",
+          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
+          "task_id": "eob-070"
+        }
+      ],
+      "labels": [
+        {
+          "labeled_at": "2026-08-27T23:29:44.083407+00:00",
+          "labeler": "self",
+          "position": 1,
+          "seconds": 7.4705667498055845,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T17:35:55.054886+00:00",
+          "labeler": "self",
+          "position": 2,
+          "seconds": 4.539231459144503,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T17:36:01.326945+00:00",
+          "labeler": "self",
+          "position": 3,
+          "seconds": 6.212937125004828,
+          "verdict": "different"
+        },
+        {
+          "labeled_at": "2026-08-27T23:29:48.930502+00:00",
+          "labeler": "self",
+          "position": 4,
+          "seconds": 4.7778241250198334,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:29:56.795999+00:00",
+          "labeler": "self",
+          "position": 6,
+          "seconds": 2.3925113750156015,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:29:58.882750+00:00",
+          "labeler": "self",
+          "position": 7,
+          "seconds": 2.0160368329379708,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:30:01.411503+00:00",
+          "labeler": "self",
+          "position": 8,
+          "seconds": 2.4536527921445668,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:30:03.634456+00:00",
+          "labeler": "self",
+          "position": 9,
+          "seconds": 2.1596130419056863,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:30:07.385974+00:00",
+          "labeler": "self",
+          "position": 10,
+          "seconds": 3.6903588748537004,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:30:08.860350+00:00",
+          "labeler": "self",
+          "position": 11,
+          "seconds": 1.4170635000336915,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:30:11.434466+00:00",
+          "labeler": "self",
+          "position": 12,
+          "seconds": 2.5129089998081326,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:30:18.073983+00:00",
+          "labeler": "self",
+          "position": 14,
+          "seconds": 3.111021083081141,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:30:20.671640+00:00",
+          "labeler": "self",
+          "position": 15,
+          "seconds": 2.5234284999314696,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:30:22.885704+00:00",
+          "labeler": "self",
+          "position": 16,
+          "seconds": 2.1457613750826567,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:30:34.460080+00:00",
+          "labeler": "self",
+          "position": 17,
+          "seconds": 11.502559958025813,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:30:36.717218+00:00",
+          "labeler": "self",
+          "position": 18,
+          "seconds": 2.184767666971311,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:30:50.309556+00:00",
+          "labeler": "self",
+          "position": 21,
+          "seconds": 4.243326042080298,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:30:52.075353+00:00",
+          "labeler": "self",
+          "position": 22,
+          "seconds": 1.6980165839195251,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:31:04.237277+00:00",
+          "labeler": "self",
+          "position": 27,
+          "seconds": 2.6072652919683605,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:31:08.876346+00:00",
+          "labeler": "self",
+          "position": 29,
+          "seconds": 1.9754108749330044,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:31:12.589931+00:00",
+          "labeler": "self",
+          "position": 32,
+          "seconds": 1.4191109170205891,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:52:58.603543+00:00",
+          "labeler": "self",
+          "position": 34,
+          "seconds": 329.7148381660227,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:53:00.583027+00:00",
+          "labeler": "self",
+          "position": 35,
+          "seconds": 1.9044136248994619,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:53:02.163925+00:00",
+          "labeler": "self",
+          "position": 36,
+          "seconds": 1.5123183750547469,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:53:03.464646+00:00",
+          "labeler": "self",
+          "position": 37,
+          "seconds": 1.2319755831267685,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:53:06.047099+00:00",
+          "labeler": "self",
+          "position": 39,
+          "seconds": 1.14592079189606,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:53:13.573987+00:00",
+          "labeler": "self",
+          "position": 42,
+          "seconds": 5.531868708087131,
+          "verdict": "unsure"
+        },
+        {
+          "labeled_at": "2026-08-27T23:53:16.370230+00:00",
+          "labeler": "self",
+          "position": 43,
+          "seconds": 2.728641791967675,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:53:22.211999+00:00",
+          "labeler": "self",
+          "position": 46,
+          "seconds": 1.856965458020568,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:53:24.992327+00:00",
+          "labeler": "self",
+          "position": 47,
+          "seconds": 2.7220018750522286,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:53:39.736513+00:00",
+          "labeler": "self",
+          "position": 67,
+          "seconds": 1.082159083103761,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-27T23:53:41.838029+00:00",
+          "labeler": "self",
+          "position": 69,
+          "seconds": 1.0101700420491397,
+          "verdict": "equivalent"
+        }
+      ],
+      "requested_n": 100,
+      "run_ids": [
+        "70dc0c91-c365-4b40-9270-44a28b9696aa",
+        "a0d88ed2-90e9-499a-b905-474f1a35f396"
+      ],
+      "seed": 0
+    }
+  ]
+}
