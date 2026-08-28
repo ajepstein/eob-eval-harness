@@ -209,11 +209,28 @@ existed. The calibration was discarded rather than superseded, and the 16
 `cpt_codes` labels cleared — leaving 32 labels on questions the schema gap
 never touched, and 69 items to label against a defined rule.
 
-One caveat belongs with that next calibration before it is read. 36 of the
-69 items are `cpt_codes` comparisons whose answer now follows mechanically
-from a rule `judge_v2` states in its own rubric. The judge will get them
-right, and kappa will improve for a reason that is not judgment. The signal
-worth reading lives in the `patient_name` and `member_id` items.
+That caveat then turned into a design change. 50 of the 91 items were
+comparisons whose answer follows mechanically from a documented convention,
+and `judge_v2` states both conventions in its own rubric. Calibrating over
+them would have measured whether the rubric was read, not whether the judge
+can judge — kappa improving for a reason that is not judgment.
+
+The evidence that this was not hypothetical arrived from the labelling
+itself. Handed those items, a person labelled structurally identical pairs
+`equivalent` and `different` twenty seconds apart, at a median of about a
+second each: too fast to have read the values, which is what a lookup
+degrades into when a person is asked to perform it.
+
+So schema-settled items are now separated out rather than labelled.
+`harness/conventions.py` returns the verdict a convention determines, or
+`None` where judgment is genuinely required, and
+`scripts/prune_label_set.py` removes the settled ones. The predicate is
+deliberately narrow and refuses anything it cannot reconcile exactly — a
+false "settled" deletes a real disagreement from the evidence, and nobody
+sees it again. Most of its tests are refusals for that reason.
+
+What remains is 41 judgment items, above the calibration floor of 30, on
+which a kappa would mean something.
 
 ---
 

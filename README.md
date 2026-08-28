@@ -220,11 +220,12 @@ That runs the full 78-task suite against both adapters and checks every
 quality gate in under a second. To go further:
 
 ```bash
-pytest -q                                        # 434 tests, offline
+pytest -q                                        # 456 tests, offline
 python scripts/run_eval.py --report --open       # self-contained HTML report
 python scripts/run_eval.py --mde                 # what this suite can resolve
 python scripts/run_eval.py --frontier            # cost against quality
 python scripts/export_labels.py                  # back up the hand labels
+python scripts/prune_label_set.py                # drop items the schema settles
 ```
 
 `eval_runs.db` is gitignored because everything in it is derived — runs

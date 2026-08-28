@@ -253,6 +253,7 @@ def test_labelling_scripts_import_nothing_that_exposes_verdicts():
         "scripts/label.py",
         "scripts/label_status.py",
         "scripts/export_labels.py",
+        "scripts/prune_label_set.py",
     ):
         code = _executable_source(script)
         assert "judge" not in code.lower(), f"{script} references judge data"
