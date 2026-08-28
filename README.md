@@ -29,12 +29,17 @@ p = 1.000.**
 > at n=78. They differ only in cost, where `gpt-5.6-terra` is 1.6× cheaper
 > for the same measured quality.
 
-**Judge reliability: not established.** 2 of 101 sampled items are labelled,
-below the `MIN_CALIBRATION_N = 30` floor at which kappa is a measurement
-rather than noise. The harness therefore refuses to report judge-adjusted
-scores, the HTML report leads with a red warning instead of a calibration
-banner, and `set_baseline.py` will not promote a baseline. Those refusals
-are the intended behaviour, not an outage — see *Limitations*.
+**Judge reliability: measured, and the judge failed.** Against 42 blind
+human labels the judge scored **kappa −0.043** — no better than chance. It
+and the labeller never once agreed that two values were *different*: all six
+of the labeller's "different" calls were judged equivalent. The judge is
+systematically too permissive on exactly the distinction that matters, which
+is whether a member id carrying an extra component is the same identifier.
+
+That is a result, not a gap. The harness refuses to report judge-adjusted
+scores, the report leads with a red banner, and `set_baseline.py` will not
+promote a baseline — because a judge measured below the 0.40 floor has been
+tested and found wanting, not merely left unmeasured.
 
 ---
 
@@ -132,10 +137,12 @@ human labels that do not yet exist.
 
 Written before anyone asks.
 
-- **The judge is uncalibrated.** 2 of 101 items labelled. Every
-  judge-adjusted number in this repository is of unknown reliability, and
-  the harness refuses to report them rather than showing them with a
-  caveat.
+- **The judge does not work on this task**, at kappa −0.043 over 42 labels.
+  The label set is also 86% one class, which makes kappa unstable, and only
+  five double-label pairs survive, so the human ceiling is undefined and the
+  result cannot be attributed between "bad judge" and "ambiguous task". The
+  honest reading is that the rubric needs revising to `judge_v2` and
+  re-calibrating, not that the number should be presented more kindly.
 - **78 synthetic tasks, one document domain.** Fictional patients, payers
   and providers. Nothing here says how these models behave on real scanned
   EOBs, and OCR noise is entirely absent.

@@ -430,3 +430,54 @@ def test_migration_adds_the_labeller_column_to_an_older_store(tmp_path: Path):
     with sqlite3.connect(db) as conn:
         cols = {r[1] for r in conn.execute("PRAGMA table_info(calibrations)")}
     assert "labelers_json" in cols
+
+
+# --- a measured-but-useless judge is still not usable ------------------------
+
+
+def test_a_kappa_below_the_floor_does_not_establish_reliability():
+    from harness.calibration import MIN_USABLE_KAPPA
+
+    usable, why = calibration_is_usable(
+        {"n": 100, "kappa": MIN_USABLE_KAPPA - 0.01, "labelers_json": '["self"]'}
+    )
+
+    assert not usable
+    assert "below the" in why
+    assert "a result, not a gap" in why
+
+
+def test_a_negative_kappa_does_not_establish_reliability():
+    # Worse than chance. n and definedness alone would have let this through.
+    usable, why = calibration_is_usable(
+        {"n": 100, "kappa": -0.05, "labelers_json": '["self"]'}
+    )
+
+    assert not usable
+
+
+def test_a_weak_but_real_kappa_is_accepted():
+    # "Weak" is a caveat to report, not grounds to refuse.
+    from harness.calibration import MIN_USABLE_KAPPA
+
+    usable, why = calibration_is_usable(
+        {"n": 100, "kappa": MIN_USABLE_KAPPA, "labelers_json": '["self"]'}
+    )
+
+    assert usable and why is None
+
+
+def test_the_floor_sits_on_the_band_boundary():
+    from harness.calibration import MIN_USABLE_KAPPA, kappa_band
+
+    assert kappa_band(MIN_USABLE_KAPPA) == "weak"
+    assert kappa_band(MIN_USABLE_KAPPA - 0.01) == "close to useless"
+
+
+def test_a_large_sample_does_not_rescue_a_useless_kappa():
+    # Quantity is not a substitute for agreement.
+    usable, _ = calibration_is_usable(
+        {"n": 10_000, "kappa": 0.05, "labelers_json": '["self"]'}
+    )
+
+    assert not usable

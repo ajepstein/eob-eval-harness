@@ -55,6 +55,18 @@ MIN_CALIBRATION_N = 30
 # establish reliability, so every consumer refuses them.
 NON_HUMAN_LABELERS = frozenset({"synthetic", "model", "generated"})
 
+# The lowest kappa that establishes anything. This is the boundary between
+# the "close to useless" and "weak" bands.
+#
+# Quantity and definedness are not sufficient on their own: a calibration can
+# clear MIN_CALIBRATION_N, produce a perfectly well-defined kappa, and still
+# show that the judge agrees with the labeller no better than chance. Letting
+# that unblock the judge gate would mean the harness reporting judge-adjusted
+# scores on the strength of a measurement that says the judge does not work.
+# A judge below this floor has been measured, and the measurement is that it
+# should not be used.
+MIN_USABLE_KAPPA = 0.40
+
 
 def calibration_is_usable(calibration: dict | None) -> tuple[bool, str | None]:
     """Whether a stored calibration may be relied on, and why not if not."""
@@ -83,10 +95,19 @@ def calibration_is_usable(calibration: dict | None) -> tuple[bool, str | None]:
                 f"establishes nothing about judge reliability"
             )
 
-    if calibration.get("kappa") is None:
+    kappa = calibration.get("kappa")
+    if kappa is None:
         return False, (
             "the stored calibration has an undefined kappa (degenerate "
             "marginals), so it establishes no reliability"
+        )
+    if kappa < MIN_USABLE_KAPPA:
+        return False, (
+            f"the judge was measured at kappa {kappa:.3f} "
+            f"({kappa_band(kappa)}), below the {MIN_USABLE_KAPPA:.2f} floor. "
+            f"This is a result, not a gap: the judge has been tested against "
+            f"human labels and does not agree with them well enough to be "
+            f"relied on. Revise the rubric and re-calibrate"
         )
     return True, None
 
