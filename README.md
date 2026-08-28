@@ -163,8 +163,12 @@ Written before anyone asks.
   indistinguishability result reported above.
 - **The judge scores kappa −0.043 over 42 labels**, below the usable floor.
   The label set is 86% one class, which makes kappa unstable, and only five
-  double-label pairs survive, so the human ceiling is undefined and the
-  result cannot be attributed between "bad judge" and "ambiguous task".
+  double-label pairs survive, so the human ceiling is undefined. The
+  disagreement is now largely attributable: it concentrates in `cpt_codes`,
+  where the judge was consistent across all 34 calls and the human was not,
+  on a modifier question `SCHEMA.md` did not answer at the time. That
+  question is now decided, which invalidates these 42 labels for calibrating
+  `judge_v2` — they were collected against an undefined rule.
 - **`judge_v2` has not been calibrated, and must not be calibrated against
   the labels that produced v1's score.** Revising a rubric against the same
   labels used to evaluate it and then re-scoring on those labels measures

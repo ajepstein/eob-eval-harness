@@ -176,12 +176,26 @@ downstream machinery — the calibration banner, the baseline promotion, the
 regression gate — is built and correctly refuses to operate, but now on a
 measurement rather than on an absence.
 
-The refusal is only half the story. Five of the six judge/human
-disagreements are `cpt_codes`, all in the same direction, and they trace to
-`SCHEMA.md` never saying whether modifiers belong in that field. That is a
-schema defect being charged to the judge, and no rubric revision can fix
-it. `judge_v2` states the convention explicitly; it must be calibrated on
-the 53 unlabelled items, never on the 42 that produced this number.
+The refusal is only half the story, and the attribution turned out to be
+recoverable. All 34 of the judge's `cpt_codes` calls returned `equivalent`,
+with reasoning defensible on its own terms — "the same base CPT code with a
+modifier appended, denoting the same procedure". The human labels on that
+same question split 11 `equivalent` to 5 `different`, and gave opposite
+verdicts on structurally identical pairs: eob-051 and eob-062 both compare
+bare codes against `-25` and `-TC`, and were labelled differently.
+
+So the judge was perfectly consistent and the human was not, on a question
+`SCHEMA.md` had never answered. Kappa −0.043 is substantially a measurement
+of that missing definition rather than of judge reliability — which is the
+more uncomfortable finding, because the labels were the trusted side of the
+comparison.
+
+`SCHEMA.md` now defines the field as codes-only. That makes the judge's rule
+the wrong one on all 34 calls and the five `different` labels the right ones.
+It does not rescue the label set: those 42 items were labelled before the
+rule existed, so they cannot calibrate `judge_v2` either. The calibration
+should be discarded rather than superseded, and rerun on the 53 held-out
+items now that there is a defined answer to label against.
 
 ---
 

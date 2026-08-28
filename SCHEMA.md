@@ -31,6 +31,24 @@ facts — a model cannot infer them from the document, so they belong here.
   provider, even if other NPIs are present. A facility NPI is not a
   fallback.
 
+- **`cpt_codes` holds procedure codes only.** A CPT modifier — the
+  two-character suffix in `99214-25`, `71046-TC`, `93000-26` — is a separate
+  data element qualifying a code, not part of the code. Documents in this
+  suite render the two joined by a hyphen; that is a presentation choice, not
+  a single value. Extract `99214`, never `99214-25`.
+
+  This follows the claim standards the documents are modelled on, which carry
+  code and modifiers in distinct positions (CMS-1500 box 24D; X12 837P
+  SV101-2 against SV101-3 onward). It also keeps the field aggregatable: a
+  consumer counting `99214` encounters should not need to know every modifier
+  that can attach to one.
+
+  The cost is real and worth stating plainly. `-26` and `-TC` are
+  payment-determining — `71046-TC` reimburses differently from `71046` — so a
+  consumer needing that distinction cannot recover it from this schema. The
+  remedy is a separate `cpt_modifiers` field, not a wider reading of this
+  one. That field is not in scope here and its absence is a known limit.
+
 ## Normalization rules
 
 These rules govern how extracted values are represented, and the Day 4
