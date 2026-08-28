@@ -19,10 +19,10 @@ the interval.
 
 | adapter | model | n | schema | mean F1 [95% CI] | $/task |
 |---|---|---:|---:|---:|---:|
-| anthropic | `claude-sonnet-5` | 78 | 1.00 | **0.929** [0.902, 0.955] | $0.000408 |
-| openai | `gpt-5.6-terra` | 78 | 1.00 | **0.929** [0.901, 0.955] | $0.000260 |
+| anthropic | `claude-sonnet-5` | 78 | 1.00 | **0.938** [0.913, 0.962] | $0.000408 |
+| openai | `gpt-5.6-terra` | 78 | 1.00 | **0.936** [0.910, 0.960] | $0.000260 |
 
-**Paired difference: +0.0000, 95% CI [-0.0128, +0.0128]. McNemar exact
+**Paired difference: −0.002, 95% CI [−0.014, +0.010]. McNemar exact
 p = 1.000.**
 
 > The difference between these two models is not distinguishable from zero
@@ -103,12 +103,14 @@ design already resolves differences of **0.013**, nine times finer than the
 unpaired power calculation suggests. Growing the suite would tighten that
 slightly and change no conclusion; the models are genuinely equivalent here.
 
-**The semantic-equivalence tail is real but small.** Raw F1 0.929 rises to
-0.995 once a judge adjudicates near-misses — a 6.6-point gap consisting
-almost entirely of defensible surface-form disagreements: `WHITFIELD,
-MARGUERITE A.` versus `Marguerite A. Whitfield`, `99214` versus `99214-25`,
-`WB 5520 1147` versus `WB55201147`. **That 0.995 is not currently
-reportable**, because the judge producing it is uncalibrated.
+**The semantic-equivalence tail is real but small.** Raw F1 is 0.938/0.936,
+and a judge adjudicating the near-misses lifts it several points — a gap
+consisting of defensible surface-form disagreements: `WHITFIELD, MARGUERITE
+A.` versus `Marguerite A. Whitfield`, `EG-441002` versus `EG-441002-A`. **The
+adjudicated figure is deliberately not quoted here.** The judge producing it
+is uncalibrated, and the near-miss population itself changed when `member_id`
+normalization was defined, so any number carried over from before that change
+would describe a population that no longer exists.
 
 **The suite resisted being made harder.** Two separate attempts to engineer
 tasks yielding genuine "different" verdicts produced zero near-misses: both
@@ -159,8 +161,8 @@ the method working, not failing.
 Written before anyone asks.
 
 - **The answer key has not been human-verified.** None of the 78 tasks
-  carries a `verified` flag, so every number above — the 0.929 means, the
-  paired difference of 0.000, the 0.0000 hallucination rate — is measured
+  carries a `verified` flag, so every number above — the 0.938/0.936 means,
+  the paired difference of −0.002, the 0.0000 hallucination rate — is measured
   against expected values written alongside the documents and never
   independently reviewed. `scripts/verify_tasks.py` exists for exactly this
   and has not been run; the test suite warns on every invocation. This is

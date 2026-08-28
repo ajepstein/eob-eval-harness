@@ -151,8 +151,10 @@ like "fields fail together". Replaced with AST-based tests that check
 ## What was measured, and what could not be
 
 **Two frontier models are statistically indistinguishable on this task.**
-Mean F1 0.929 each; paired difference 0.000 with a 95% interval of
-[-0.013, 0.013]; McNemar exact p = 1.000. They are separated by cost alone.
+Mean F1 0.938 and 0.936; paired difference −0.002 with a 95% interval of
+[−0.014, 0.010]; McNemar exact p = 1.000. They are separated by cost alone.
+(These numbers moved slightly when `member_id` normalization was defined —
+the conclusion did not.)
 
 **Hallucination never occurred.** Across every nullable field in 78 tasks,
 neither model invented a value where the document had none — a rate of

@@ -3,6 +3,7 @@ from decimal import Decimal
 import pytest
 
 from harness.normalize import (
+    norm_member_id,
     FIELD_NORMALIZERS,
     norm_codes,
     norm_currency,
@@ -213,3 +214,34 @@ def test_normalizers_never_raise_on_hostile_input():
     for func in FIELD_NORMALIZERS.values():
         for value in hostile:
             func(value)  # must not raise
+
+
+# --- member_id ---------------------------------------------------------------
+
+
+def test_member_id_ignores_presentational_whitespace():
+    # SCHEMA.md: spacing inside an identifier is grouping, not content.
+    assert norm_member_id("PM 4471 2039") == norm_member_id("PM44712039")
+
+
+def test_member_id_removes_whitespace_rather_than_collapsing_it():
+    # norm_string would collapse "PM 4471 2039" to itself and compare unequal
+    # to "PM44712039". The distinction is the whole point of this normalizer.
+    assert norm_member_id("PM  4471   2039") == "pm44712039"
+
+
+def test_member_id_keeps_the_dependent_code_distinct():
+    # SCHEMA.md defines the field as the subscriber id, so a dependent
+    # suffix is a genuine difference. Stripping hyphens as "presentational"
+    # would silently collapse these two and erase that decision.
+    assert norm_member_id("EG-441002") != norm_member_id("EG-441002-A")
+
+
+def test_member_id_casefolds():
+    assert norm_member_id("eg-441002") == norm_member_id("EG-441002")
+
+
+def test_member_id_treats_absence_markers_as_null():
+    assert norm_member_id("not provided") is None
+    assert norm_member_id("") is None
+    assert norm_member_id(None) is None

@@ -181,6 +181,30 @@ def norm_date(v: Any) -> str | None:
     return None
 
 
+def norm_member_id(v: Any) -> str | None:
+    """Casefold and remove internal whitespace, per SCHEMA.md.
+
+    Unlike ``norm_string``, whitespace is *removed* rather than collapsed:
+    spacing inside an identifier is presentational grouping, the way a card
+    number is printed in fours, so "PM 4471 2039" and "PM44712039" are the
+    same id. This mirrors ``norm_npi``, which discards separators for the
+    same reason.
+
+    Hyphens are kept, because they are not presentational here: a trailing
+    ``-A`` or ``-01`` is a dependent code, and SCHEMA.md defines this field
+    as the subscriber id without it. Stripping hyphens would silently make
+    those two values compare equal.
+    """
+    if _is_null(v):
+        return None
+    if isinstance(v, bool):
+        return None
+    text = _WHITESPACE.sub("", str(v)).strip()
+    if not text:
+        return None
+    return text.casefold()
+
+
 def norm_npi(v: Any) -> str | None:
     """Digits only. Returns None unless exactly 10 digits remain.
 
@@ -223,7 +247,7 @@ FIELD_NORMALIZERS: dict[str, Callable[[Any], Any]] = {
     "date_of_service": norm_date,
     "provider_npi": norm_npi,
     "payer_name": norm_string,
-    "member_id": norm_string,
+    "member_id": norm_member_id,
     "cpt_codes": norm_codes,
     "billed_amount": norm_currency,
     "patient_responsibility": norm_currency,

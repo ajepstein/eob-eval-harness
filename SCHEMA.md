@@ -31,6 +31,18 @@ facts — a model cannot infer them from the document, so they belong here.
   provider, even if other NPIs are present. A facility NPI is not a
   fallback.
 
+- **`member_id` is the subscriber identifier, without a dependent code.**
+  A trailing `-A`, `-01` or similar identifies which person on the contract
+  the claim is for; it is not part of the member id. `EG-441002-A` extracts
+  as `EG-441002`. Like the NPI rule above, this is a convention the document
+  cannot settle on its own.
+
+  Whitespace inside the identifier is presentational grouping, the way a
+  card number is printed in fours: `PM 4471 2039` and `PM44712039` are the
+  same id, and `norm_member_id` removes internal whitespace so they compare
+  equal. Hyphens are kept, precisely so the dependent-code distinction above
+  survives normalization.
+
 - **`cpt_codes` holds procedure codes only.** A CPT modifier — the
   two-character suffix in `99214-25`, `71046-TC`, `93000-26` — is a separate
   data element qualifying a code, not part of the code. Documents in this
