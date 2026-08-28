@@ -127,16 +127,6 @@
           "task_id": "eob-062"
         },
         {
-          "expected": "wb 5520 1147",
-          "field": "member_id",
-          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-050:member_id",
-          "pass_number": 1,
-          "position": 12,
-          "predicted": "wb55201147",
-          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
-          "task_id": "eob-050"
-        },
-        {
           "expected": "['99215', '94010']",
           "field": "cpt_codes",
           "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-056:cpt_codes",
@@ -157,16 +147,6 @@
           "task_id": "eob-049"
         },
         {
-          "expected": "sp 8820 4471",
-          "field": "member_id",
-          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-066:member_id",
-          "pass_number": 1,
-          "position": 15,
-          "predicted": "sp88204471",
-          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
-          "task_id": "eob-066"
-        },
-        {
           "expected": "oyelaran, benedicta a.",
           "field": "patient_name",
           "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-059:patient_name",
@@ -175,16 +155,6 @@
           "predicted": "benedicta oyelaran",
           "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
           "task_id": "eob-059"
-        },
-        {
-          "expected": "sp 8820 4471",
-          "field": "member_id",
-          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-066:member_id",
-          "pass_number": 1,
-          "position": 17,
-          "predicted": "sp88204471",
-          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
-          "task_id": "eob-066"
         },
         {
           "expected": "fontaine-adebayo, marguerite v.",
@@ -295,16 +265,6 @@
           "predicted": "['99213-25', '85025']",
           "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
           "task_id": "eob-053"
-        },
-        {
-          "expected": "fc 9902 3317",
-          "field": "member_id",
-          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-070:member_id",
-          "pass_number": 1,
-          "position": 29,
-          "predicted": "fc99023317",
-          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
-          "task_id": "eob-070"
         },
         {
           "expected": "['99214', '93000']",
@@ -587,16 +547,6 @@
           "task_id": "eob-069"
         },
         {
-          "expected": "pm 4471 2039",
-          "field": "member_id",
-          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-063:member_id",
-          "pass_number": 1,
-          "position": 58,
-          "predicted": "pm44712039",
-          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
-          "task_id": "eob-063"
-        },
-        {
           "expected": "tf-772208",
           "field": "member_id",
           "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-064:member_id",
@@ -605,16 +555,6 @@
           "predicted": "tf-772208-04",
           "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
           "task_id": "eob-064"
-        },
-        {
-          "expected": "wb 5520 1147",
-          "field": "member_id",
-          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-050:member_id",
-          "pass_number": 2,
-          "position": 60,
-          "predicted": "wb55201147",
-          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
-          "task_id": "eob-050"
         },
         {
           "expected": "fontaine-adebayo, marguerite v.",
@@ -665,16 +605,6 @@
           "predicted": "['99215-25', '20551-lt']",
           "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
           "task_id": "eob-061"
-        },
-        {
-          "expected": "cw 3390 1128",
-          "field": "member_id",
-          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-059:member_id",
-          "pass_number": 1,
-          "position": 66,
-          "predicted": "cw33901128",
-          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
-          "task_id": "eob-059"
         },
         {
           "expected": "holloway-ndiaye, seraphine m.",
@@ -737,16 +667,6 @@
           "task_id": "eob-057"
         },
         {
-          "expected": "fc 9902 3317",
-          "field": "member_id",
-          "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-070:member_id",
-          "pass_number": 1,
-          "position": 73,
-          "predicted": "fc99023317",
-          "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
-          "task_id": "eob-070"
-        },
-        {
           "expected": "d'arcy-boateng, philomena n.",
           "field": "patient_name",
           "item_key": "70dc0c91-c365-4b40-9270-44a28b9696aa:eob-052:patient_name",
@@ -755,16 +675,6 @@
           "predicted": "philomena n. d'arcy-boateng",
           "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
           "task_id": "eob-052"
-        },
-        {
-          "expected": "pm 4471 2039",
-          "field": "member_id",
-          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-063:member_id",
-          "pass_number": 1,
-          "position": 75,
-          "predicted": "pm44712039",
-          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
-          "task_id": "eob-063"
         },
         {
           "expected": "o'callaghan-mbeki, fionnuala",
@@ -855,16 +765,6 @@
           "predicted": "['99213-25', '36415']",
           "run_id": "70dc0c91-c365-4b40-9270-44a28b9696aa",
           "task_id": "eob-057"
-        },
-        {
-          "expected": "cw 3390 1128",
-          "field": "member_id",
-          "item_key": "a0d88ed2-90e9-499a-b905-474f1a35f396:eob-059:member_id",
-          "pass_number": 1,
-          "position": 85,
-          "predicted": "cw33901128",
-          "run_id": "a0d88ed2-90e9-499a-b905-474f1a35f396",
-          "task_id": "eob-059"
         },
         {
           "expected": "ashworth-diallo, clementine r.",
@@ -1019,6 +919,13 @@
       ],
       "labels": [
         {
+          "labeled_at": "2026-08-28T22:04:34.913993+00:00",
+          "labeler": "self",
+          "position": 0,
+          "seconds": 10.90148749994114,
+          "verdict": "equivalent"
+        },
+        {
           "labeled_at": "2026-08-27T23:29:44.083407+00:00",
           "labeler": "self",
           "position": 1,
@@ -1044,6 +951,13 @@
           "labeler": "self",
           "position": 4,
           "seconds": 4.7778241250198334,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-28T22:04:36.826857+00:00",
+          "labeler": "self",
+          "position": 5,
+          "seconds": 1.8374834591522813,
           "verdict": "equivalent"
         },
         {
@@ -1089,24 +1003,17 @@
           "verdict": "equivalent"
         },
         {
-          "labeled_at": "2026-08-27T23:30:11.434466+00:00",
+          "labeled_at": "2026-08-28T22:04:41.359229+00:00",
           "labeler": "self",
-          "position": 12,
-          "seconds": 2.5129089998081326,
-          "verdict": "equivalent"
+          "position": 13,
+          "seconds": 4.458874042145908,
+          "verdict": "different"
         },
         {
           "labeled_at": "2026-08-27T23:30:18.073983+00:00",
           "labeler": "self",
           "position": 14,
           "seconds": 3.111021083081141,
-          "verdict": "equivalent"
-        },
-        {
-          "labeled_at": "2026-08-27T23:30:20.671640+00:00",
-          "labeler": "self",
-          "position": 15,
-          "seconds": 2.5234284999314696,
           "verdict": "equivalent"
         },
         {
@@ -1117,18 +1024,25 @@
           "verdict": "equivalent"
         },
         {
-          "labeled_at": "2026-08-27T23:30:34.460080+00:00",
-          "labeler": "self",
-          "position": 17,
-          "seconds": 11.502559958025813,
-          "verdict": "equivalent"
-        },
-        {
           "labeled_at": "2026-08-27T23:30:36.717218+00:00",
           "labeler": "self",
           "position": 18,
           "seconds": 2.184767666971311,
           "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-28T22:04:43.162810+00:00",
+          "labeler": "self",
+          "position": 19,
+          "seconds": 1.7149717919528484,
+          "verdict": "different"
+        },
+        {
+          "labeled_at": "2026-08-28T22:04:44.671784+00:00",
+          "labeler": "self",
+          "position": 20,
+          "seconds": 1.4319244578946382,
+          "verdict": "different"
         },
         {
           "labeled_at": "2026-08-27T23:30:50.309556+00:00",
@@ -1145,6 +1059,34 @@
           "verdict": "equivalent"
         },
         {
+          "labeled_at": "2026-08-28T22:04:45.900728+00:00",
+          "labeler": "self",
+          "position": 23,
+          "seconds": 1.150742958066985,
+          "verdict": "different"
+        },
+        {
+          "labeled_at": "2026-08-28T22:04:46.832835+00:00",
+          "labeler": "self",
+          "position": 24,
+          "seconds": 0.8523114169947803,
+          "verdict": "different"
+        },
+        {
+          "labeled_at": "2026-08-28T22:04:48.147481+00:00",
+          "labeler": "self",
+          "position": 25,
+          "seconds": 1.2290332920383662,
+          "verdict": "different"
+        },
+        {
+          "labeled_at": "2026-08-28T22:04:49.208020+00:00",
+          "labeler": "self",
+          "position": 26,
+          "seconds": 0.9816842500586063,
+          "verdict": "different"
+        },
+        {
           "labeled_at": "2026-08-27T23:31:04.237277+00:00",
           "labeler": "self",
           "position": 27,
@@ -1152,10 +1094,24 @@
           "verdict": "equivalent"
         },
         {
-          "labeled_at": "2026-08-27T23:31:08.876346+00:00",
+          "labeled_at": "2026-08-28T22:04:50.288634+00:00",
           "labeler": "self",
-          "position": 29,
-          "seconds": 1.9754108749330044,
+          "position": 28,
+          "seconds": 1.0088260411284864,
+          "verdict": "different"
+        },
+        {
+          "labeled_at": "2026-08-28T22:04:51.209907+00:00",
+          "labeler": "self",
+          "position": 30,
+          "seconds": 0.8550339580979198,
+          "verdict": "different"
+        },
+        {
+          "labeled_at": "2026-08-28T22:04:55.115905+00:00",
+          "labeler": "self",
+          "position": 31,
+          "seconds": 3.8393067920114845,
           "verdict": "equivalent"
         },
         {
@@ -1164,6 +1120,13 @@
           "position": 32,
           "seconds": 1.4191109170205891,
           "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-28T22:04:56.537122+00:00",
+          "labeler": "self",
+          "position": 33,
+          "seconds": 1.3428726252168417,
+          "verdict": "different"
         },
         {
           "labeled_at": "2026-08-27T23:52:58.603543+00:00",
@@ -1226,6 +1189,62 @@
           "labeler": "self",
           "position": 47,
           "seconds": 2.7220018750522286,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-28T22:05:06.315710+00:00",
+          "labeler": "self",
+          "position": 51,
+          "seconds": 3.4423971250653267,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-28T22:05:07.615901+00:00",
+          "labeler": "self",
+          "position": 52,
+          "seconds": 1.226673207944259,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-28T22:05:09.475411+00:00",
+          "labeler": "self",
+          "position": 53,
+          "seconds": 1.7981714999768883,
+          "verdict": "different"
+        },
+        {
+          "labeled_at": "2026-08-28T22:05:12.722062+00:00",
+          "labeler": "self",
+          "position": 54,
+          "seconds": 3.175334082916379,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-28T22:05:15.675475+00:00",
+          "labeler": "self",
+          "position": 55,
+          "seconds": 2.8841825001873076,
+          "verdict": "different"
+        },
+        {
+          "labeled_at": "2026-08-28T22:05:18.413949+00:00",
+          "labeler": "self",
+          "position": 56,
+          "seconds": 2.6643435419537127,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-28T22:05:20.622925+00:00",
+          "labeler": "self",
+          "position": 57,
+          "seconds": 2.1237502910662442,
+          "verdict": "equivalent"
+        },
+        {
+          "labeled_at": "2026-08-28T22:05:21.211407+00:00",
+          "labeler": "self",
+          "position": 59,
+          "seconds": 0.5066137500107288,
           "verdict": "equivalent"
         },
         {
