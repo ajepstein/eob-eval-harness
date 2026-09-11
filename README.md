@@ -200,8 +200,15 @@ Written before anyone asks.
   discriminates mainly on the name-variance tail.
 - **Costs are as of 2026-08-27** and are recorded with the source URL and
   date-checked comment in `harness/config.py`.
-- **CI has not been observed running.** Both workflows are registered and
-  the gate passes locally in 0.46s, but no pull request has exercised them.
+- **The nightly live run has never completed.** It has been scheduled since
+  2026-08-28 and failed all 15 times, every one of them on a missing
+  `ANTHROPIC_API_KEY` — the repository secrets were never set. So no live
+  result in this README has been reproduced by CI, and the drift the nightly
+  exists to catch has gone unmonitored for two weeks. The workflow now
+  preflights credentials and skips rather than failing, but the secrets
+  still need setting before it measures anything.
+- **The PR gate has not been observed running.** It is registered and passes
+  locally in 0.46s, but no pull request has exercised it.
 
 ---
 
@@ -220,7 +227,7 @@ That runs the full 78-task suite against both adapters and checks every
 quality gate in under a second. To go further:
 
 ```bash
-pytest -q                                        # 456 tests, offline
+pytest -q                                        # 461 tests, offline
 python scripts/run_eval.py --report --open       # self-contained HTML report
 python scripts/run_eval.py --mde                 # what this suite can resolve
 python scripts/run_eval.py --frontier            # cost against quality

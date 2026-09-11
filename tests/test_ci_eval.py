@@ -147,3 +147,54 @@ def test_nightly_opens_an_issue_rather_than_blocking():
     text = Path(".github/workflows/eval-nightly.yml").read_text()
 
     assert "issues.create" in text
+
+
+def _nightly_steps() -> dict:
+    """Nightly steps by name. Structural, not a substring search: an `if:`
+    guard is the thing being asserted, and grep cannot see one."""
+    import yaml
+
+    doc = yaml.safe_load(Path(".github/workflows/eval-nightly.yml").read_text())
+    return {s["name"]: s for s in doc["jobs"]["live"]["steps"] if "name" in s}
+
+
+def test_nightly_checks_credentials_before_evaluating():
+    # The job failed 15 nights running because a missing secret only
+    # surfaced inside AnthropicAdapter.__init__ — after tasks were loaded
+    # and after a cost estimate was printed for calls never made.
+    steps = _nightly_steps()
+
+    assert "Check credentials" in steps
+    names = list(steps)
+    assert names.index("Check credentials") < names.index("Live evaluation")
+
+
+def test_nightly_skips_rather_than_fails_without_credentials():
+    steps = _nightly_steps()
+
+    assert "steps.preflight.outputs.ready == 'true'" in steps["Live evaluation"]["if"]
+
+
+def test_an_unconfigured_nightly_run_reports_nothing():
+    # A skipped run has no finding. Filing one would be the same false
+    # signal as the fifteen issues that blamed provider drift.
+    guard = _nightly_steps()["Report failure"]["if"]
+
+    assert "failure()" in guard
+    assert "steps.preflight.outputs.ready == 'true'" in guard
+
+
+def test_nightly_comments_on_an_existing_issue_rather_than_opening_another():
+    text = Path(".github/workflows/eval-nightly.yml").read_text()
+
+    assert "listForRepo" in text, "does not look for an existing issue"
+    assert "createComment" in text, "cannot report onto an existing issue"
+
+
+def test_nightly_reports_the_actual_error():
+    # Fifteen issues asserted provider drift for a missing secret because
+    # the body never carried the failure itself.
+    text = Path(".github/workflows/eval-nightly.yml").read_text()
+
+    assert "live.log" in text, "failure output is never captured"
+    assert "set -o pipefail" in text, "tee would mask the eval's exit code"
