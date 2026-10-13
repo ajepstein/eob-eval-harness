@@ -3,7 +3,7 @@ import math
 
 import pytest
 
-from stonair.estimate import (envelope, load_part, nest_count, op_a, op_b, params, press_motor_ratings,
+from stonair.estimate import (envelope, load_part, nest_count, op_a, op_b, op_c, params, press_motor_ratings,
                               started_parts)
 
 FLOWS_A = ["retained_good_parts_g", "rejected_parts_g", "removed_inside_part_holes_g",
@@ -102,3 +102,37 @@ def test_envelopes_are_ordered():
         e = envelope(op, kw)
         assert e["favourable"]["energy_total_kWh"] < e["central"]["energy_total_kWh"] < \
             e["unfavourable"]["energy_total_kWh"]
+
+
+# ---------------------------------------------------------------- OP-C (laser route for P007)
+@pytest.mark.parametrize("level,sheet", list(itertools.product(("low", "central", "high"),
+                                                               ("600x600", "600x1500", "1000x2000"))))
+def test_op_c_mass_balance_closes(level, sheet):
+    r = op_c(params("OP-C", level, {"sheet_size_mm": sheet}))
+    assert sum(r[k] for k in FLOWS_A) == pytest.approx(r["input_material_g"], rel=1e-12)
+    assert all(r[k] >= -1e-9 for k in FLOWS_A)
+    assert r["good_parts"] == 200 and r["part_id"] == "P007" and r["operation"] == "OP-C"
+
+
+def test_op_c_uses_copper_and_p007_geometry():
+    r = op_c(params("OP-C"))
+    assert r["part_net_mass_g"] == pytest.approx(374.47251166716813 * 8.89e-3)
+    v = 10 * 1000 / 60
+    t = 236 / v + math.pi * 5.5 / (v * 0.35) + 2 * 0.5 + 2 * 0.4
+    assert r["cut_time_per_part_s"] == pytest.approx(t)
+    assert r["energy_cutting_kWh"] == pytest.approx(205 * t / 3600 * 12)
+
+
+def test_op_c_small_blank_needs_two_sheets():
+    # 600 x 600, margin 10, gap 3: (580+3)//15 = 38, (580+3)//109 = 5 -> 190 per blank < 205 started
+    r = op_c(params("OP-C", overrides={"sheet_size_mm": "600x600"}))
+    assert (r["parts_per_sheet"], r["sheets"]) == (190, 2)
+
+
+def test_p007_routes_share_demand_but_not_tooling_or_energy():
+    b = op_b(params("OP-B"), press_motor_ratings()["B1"])
+    c = op_c(params("OP-C"))
+    assert b["good_parts"] == c["good_parts"] == 200
+    assert b["retained_good_parts_g"] == pytest.approx(c["retained_good_parts_g"])
+    assert c["energy_total_kWh"] > b["energy_total_kWh"]
+    assert envelope("OP-C")["favourable"]["energy_total_kWh"] < envelope("OP-C")["unfavourable"]["energy_total_kWh"]

@@ -85,7 +85,7 @@ def test_sourced_assumptions_trace_to_evidence():
 
 def test_candidate_counts_and_distinct_machines():
     cands = read("machine_candidates.csv")
-    for op in ("OP-A", "OP-B"):
+    for op in ("OP-A", "OP-B", "OP-C"):
         models = {(c["manufacturer"], c["model"]) for c in cands if c["operation"] == op}
         assert len(models) >= 5, op
 
@@ -94,10 +94,23 @@ def test_ranking_rules():
     r = {x["candidate_id"]: x for x in rank()}
     assert r["A8"]["status"] == "excluded_insufficient_evidence" and r["A8"]["rank"] is None
     assert r["B5"]["best_energy_evidence"] == "none"                 # text motor field earns nothing
-    for op in ("OP-A", "OP-B"):
+    for op in ("OP-A", "OP-B", "OP-C"):
         ranks = sorted(x["rank"] for x in r.values() if x["operation"] == op and x["rank"])
         assert ranks == list(range(1, len(ranks) + 1))
     ev_ids = {e["evidence_id"] for e in machine_evidence()}
     for x in r.values():
         assert all(i in ev_ids for i in x["gate_evidence_ids"].split(";") if i)
     assert r["A1"]["rank"] == 1                                       # only eligible with OEM average power
+    assert r["C1"]["rank"] == 1
+    assert r["C5"]["gate_material_thickness"] == "pass_inferred"     # OEM lists copper, gives no thickness
+    assert r["C6"]["gate_envelope"] == "pass"                         # 1250 x 1250 >= 600 x 600 blank
+
+
+def test_op_c_sourced_scenarios_trace_to_evidence():
+    ev = machine_evidence() + evidence.process_evidence()
+    raw_vals = {round(float(x), 6) for r in ev for x in (r["value_low"], r["value_high"]) if x not in ("", None)}
+    for lvl in ("low", "central", "high"):
+        p = params("OP-C", lvl)
+        assert p["contour_speed_m_min"] in raw_vals, lvl
+        assert p["processing_power_kW"] in raw_vals, lvl
+    assert params("OP-C")["kerf_width_mm"] in raw_vals

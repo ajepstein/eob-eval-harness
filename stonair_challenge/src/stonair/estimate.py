@@ -1,9 +1,11 @@
-"""Scoped material and electricity estimates for the two selected operations.
+"""Scoped material and electricity estimates for the selected operations.
 
 OP-A  P002 top cover: fiber-laser cutting of the outer contour and 4 x Ø3.4
       holes from 2 mm 6061-T6 sheet.
 OP-B  P007 end collector: pierce Ø5.5 + cut-off (or compound blank) from
       0.3 mm C11000 strip on a gap-frame press.
+OP-C  P007 end collector, alternative route: fiber-laser cutting from 0.3 mm
+      C11000 sheet (no die). Same model as OP-A with copper inputs.
 
 All quantities carry explicit units in their names. Inputs come from three
 places only: CAD (geometry), the evidence tables (sourced values) and
@@ -95,10 +97,18 @@ def _sheet(dim: str) -> tuple[float, float]:
     return max(a, b), min(a, b)
 
 
-# --------------------------------------------------------------------------- OP-A
+# --------------------------------------------------------------------------- OP-A / OP-C
 def op_a(p: dict, part: Part | None = None, density_g_cm3: float | None = None) -> dict:
-    part = part or load_part("P002")
-    rho = (density_g_cm3 or _density("M-01")) * 1e-3  # g/mm3
+    return laser_cut("OP-A", p, part or load_part("P002"), (density_g_cm3 or _density("M-01")))
+
+
+def op_c(p: dict, part: Part | None = None, density_g_cm3: float | None = None) -> dict:
+    return laser_cut("OP-C", p, part or load_part("P007"), (density_g_cm3 or _density("M-03")))
+
+
+def laser_cut(op: str, p: dict, part: Part, density_g_cm3: float) -> dict:
+    """Sheet nesting + cut-time x power model shared by the laser operations."""
+    rho = density_g_cm3 * 1e-3  # g/mm3
     t = part.thickness_mm
     good = part.qty_good
     started = started_parts(good, p["reject_rate"])
@@ -129,11 +139,13 @@ def op_a(p: dict, part: Part | None = None, density_g_cm3: float | None = None) 
     e_cut = t_cycle_h * p["processing_power_kW"]
     e_handle = t_handle_h * p["standby_power_kW"]
     return {
-        "operation": "OP-A", "part_id": part.part_id, "good_parts": good, "started_parts": started,
+        "operation": op, "part_id": part.part_id, "good_parts": good, "started_parts": started,
         "parts_per_sheet": per_sheet, "sheets": sheets, "sheet_size_mm": p["sheet_size_mm"],
         "part_net_mass_g": m_part, "input_material_g": input_g, **flows,
         "kerf_vaporised_g (subset of holes+skeleton)": kerf_g,
         "material_utilisation_good_over_input": flows["retained_good_parts_g"] / input_g,
+        # Remainder is reusable offcut; this ratio ignores it (nest-allocated basis).
+        "material_utilisation_good_over_nest_used": flows["retained_good_parts_g"] / (input_g - flows["sheet_remainder_g"]),
         "cut_time_per_part_s": t_part_s, "in_cycle_time_h": t_cycle_h, "handling_time_h": t_handle_h,
         "energy_cutting_kWh": e_cut, "energy_handling_standby_kWh": e_handle,
         "energy_total_kWh": e_cut + e_handle, "energy_per_good_part_kWh": (e_cut + e_handle) / good,
@@ -211,6 +223,7 @@ def press_motor_ratings() -> dict[str, float]:
 NUMERIC_A = ["part_gap_mm", "edge_margin_mm", "kerf_width_mm", "contour_speed_m_min", "small_hole_speed_factor",
              "pierce_time_s", "move_time_per_feature_s", "processing_power_kW", "standby_power_kW",
              "sheet_handling_min_per_sheet", "reject_rate"]
+NUMERIC_C = NUMERIC_A
 NUMERIC_B = ["web_mm", "strip_end_scrap_mm", "tryout_parts", "reject_rate", "shear_strength_MPa", "force_factor",
              "penetration_energy_factor", "drive_efficiency", "idle_fraction_of_motor_rating", "parts_per_min",
              "motor_on_setup_min"]
@@ -218,12 +231,16 @@ NUMERIC_B = ["web_mm", "strip_end_scrap_mm", "tryout_parts", "reject_rate", "she
 _INVERSE = {"contour_speed_m_min", "small_hole_speed_factor", "parts_per_min", "drive_efficiency"}
 
 
+def _runner(op: str, motor_kW: float | None):
+    return {"OP-A": op_a, "OP-C": op_c}.get(op) or (lambda p: op_b(p, motor_kW))
+
+
 def sensitivity(op: str, motor_kW: float | None = None) -> list[dict]:
     base = params(op, "central")
-    run = (lambda p: op_a(p)) if op == "OP-A" else (lambda p: op_b(p, motor_kW))
+    run = _runner(op, motor_kW)
     ref = run(base)
     rows = []
-    for name in (NUMERIC_A if op == "OP-A" else NUMERIC_B):
+    for name in {"OP-A": NUMERIC_A, "OP-B": NUMERIC_B, "OP-C": NUMERIC_C}[op]:
         for level in ("low", "high"):
             v = params(op, level)[name]
             r = run({**base, name: v})
@@ -232,8 +249,9 @@ def sensitivity(op: str, motor_kW: float | None = None) -> list[dict]:
                          "delta_energy_pct": 100 * (r["energy_total_kWh"] / ref["energy_total_kWh"] - 1),
                          "input_material_g": r["input_material_g"],
                          "delta_input_pct": 100 * (r["input_material_g"] / ref["input_material_g"] - 1)})
-    cat = ("sheet_size_mm", ("1000x2000", "1219x2438", "1250x2500")) if op == "OP-A" else \
-          ("route", ("pierce_cutoff", "compound_blank"))
+    cat = {"OP-A": ("sheet_size_mm", ("1000x2000", "1219x2438", "1250x2500")),
+           "OP-B": ("route", ("pierce_cutoff", "compound_blank")),
+           "OP-C": ("sheet_size_mm", ("600x600", "600x1500", "1000x2000"))}[op]
     for v in cat[1]:
         r = run({**base, cat[0]: v})
         rows.append({"operation": op, "parameter": cat[0], "level": "scenario", "value": v,
@@ -250,5 +268,5 @@ def envelope(op: str, motor_kW: float | None = None) -> dict:
     fav = {k: (hi[k] if k in _INVERSE else lo[k]) for k in lo if isinstance(lo[k], float)}
     unf = {k: (lo[k] if k in _INVERSE else hi[k]) for k in lo if isinstance(lo[k], float)}
     base = params(op, "central")
-    run = (lambda p: op_a(p)) if op == "OP-A" else (lambda p: op_b(p, motor_kW))
+    run = _runner(op, motor_kW)
     return {"favourable": run({**base, **fav}), "central": run(base), "unfavourable": run({**base, **unf})}
