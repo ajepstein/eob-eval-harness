@@ -1,0 +1,4 @@
+route,method,die_class,low_USD,central_USD,high_USD,n_sources,evidence_ids,central_USD_per_good_part_1_order,central_USD_per_good_part_5_orders,central_USD_per_good_part_10_orders
+pierce_cutoff,top_down,simple die (single-station / 2-station pierce + cut-off strip die),1000.0,4000.0,10000.0,6,D-01;D-03;D-06;D-07;D-08;D-09,20.0,4.0,2.0
+pierce_cutoff,bottom_up,simple die (single-station / 2-station pierce + cut-off strip die),2972.0,5796.67,11780.67,3,D-10;D-11;D-12,28.98335,5.79667,2.898335
+compound_blank,top_down,compound blanking die (outline + hole in one stroke),2000.0,7000.0,25000.0,3,D-02;D-04;D-05,35.0,7.0,3.5

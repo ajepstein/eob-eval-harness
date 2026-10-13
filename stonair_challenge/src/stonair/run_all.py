@@ -6,6 +6,7 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
+from . import die_cost
 from .estimate import envelope, op_a, op_b, op_c, params, press_motor_ratings, sensitivity
 from .evidence import machine_evidence, process_evidence, validate
 from .ingest import DATA_DICTIONARY, normalised_bom_rows, reconcile
@@ -70,6 +71,9 @@ def main() -> dict:
                         "energy_per_good_part_kWh": r["energy_per_good_part_kWh"],
                         "input_material_g": r["input_material_g"], "started_parts": r["started_parts"]})
     _write("envelopes.csv", env)
+    dies = die_cost.summary(b_c["good_parts"])
+    _write("die_cost.csv", dies)
+    die_td = dies[0]
     p007 = []
     for route, r in (("OP-B press pierce + cut-off", b_c), ("OP-C fiber laser", c_c)):
         e = {x["case"]: x["energy_total_kWh"] for x in env if x["operation"] == r["operation"]}
@@ -79,7 +83,11 @@ def main() -> dict:
                      "scrap_g": r["input_material_g"] - r["retained_good_parts_g"] - r.get("sheet_remainder_g", 0.0),
                      "energy_central_kWh": r["energy_total_kWh"], "energy_favourable_kWh": e["favourable"],
                      "energy_unfavourable_kWh": e["unfavourable"],
-                     "part_tooling": "custom pierce/cut-off die" if r["operation"] == "OP-B" else "none"})
+                     "part_tooling": "custom pierce/cut-off die" if r["operation"] == "OP-B" else "none",
+                     "die_cost_USD_low_central_high": (f"{die_td['low_USD']:.0f} / {die_td['central_USD']:.0f} / "
+                                                       f"{die_td['high_USD']:.0f}") if r["operation"] == "OP-B" else "0",
+                     "die_USD_per_good_part_this_order": die_td["central_USD_per_good_part_1_order"]
+                     if r["operation"] == "OP-B" else 0.0})
     _write("p007_route_comparison.csv", p007)
 
     summary = {
@@ -93,6 +101,8 @@ def main() -> dict:
         "op_c_central": {k: c_c[k] for k in ("started_parts", "sheets", "sheet_size_mm", "input_material_g",
                                              "retained_good_parts_g", "sheet_remainder_g", "energy_total_kWh",
                                              "energy_per_good_part_kWh")},
+        "p007_die_cost_USD": {d["method"] + ":" + d["route"]: [d["low_USD"], d["central_USD"], d["high_USD"]]
+                              for d in dies},
         "envelopes_kWh": {f"{e['operation']}:{e['case']}": e["energy_total_kWh"] for e in env},
         "scope_note": "Energy covers only the selected operations (OP-B and OP-C are alternative routes for the same part); it is not module energy.",
     }

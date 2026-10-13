@@ -52,6 +52,23 @@
     "energy_total_kWh": 2.8166749933479514,
     "energy_per_good_part_kWh": 0.014083374966739757
   },
+  "p007_die_cost_USD": {
+    "top_down:pierce_cutoff": [
+      1000.0,
+      4000.0,
+      10000.0
+    ],
+    "bottom_up:pierce_cutoff": [
+      2972.0,
+      5796.67,
+      11780.67
+    ],
+    "top_down:compound_blank": [
+      2000.0,
+      7000.0,
+      25000.0
+    ]
+  },
   "envelopes_kWh": {
     "OP-A:favourable": 1.2509609294723663,
     "OP-A:central": 3.2527678088348306,

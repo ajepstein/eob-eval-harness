@@ -8,7 +8,7 @@ This folder is self-contained, and nothing in the parent repository is used. Rea
 cd stonair_challenge
 python -m pip install -r requirements.txt      # openpyxl (xlsx check), pytest
 PYTHONPATH=src python -m stonair.run_all       # regenerates outputs/ from data/
-python -m pytest                               # 74 tests
+python -m pytest                               # 81 tests
 ```
 
 Python ≥ 3.10 and the standard library only, apart from `openpyxl` for the csv/xlsx consistency check. There is no network access at run time: all evidence is committed as data.
@@ -26,8 +26,8 @@ Python ≥ 3.10 and the standard library only, apart from `openpyxl` for the csv
 | `data/evidence/rejected_leads.csv` | Leads excluded before candidacy, with reason codes |
 | `data/assumptions.csv` | Every non-sourced input (low / central / high), marked `assumption`, `sourced_scenario` or `scenario` |
 | `docs/process_routes.md` | Routes and alternatives for P002 and P007: one operation for P002, and two alternative routes estimated for P007 (press OP-B, laser OP-C) |
-| `src/stonair/` | `units` (conversion), `step_geom` (minimal STEP reader), `ingest` (normalisation and reconciliation), `evidence` (normalisation and attribution validation), `ranking` (gates and ranking), `estimate` (material and energy), `run_all` |
-| `outputs/` | Generated: `normalized_bom.csv`, `data_dictionary.csv`, `reconciliation_checks.csv`, `machine_evidence.csv` (with normalised values), `candidate_ranking.csv`, `estimates_central.csv`, `op_b_energy_by_candidate.csv`, `p007_route_comparison.csv`, `sensitivity.csv`, `envelopes.csv`, `summary.json` |
+| `src/stonair/` | `units` (conversion), `step_geom` (minimal STEP reader), `ingest` (normalisation and reconciliation), `evidence` (normalisation and attribution validation), `ranking` (gates and ranking), `estimate` (material and energy), `die_cost` (press-route die cost), `run_all` |
+| `outputs/` | Generated: `normalized_bom.csv`, `data_dictionary.csv`, `reconciliation_checks.csv`, `machine_evidence.csv` (with normalised values), `candidate_ranking.csv`, `estimates_central.csv`, `op_b_energy_by_candidate.csv`, `p007_route_comparison.csv`, `die_cost.csv`, `sensitivity.csv`, `envelopes.csv`, `summary.json` |
 | `tests/` | Unit conversion, ingest/reconciliation, STEP geometry, evidence attribution (including tamper tests), ranking rules, mass balance and hand-calculated energy |
 
 ## Conventions
