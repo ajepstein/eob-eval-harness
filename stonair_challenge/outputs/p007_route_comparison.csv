@@ -1,0 +1,3 @@
+route,good_parts,input_material_g,retained_good_parts_g,reusable_remainder_g,scrap_g,energy_central_kWh,energy_favourable_kWh,energy_unfavourable_kWh,part_tooling
+OP-B press pierce + cut-off,200,745.37316,665.812126,0.0,79.561034,0.806692,0.162716,2.698508,custom pierce/cut-off die
+OP-C fiber laser,200,2400.3,665.812126,1506.388275,228.099599,2.816675,1.023901,11.133547,none

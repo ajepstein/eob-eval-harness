@@ -6,7 +6,7 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
-from .estimate import envelope, op_a, op_b, params, press_motor_ratings, sensitivity
+from .estimate import envelope, op_a, op_b, op_c, params, press_motor_ratings, sensitivity
 from .evidence import machine_evidence, process_evidence, validate
 from .ingest import DATA_DICTIONARY, normalised_bom_rows, reconcile
 from .ranking import rank
@@ -49,8 +49,10 @@ def main() -> dict:
     top_b = next(r["candidate_id"] for r in ranking if r["operation"] == "OP-B" and r["rank"] == 1)
     a_c = op_a(params("OP-A"))
     b_c = op_b(params("OP-B"), motors[top_b])
+    c_c = op_c(params("OP-C"))
     _write("estimates_central.csv", [{"basis": "OP-A central, sourced 3 kW power scenario (A1/A2 evidence)", **a_c},
-                                     {"basis": f"OP-B central, motor rating of rank-1 press {top_b}", **b_c}])
+                                     {"basis": f"OP-B central, motor rating of rank-1 press {top_b}", **b_c},
+                                     {"basis": "OP-C central, sourced 3-4 kW power scenario (C1/C2 evidence)", **c_c}])
     by_cand = []
     for cid, kw in sorted(motors.items()):
         r = op_b(params("OP-B"), kw)
@@ -60,25 +62,39 @@ def main() -> dict:
                         "energy_total_kWh": r["energy_total_kWh"], "energy_per_good_part_kWh": r["energy_per_good_part_kWh"],
                         "naive_motor_rating_x_run_time_kWh": r["naive_motor_rating_x_run_time_kWh"]})
     _write("op_b_energy_by_candidate.csv", by_cand)
-    _write("sensitivity.csv", sensitivity("OP-A") + sensitivity("OP-B", motors[top_b]))
+    _write("sensitivity.csv", sensitivity("OP-A") + sensitivity("OP-B", motors[top_b]) + sensitivity("OP-C"))
     env = []
-    for op, kw in (("OP-A", None), ("OP-B", motors[top_b])):
+    for op, kw in (("OP-A", None), ("OP-B", motors[top_b]), ("OP-C", None)):
         for case, r in envelope(op, kw).items():
             env.append({"operation": op, "case": case, "energy_total_kWh": r["energy_total_kWh"],
                         "energy_per_good_part_kWh": r["energy_per_good_part_kWh"],
                         "input_material_g": r["input_material_g"], "started_parts": r["started_parts"]})
     _write("envelopes.csv", env)
+    p007 = []
+    for route, r in (("OP-B press pierce + cut-off", b_c), ("OP-C fiber laser", c_c)):
+        e = {x["case"]: x["energy_total_kWh"] for x in env if x["operation"] == r["operation"]}
+        p007.append({"route": route, "good_parts": r["good_parts"], "input_material_g": r["input_material_g"],
+                     "retained_good_parts_g": r["retained_good_parts_g"],
+                     "reusable_remainder_g": r.get("sheet_remainder_g", 0.0),
+                     "scrap_g": r["input_material_g"] - r["retained_good_parts_g"] - r.get("sheet_remainder_g", 0.0),
+                     "energy_central_kWh": r["energy_total_kWh"], "energy_favourable_kWh": e["favourable"],
+                     "energy_unfavourable_kWh": e["unfavourable"],
+                     "part_tooling": "custom pierce/cut-off die" if r["operation"] == "OP-B" else "none"})
+    _write("p007_route_comparison.csv", p007)
 
     summary = {
         "reconciliation": {s: sum(1 for c in checks if c["status"] == s) for s in ("pass", "flag", "fail", "unresolved")},
         "candidates": {op: {s: sum(1 for r in ranking if r["operation"] == op and r["status"] == s)
-                            for s in sorted({r["status"] for r in ranking})} for op in ("OP-A", "OP-B")},
+                            for s in sorted({r["status"] for r in ranking})} for op in ("OP-A", "OP-B", "OP-C")},
         "op_a_central": {k: a_c[k] for k in ("started_parts", "sheets", "input_material_g", "retained_good_parts_g",
                                              "energy_total_kWh", "energy_per_good_part_kWh")},
         "op_b_central": {k: b_c[k] for k in ("started_parts", "strokes", "input_material_g", "retained_good_parts_g",
                                              "required_force_kN", "energy_total_kWh", "energy_per_good_part_kWh")},
+        "op_c_central": {k: c_c[k] for k in ("started_parts", "sheets", "sheet_size_mm", "input_material_g",
+                                             "retained_good_parts_g", "sheet_remainder_g", "energy_total_kWh",
+                                             "energy_per_good_part_kWh")},
         "envelopes_kWh": {f"{e['operation']}:{e['case']}": e["energy_total_kWh"] for e in env},
-        "scope_note": "Energy covers only the two selected operations; it is not module energy.",
+        "scope_note": "Energy covers only the selected operations (OP-B and OP-C are alternative routes for the same part); it is not module energy.",
     }
     (OUT / "summary.json").write_text(json.dumps(summary, indent=2, default=lambda v: round(v, 4)))
     return summary

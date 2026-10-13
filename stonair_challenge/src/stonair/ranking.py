@@ -43,26 +43,35 @@ def rank() -> list[dict]:
     p002, p007 = load_part("P002"), load_part("P007")
     f_req = required_force_bounds()["required_force_kN_worst"]
     die = sorted((float(v) for v in params("OP-B", "high")["die_footprint_mm"].split("x")), reverse=True)
-    sheet_central = sorted((float(v) for v in params("OP-A")["sheet_size_mm"].split("x")), reverse=True)
     out = []
     for c in cands:
         cid, op = c["candidate_id"], c["operation"]
         rows = [r for r in _rows(cid, ev) if config_applicable(r)]
         gates: dict[str, str] = {}
         refs: list[str] = []
-        if op == "OP-A":
-            th, ref = _gate_value(_find(rows, "thickness", "alumin"), lambda f: max(f, key=lambda r: r["normalized_high"]))
-            if th is None:
-                gates["material_thickness"] = "unknown"
-            else:
-                ok = th["normalized_high"] >= p002.thickness_mm
+        if op in ("OP-A", "OP-C"):
+            part, word = (p002, "alumin") if op == "OP-A" else (p007, "copper")
+            th, ref = _gate_value(_find(rows, "thickness", word), lambda f: max(f, key=lambda r: r["normalized_high"]))
+            listed = [r for r in rows if "materials" in r["parameter"] and word in r["original_value"].lower()
+                      and TIER_SCORE[sources[r["source_id"]]["source_tier"]] >= 1.5]
+            if th is not None:
+                ok = th["normalized_high"] >= part.thickness_mm
                 tier = sources[th["source_id"]]["source_tier"]
                 gates["material_thickness"] = ("pass" if TIER_SCORE[tier] >= 1.5 else "pass_resale_only") if ok else "fail"
                 refs.append(ref)
-            area = [r for r in rows if any(k in r["parameter"] for k in ("working range", "axis travel", "sheet size"))]
+            elif listed:
+                # OEM names the material but gives no thickness limit; 0.3 mm is far below any fiber-laser limit
+                gates["material_thickness"] = "pass_inferred"
+                refs.append(listed[0]["evidence_id"])
+            else:
+                gates["material_thickness"] = "unknown"
+            # The machine must take at least the smallest sheet scenario for the operation.
+            sheet_min = sorted((float(v) for v in params(op, "low")["sheet_size_mm"].split("x")), reverse=True)
+            area = [r for r in rows if any(k in r["parameter"].lower() for k in ("working range", "axis travel", "sheet size",
+                                                                         "working area", "xyz range"))]
             if area:
                 a = sorted((area[0]["normalized_low"], area[0]["normalized_high"]), reverse=True)
-                gates["envelope"] = "pass" if a[0] >= sheet_central[0] and a[1] >= sheet_central[1] else "fail"
+                gates["envelope"] = "pass" if a[0] >= sheet_min[0] and a[1] >= sheet_min[1] else "fail"
                 refs.append(area[0]["evidence_id"])
             elif any(k in c["model"] for k in ("3015", "1530")):
                 gates["envelope"] = "pass_inferred"  # model designation implies a 3000 x 1500 mm bed
@@ -113,7 +122,7 @@ def rank() -> list[dict]:
             "score": score if status.startswith("eligible") else None,
             "gate_evidence_ids": ";".join(refs), "scale_note": c["scale_note"], "tooling_note": c["tooling_note"],
         })
-    for op in ("OP-A", "OP-B"):
+    for op in ("OP-A", "OP-B", "OP-C"):
         el = sorted((r for r in out if r["operation"] == op and r["score"] is not None),
                     key=lambda r: (STATUS_ORDER[r["status"]], -r["score"], r["candidate_id"]))
         for i, r in enumerate(el, 1):
