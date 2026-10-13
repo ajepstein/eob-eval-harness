@@ -54,13 +54,16 @@ _UNITS: dict[str, tuple[str, float]] = {
     # counts and ratios
     "each": ("count", 1.0),
     "%": ("ratio", 0.01),
+    # money (nominal, as published; no inflation or FX adjustment)
+    "USD": ("currency", 1.0),
+    "USD/h": ("currency_rate", 1.0),
 }
 
 BASE_UNIT = {
     "length": "mm", "mass": "g", "power": "kW", "apparent_power": "kVA",
     "force": "kN", "energy": "kWh", "speed": "mm/s", "rate": "spm",
     "time": "s", "stress": "MPa", "density": "g/cm3", "count": "each",
-    "ratio": "fraction",
+    "ratio": "fraction", "currency": "USD", "currency_rate": "USD/h",
 }
 
 

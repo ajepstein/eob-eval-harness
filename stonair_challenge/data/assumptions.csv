@@ -36,3 +36,8 @@
 "C-10","OP-C","standby_power_kW","3","5","8","kW","assumption","As A-10. NO source; key gap."
 "C-11","OP-C","sheet_handling_min_per_sheet","3","5","10","min","assumption","As A-11."
 "C-12","OP-C","reject_rate","0","0.02","0.05","fraction","assumption","As A-12 (same 0/2/5 % as OP-B, for a like-for-like route comparison)."
+"B-14","OP-B","die_set_USD","435.50","723.67","1038.27","USD","sourced_scenario","D-10 (low), D-11 (central = lowest MSC price, high = smallest Anchor Danly set)."
+"B-15","OP-B","shop_rate_burden_multiplier","2.5","3.0","4.0","-","assumption","Shop billing rate / toolmaker wage (overhead, machines, margin). No shop-rate source found (S57)."
+"B-16","OP-B","toolmaker_hours","30","50","80","h","assumption","Design, machining, heat-treat handling, assembly and try-out of a 2-station pierce + cut-off die for 0.3 mm Cu. No source collected."
+"B-17","OP-B","die_components_USD","300","600","1200","USD","assumption","Tool steel, punch, die button, cut-off blade, stripper, springs, stops, heat treatment. No source collected."
+"B-18","OP-B","orders_amortised","1","5","10","each","scenario","Number of 100-module orders sharing one die (die re-used for repeat orders)."

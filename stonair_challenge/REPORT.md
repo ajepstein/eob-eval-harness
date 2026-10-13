@@ -1,6 +1,6 @@
 # Findings: equipment discovery and scoped resource estimate (P002, P007)
 
-Stonair candidate challenge, Rev A. Prepared 2026-10-13. Scope: 100 modules. One operation for P002 and two alternative routes for P007; **nothing here is module energy.**
+Stonair candidate challenge, Rev A. Prepared 2026-10-13. Scope: 100 modules. One operation for P002, two alternative routes for P007, and a die cost estimate for the press route; **nothing here is module energy.**
 
 ## 1. Data integrity
 
@@ -24,7 +24,7 @@ Other alternatives are kept separate but not estimated: turret punch, press blan
 
 ## 3. Machine discovery
 
-There were 48 logged searches plus 1 failed retrieval test (`data/evidence/search_log.csv`), 59 registered sources, 70 machine specifications (`outputs/machine_evidence.csv`) and 20 process or material values. Each specification carries machine identity, configuration, original and normalised value, source, location, excerpt, applicability and uncertainty. 24 leads were rejected with reasons, for example a CO₂ machine listed as fiber, marketplace listings, job-shop service pages, oversized presses and a Wikipedia engine article.
+There were 59 logged searches plus 1 failed retrieval test (`data/evidence/search_log.csv`), 70 registered sources, 70 machine specifications (`outputs/machine_evidence.csv`) and 33 process, material or cost values. Each specification carries machine identity, configuration, original and normalised value, source, location, excerpt, applicability and uncertainty. 30 leads were rejected with reasons, for example a CO₂ machine listed as fiber, marketplace listings, job-shop service pages, oversized presses and a Wikipedia engine article.
 
 | OP-A (laser) | Status / rank | Best energy evidence |
 |---|---|---|
@@ -83,7 +83,21 @@ The power evidence uses distinct types: rated laser output, motor rating, instal
 
 **OP-C** uses the OP-A formula with copper inputs: 236 mm perimeter + Ø5.5 hole, 0.5 s pierce (copper pierces less readily), P_proc 10–12–18 kW, giving 3.5 s per part. No source gives a 0.3 mm copper speed, so the speeds are thicker-sheet proxies: 3.4 m/min (1.2 mm, 3 kW), 10 m/min central (1 mm, 1 kW, N₂) and 21 m/min (1 mm, 3 kW).
 
-**P007 routes compared** (`outputs/p007_route_comparison.csv`): the laser uses about 3.5× the press's electricity (2.82 vs 0.81 kWh) and buys about 3.2× the copper (2.40 vs 0.75 kg, 1.51 kg of it reusable offcut), but needs no die. Which is cheaper at 200 parts depends on die cost, which was not researched.
+**P007 routes compared** (`outputs/p007_route_comparison.csv`): the laser uses about 3.5× the press's electricity (2.82 vs 0.81 kWh) and buys about 3.2× the copper (2.40 vs 0.75 kg, 1.51 kg of it reusable offcut), but needs no die.
+
+**Die cost for the press route** (`outputs/die_cost.csv`, nominal USD, not a quote):
+
+| Die | Method | Low / central / high | Per good part, one 200-part order |
+|---|---|---|---|
+| Pierce + cut-off (simple die) | published ranges, 6 sources | $1,000 / **$4,000** / $10,000 | **$20** |
+| Pierce + cut-off (simple die) | die set + parts + toolmaker hours | $2,970 / $5,800 / $11,780 | $29 |
+| Compound blank (alternative) | published ranges, 3 sources | $2,000 / $7,000 / $25,000 | $35 |
+
+- **Published ranges:** low = smallest published low, high = largest published high, central = median of the range midpoints.
+- **Die set + toolmaker hours:** a $436–1,038 catalog die set, $300–1,200 of components (assumed) and 30–80 toolmaker hours. Hours are costed at a sourced $29.82/h wage × a 2.5–4× overhead multiplier (assumed, since no shop rate was found).
+- **The two methods overlap.** Every die price comes from a die maker's or supplier's own marketing page, mixing US and Chinese pricing.
+
+**What it means for P007:** the press route's 2 kWh electricity saving is negligible beside a die of roughly $4,000. At 200 parts the die adds about **$20 per good part**; spread over 10 repeat orders it falls to about $2. The laser route is therefore the likely choice for this order unless a laser job costs more than about $20 per part above stamping. Laser job pricing was not researched, so that comparison stays open. The only copper example found (a laser vendor's 2 mm busbar case, with a $2,500 die) implies a break-even near 25,000 parts. It covers labour and consumables only, so it is context, not evidence.
 
 **What drives the uncertainty** (`outputs/sensitivity.csv`):
 
@@ -97,8 +111,8 @@ The power evidence uses distinct types: rated laser output, motor rating, instal
 2. **Unsourced and dominant:** laser standby power, press idle fraction (only a qualitative "large share" was found), pierce and move times, and feed rate. These are labelled assumptions in `data/assumptions.csv`.
 3. **OEM averages are not aluminium-, copper- or part-specific.** No energy per part or per stroke was published by any OEM. For OP-C, no 0.3 mm copper speed and no power figure for the small-format machines was found.
 4. Salvagnini's work envelope, Bystronic and Amada ENSIS OEM data sheets, and the Chin Fong motor kW were not captured.
-5. Not modelled: assist gas (N₂) and compressed air, extraction beyond the OEM bundle, deburring, slitting of the copper strip, die manufacture and cost, thin-copper distortion and burr, and transport.
+5. Not modelled: assist gas (N₂) and compressed air, extraction beyond the OEM bundle, deburring, slitting of the copper strip, die maintenance and wear, thin-copper distortion and burr, laser job pricing, and transport.
 
-Still outside the time box: a measured-power request to OEMs, and a die-cost quote to settle the P007 route choice.
+Still outside the time box: a measured-power request to OEMs, a real die quote, and laser job-shop prices to close the P007 cost comparison.
 
 *AI disclosure:* this work was produced with an AI coding assistant (Claude), which ran the searches and wrote the code and text. Search excerpts are machine-summarised and are **not** verified quotations. Every value is attributed so it can be checked.
