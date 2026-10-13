@@ -6,7 +6,7 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
-from . import die_cost
+from . import die_cost, job_cost
 from .estimate import envelope, op_a, op_b, op_c, params, press_motor_ratings, sensitivity
 from .evidence import machine_evidence, process_evidence, validate
 from .ingest import DATA_DICTIONARY, normalised_bom_rows, reconcile
@@ -74,6 +74,13 @@ def main() -> dict:
     dies = die_cost.summary(b_c["good_parts"])
     _write("die_cost.csv", dies)
     die_td = dies[0]
+    jobs = [job_cost.job_price(l) for l in ("low", "central", "high")]
+    jobs.append(job_cost.job_price("central", cut_case="unfavourable"))
+    _write("laser_job_cost.csv", jobs)
+    _write("laser_service_thickness.csv", job_cost.thin_copper_availability())
+    job_c = jobs[1]
+    # Lower bound: treats the press's own per-part running cost as zero, so the true break-even is later.
+    be = die_cost.break_even_parts(die_td["central_USD"], job_c["marginal_per_part_USD"], 0.0)
     p007 = []
     for route, r in (("OP-B press pierce + cut-off", b_c), ("OP-C fiber laser", c_c)):
         e = {x["case"]: x["energy_total_kWh"] for x in env if x["operation"] == r["operation"]}
@@ -87,7 +94,10 @@ def main() -> dict:
                      "die_cost_USD_low_central_high": (f"{die_td['low_USD']:.0f} / {die_td['central_USD']:.0f} / "
                                                        f"{die_td['high_USD']:.0f}") if r["operation"] == "OP-B" else "0",
                      "die_USD_per_good_part_this_order": die_td["central_USD_per_good_part_1_order"]
-                     if r["operation"] == "OP-B" else 0.0})
+                     if r["operation"] == "OP-B" else 0.0,
+                     "laser_job_price_USD_low_central_high": "" if r["operation"] == "OP-B" else
+                     " / ".join(f"{j['order_price_USD']:.0f}" for j in jobs[:3]),
+                     "break_even_parts_lower_bound": be if r["operation"] == "OP-B" else ""})
     _write("p007_route_comparison.csv", p007)
 
     summary = {
@@ -103,6 +113,8 @@ def main() -> dict:
                                              "energy_per_good_part_kWh")},
         "p007_die_cost_USD": {d["method"] + ":" + d["route"]: [d["low_USD"], d["central_USD"], d["high_USD"]]
                               for d in dies},
+        "p007_laser_job_price_USD": {j["level"] + ":" + j["cut_case"]: j["order_price_USD"] for j in jobs},
+        "p007_break_even_parts_lower_bound": be,
         "envelopes_kWh": {f"{e['operation']}:{e['case']}": e["energy_total_kWh"] for e in env},
         "scope_note": "Energy covers only the selected operations (OP-B and OP-C are alternative routes for the same part); it is not module energy.",
     }

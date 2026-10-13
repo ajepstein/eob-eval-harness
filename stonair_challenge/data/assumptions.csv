@@ -41,3 +41,8 @@
 "B-16","OP-B","toolmaker_hours","30","50","80","h","assumption","Design, machining, heat-treat handling, assembly and try-out of a 2-station pierce + cut-off die for 0.3 mm Cu. No source collected."
 "B-17","OP-B","die_components_USD","300","600","1200","USD","assumption","Tool steel, punch, die button, cut-off blade, stripper, springs, stops, heat treatment. No source collected."
 "B-18","OP-B","orders_amortised","1","5","10","each","scenario","Number of 100-module orders sharing one die (die re-used for repeat orders)."
+"C-13","OP-C","laser_rate_USD_h","60","130","300","USD/h","sourced_scenario","J-06..J-10: low = smallest published low, central = median of range midpoints, high = largest published high (computed in job_cost.py; values here must match)."
+"C-14","OP-C","setup_fee_USD","0","50","75","USD","sourced_scenario","0 = shops with no setup fee (J-13); 50 = top of guide's flat fee (J-11); 75 = top of 'other shops' range (J-14)."
+"C-15","OP-C","minimum_charge_USD","25","100","750","USD","sourced_scenario","J-15 (low), J-12 (central), J-16 (high outlier)."
+"C-16","OP-C","copper_sheet_USD_lb","13.34","20.00","35","USD/lb","sourced_scenario","Low/central derived from J-17/J-18 and J-19/J-20 (computed in job_cost.py). High is an ASSUMPTION: small cut sheet of 0.3 mm gauge, not found priced."
+"C-17","OP-C","material_markup","1.0","1.15","1.3","-","assumption","Job-shop markup on material passed through. No source collected."

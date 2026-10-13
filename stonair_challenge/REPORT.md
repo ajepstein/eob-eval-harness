@@ -28,7 +28,7 @@ Other routes are listed but not estimated: turret punch or waterjet for P002; co
 
 ## 3. Machine discovery
 
-59 searches, 70 sources, 70 machine specifications and 33 process, material or cost values; 30 leads rejected with reasons. Machines must first pass the compatibility checks: material thickness and work envelope for lasers; force ≥ 22.7 kN and bolster area for presses. Eligible machines are then ranked by 2 × energy-evidence quality + source tier + scale fit. The full table is `outputs/candidate_ranking.csv`.
+69 searches, 84 sources, 70 machine specifications and 54 process, material or cost values; 34 leads rejected with reasons. Machines must first pass the compatibility checks: material thickness and work envelope for lasers; force ≥ 22.7 kN and bolster area for presses. Eligible machines are then ranked by 2 × energy-evidence quality + source tier + scale fit. The full table is `outputs/candidate_ranking.csv`.
 
 | Op | Rank 1 (best energy evidence) | Other eligible | Not eligible / weaker |
 |---|---|---|---|
@@ -62,7 +62,11 @@ The power evidence keeps its types separate: laser output, motor rating, connect
 - **From die set + parts + toolmaker hours:** $2,970 / $5,800 / $11,780. Uses a sourced $29.82/h wage; the 2.5–4× overhead and the 30–80 hours are assumptions.
 - A compound blanking die would cost $2,000 / $7,000 / $25,000.
 
-**P007 route choice.** The press uses about 3.5× less electricity and 3.2× less copper than the laser. But its 2 kWh saving is negligible beside the die, which adds about **$20 per good part** on this 200-part order (about $2 over 10 repeat orders). So the laser is the likely choice unless laser jobs cost over $20 per part more than stamping. Laser job prices were not researched.
+**Laser job price for OP-C** (`outputs/laser_job_cost.csv`). No instant quote was possible: the online services need a CAD upload, and none of the three checked lists 0.3 mm copper. Their thinnest copper is 0.40–0.81 mm. Built bottom-up instead: price = max(minimum charge, setup + machine hours × rate + copper sheet × price × markup).
+- Inputs: rate $60 / $130 / $300 per hour (5 published ranges), setup $0–75, minimum $25–750, and copper $13–20/lb derived from listed sheet prices and weights ($35 high is assumed).
+- Result: **$88 / $209 / $750 per order**, or about $1.04 per good part at central. Copper is about 60 % of it. The slowest cutting case raises the central price to $264.
+
+**P007 route choice.** The press uses about 3.5× less electricity and 3.2× less copper, but the die alone (~$4,000, **$20 per part**) is about 19× the whole laser job ($209). Even counting the press's running cost as zero, the die only pays back after **≈ 5,000 parts (≈ 25 orders)**. **Laser is the choice at this volume**, but P007's 0.3 mm copper must go to a conventional job shop rather than an online service.
 
 **Largest uncertainties** (`outputs/sensitivity.csv`):
 - **OP-A:** cutting speed (+63 / −23 %) and processing power (−15 / +44 %).
@@ -75,6 +79,6 @@ The power evidence keeps its types separate: laser output, motor rating, connect
 1. **No primary document was opened**: page and PDF retrieval was blocked in this environment. Every value is a search-engine excerpt, flagged as such, and conflicts are kept rather than averaged (TRUMPF 12 vs 13 kW; SEYI 70–180 vs 35–65 spm; AIDA bolster dimensions). Verify first: SRC-TRU-02, SRC-SAL-01, SRC-AID-01 and SRC-BRU-01.
 2. **Unsourced but dominant inputs:** laser standby power, press idle fraction, pierce and move times, feed rate, and the die overhead and hours. All are labelled in `data/assumptions.csv`.
 3. **Not material- or part-specific:** OEM power averages; no 0.3 mm copper speed; no power data for the small-format cutters; die prices come from marketing pages, mixing US and Chinese pricing.
-4. **Not modelled:** assist gas and compressed air, deburring, copper slitting, die wear, burr and distortion on thin copper, laser job pricing, and transport.
+4. **Not modelled:** assist gas and compressed air, deburring, copper slitting, die wear, burr and distortion on thin copper, the press shop's running charge, and transport. Laser prices are built from published shop parameters, not quoted.
 
 *AI disclosure:* produced with an AI coding assistant (Claude), which ran the searches and wrote the code and text. Excerpts are machine-summarised, not verified quotations; every value is attributed so it can be checked.

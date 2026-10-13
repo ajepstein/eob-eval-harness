@@ -69,6 +69,13 @@
       25000.0
     ]
   },
+  "p007_laser_job_price_USD": {
+    "low:central": 87.59206239424948,
+    "central:central": 208.54380416119045,
+    "high:central": 750.0,
+    "central:unfavourable": 264.1563702222369
+  },
+  "p007_break_even_parts_lower_bound": 5045.924085350225,
   "envelopes_kWh": {
     "OP-A:favourable": 1.2509609294723663,
     "OP-A:central": 3.2527678088348306,

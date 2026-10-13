@@ -19,6 +19,7 @@ _UNITS: dict[str, tuple[str, float]] = {
     # mass, base g
     "g": ("mass", 1.0),
     "kg": ("mass", 1000.0),
+    "lb": ("mass", 453.59237),
     # power, base kW
     "W": ("power", 1e-3),
     "kW": ("power", 1.0),
@@ -57,6 +58,9 @@ _UNITS: dict[str, tuple[str, float]] = {
     # money (nominal, as published; no inflation or FX adjustment)
     "USD": ("currency", 1.0),
     "USD/h": ("currency_rate", 1.0),
+    "USD/lb": ("price_per_mass", 1 / 453.59237),  # base USD/g
+    # areal mass, base g/mm2 (1 lb/ft2 = 453.59237 g / 92903.04 mm2)
+    "lb/ft2": ("areal_mass", 453.59237 / 92903.04),
 }
 
 BASE_UNIT = {
@@ -64,6 +68,7 @@ BASE_UNIT = {
     "force": "kN", "energy": "kWh", "speed": "mm/s", "rate": "spm",
     "time": "s", "stress": "MPa", "density": "g/cm3", "count": "each",
     "ratio": "fraction", "currency": "USD", "currency_rate": "USD/h",
+    "price_per_mass": "USD/g", "areal_mass": "g/mm2",
 }
 
 
