@@ -1,0 +1,4 @@
+service,thinnest_copper_mm,offers_0.3_mm,evidence_id
+SendCutSend,0.8128,False,J-01
+OSH Cut,0.508,False,J-02
+Ponoko,0.4,False,J-04

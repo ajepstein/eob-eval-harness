@@ -29,3 +29,7 @@
 "Amazon FL-0604 die set listing","OP-B die","S58","not_equipment_evidence","Consumer marketplace listing."
 "Molex / Digi-Key 'cut-off die'","OP-B die","S59","wrong_product","Crimp-tool accessory, not a stamping die."
 "Hook-and-loop cutting dies ($100-150)","OP-B die","S59","wrong_product","Rule dies for soft materials."
+"Alibaba C110 copper listings","OP-C job","S64","not_equipment_evidence","Marketplace offers in mixed currencies with minimum orders."
+"OnlineMetals thin C110 strip prices (0.010 x 3 in, 0.008 x 24 in)","OP-C job","S64","unusable","Prices without weights or lengths; $/lb cannot be derived."
+"Ponoko '$2.36 per part' example","OP-C job","S65","unattributable","Marketing example not tied to a material, thickness or part."
+"Interstate Metal 0.0216 in sheet ($763.20)","OP-C job","S69","not_reproduced","Found in S64 summary but not re-found in S69; replaced by MK Metal listing."

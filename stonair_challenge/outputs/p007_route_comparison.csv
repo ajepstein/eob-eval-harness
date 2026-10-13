@@ -1,3 +1,3 @@
-route,good_parts,input_material_g,retained_good_parts_g,reusable_remainder_g,scrap_g,energy_central_kWh,energy_favourable_kWh,energy_unfavourable_kWh,part_tooling,die_cost_USD_low_central_high,die_USD_per_good_part_this_order
-OP-B press pierce + cut-off,200,745.37316,665.812126,0.0,79.561034,0.806692,0.162716,2.698508,custom pierce/cut-off die,1000 / 4000 / 10000,20.0
-OP-C fiber laser,200,2400.3,665.812126,1506.388275,228.099599,2.816675,1.023901,11.133547,none,0,0.0
+route,good_parts,input_material_g,retained_good_parts_g,reusable_remainder_g,scrap_g,energy_central_kWh,energy_favourable_kWh,energy_unfavourable_kWh,part_tooling,die_cost_USD_low_central_high,die_USD_per_good_part_this_order,laser_job_price_USD_low_central_high,break_even_parts_lower_bound
+OP-B press pierce + cut-off,200,745.37316,665.812126,0.0,79.561034,0.806692,0.162716,2.698508,custom pierce/cut-off die,1000 / 4000 / 10000,20.0,,5045.924085
+OP-C fiber laser,200,2400.3,665.812126,1506.388275,228.099599,2.816675,1.023901,11.133547,none,0,0.0,88 / 209 / 750,
