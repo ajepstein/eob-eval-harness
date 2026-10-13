@@ -1,5 +1,0 @@
-level,cut_case,good_parts,machine_h,sheet_lb,laser_rate_USD_h,setup_fee_USD,minimum_charge_USD,machine_USD,material_USD,build_up_USD,minimum_binds,order_price_USD,price_per_good_part_USD,marginal_per_part_USD
-low,central,200,0.283334,5.291756,60.0,0.0,25.0,17.000042,70.592021,87.592062,False,87.592062,0.43796,0.43796
-central,central,200,0.283334,5.291756,130.0,50.0,100.0,36.833424,121.710381,208.543804,False,208.543804,1.042719,0.792719
-high,central,200,0.283334,5.291756,300.0,75.0,750.0,85.000208,240.774883,400.775092,True,750.0,3.75,1.628875
-central,unfavourable,200,0.711123,5.291756,130.0,50.0,100.0,92.44599,121.710381,264.15637,False,264.15637,1.320782,1.070782

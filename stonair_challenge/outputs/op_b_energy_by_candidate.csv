@@ -1,5 +1,0 @@
-candidate_id,motor_rating_kW,note,energy_total_kWh,energy_per_good_part_kWh,naive_motor_rating_x_run_time_kWh
-B1,5.5,,0.806692,0.004033,1.313889
-B2,15.0,,2.200026,0.011,3.583333
-B3,4.996189,servo: idle-fraction assumption is for flywheel presses and likely overstates,0.7328,0.003664,1.193534
-B4,3.7,,0.542692,0.002713,0.883889
