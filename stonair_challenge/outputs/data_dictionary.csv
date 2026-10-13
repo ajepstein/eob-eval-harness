@@ -1,0 +1,18 @@
+field,source_field,meaning,unit,quantity_basis,ambiguity
+part_id,Part ID,"Stable part key shared by BOM, CAD files and placement JSON",-,per part definition,
+parent_id,Parent ID,Assembly the quantity is counted against,-,-,"Root STM-BM-6S4P-A is a grouping, not a raw material (START_HERE)."
+part_name_bom,Part name,Design-intent name in the BOM,-,-,"Names differ from STEP product names for P006, P007 (see reconciliation). A name does not prove a process route."
+material_stated,Material stated,Material text as supplied,-,-,"Temper/grade unselected for Cu, PA66-GF30, laminate and steel; 6061-T6 has no specification standard (e.g. ASTM B209 vs EN 485)."
+qty_per_parent,Qty / parent,Count of this part per one parent assembly,each,per 1 x STM-BM-6S4P-A,"Per parent, not per batch (xlsx Assignment sheet)."
+qty_unit,Qty unit,Unit of qty_per_parent,each,-,
+qty_total_demand,(derived),qty_per_parent x 100 modules,each,per 100-module order,"Excludes spares, rejects and setup scrap (estimated separately)."
+thickness_stated_value,Thickness stated,"Stated sheet thickness, original value",see thickness_stated_unit,per part,"Mixed units in the BOM (cm for P002, µm for P006-P008). Blank = not supplied."
+thickness_stated_unit,Thickness unit,Unit of thickness_stated_value as written,-,-,'µm' arrives as U+00B5 micro sign.
+thickness_mm,(derived),Stated thickness converted to mm,mm,per part,Nominal only; no tolerance supplied.
+purchased_unit_mass_g,Purchased unit mass + Mass unit,Mass of a purchased item,g,per each,"Only P005; 69 g is an OEM MAXIMUM, not a measured mass (START_HERE)."
+geometry_file,Geometry file,Relative STEP path in the pack,-,-,Pack paths CAD/parts/Pxxx.step; files here are under data/raw/CAD.
+requirement_note,Requirement note,Free-text gaps stated by Stonair,-,-,Tolerance and surface finish not supplied for any part.
+net_volume_mm3,Net volume (mm³),CAD solid volume of ONE instance,mm3,per 1 part,"Net (finished) volume; not stock, not mass. Float noise in last digits."
+bbox_x_mm / bbox_y_mm / bbox_z_mm,Bounding X/Y/Z (mm),Axis-aligned extents of one part in its own STEP frame,mm,per 1 part,"Extents, not features; orientation is the part's local frame. 0.30000000000000004 is float noise for 0.3."
+position_mm,cad_instances.json position_mm,Translation of the part's local origin in the assembly frame,mm,per instance,"Origin convention differs by part (corner for plates, centre for cells and fasteners). No rotation in the JSON; STEP confirms none."
+instance_id,cad_instances.json instance_id,Unique occurrence of a part in the assembly,-,per instance,

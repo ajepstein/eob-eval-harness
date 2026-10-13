@@ -1,0 +1,7 @@
+operation,case,energy_total_kWh,energy_per_good_part_kWh,input_material_g,started_parts
+OP-A,favourable,1.250961,0.01251,16048.3788,100
+OP-A,central,3.252768,0.032528,16048.3788,103
+OP-A,unfavourable,11.978078,0.119781,16048.3788,106
+OP-B,favourable,0.162716,0.000814,701.84772,200
+OP-B,central,0.806692,0.004033,745.37316,205
+OP-B,unfavourable,2.698508,0.013493,815.653944,211
