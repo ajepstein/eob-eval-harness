@@ -1,0 +1,48 @@
+{
+  "reconciliation": {
+    "pass": 74,
+    "flag": 17,
+    "fail": 0,
+    "unresolved": 9
+  },
+  "candidates": {
+    "OP-A": {
+      "eligible": 4,
+      "eligible_secondary_evidence_only": 2,
+      "eligible_unverified": 1,
+      "excluded_insufficient_evidence": 1
+    },
+    "OP-B": {
+      "eligible": 2,
+      "eligible_secondary_evidence_only": 1,
+      "eligible_unverified": 2,
+      "excluded_insufficient_evidence": 0
+    }
+  },
+  "op_a_central": {
+    "started_parts": 103,
+    "sheets": 1,
+    "input_material_g": 16048.3788,
+    "retained_good_parts_g": 11497.508922019235,
+    "energy_total_kWh": 3.2527678088348306,
+    "energy_per_good_part_kWh": 0.032527678088348305
+  },
+  "op_b_central": {
+    "started_parts": 205,
+    "strokes": 215,
+    "input_material_g": 745.37316,
+    "retained_good_parts_g": 665.8121257442249,
+    "required_force_kN": 2.00266715628048,
+    "energy_total_kWh": 0.8066922960380118,
+    "energy_per_good_part_kWh": 0.004033461480190059
+  },
+  "envelopes_kWh": {
+    "OP-A:favourable": 1.2509609294723663,
+    "OP-A:central": 3.2527678088348306,
+    "OP-A:unfavourable": 11.978078321863975,
+    "OP-B:favourable": 0.16271627734972335,
+    "OP-B:central": 0.8066922960380118,
+    "OP-B:unfavourable": 2.6985082789126253
+  },
+  "scope_note": "Energy covers only the two selected operations; it is not module energy."
+}
